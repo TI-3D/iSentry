@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 burn = { version = "0.14.0", features = ["wgpu", "train", "tui"] }
+image = "0.25.2"
