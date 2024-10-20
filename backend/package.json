@@ -6,10 +6,19 @@
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
-    "elysia": "latest"
+    "@elysiajs/swagger": "^1.1.5",
+    "@paralleldrive/cuid2": "^2.2.2",
+    "drizzle-orm": "^0.35.2",
+    "drizzle-typebox": "^0.1.1",
+    "elysia": "latest",
+    "mysql2": "^3.11.3"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "drizzle-kit": "^0.26.2"
+  },
+  "override": {
+    "@sinclair/typebox": "0.32.34"
   },
   "module": "src/index.js"
 }
