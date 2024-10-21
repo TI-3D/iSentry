@@ -9,8 +9,10 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController fullNameController = TextEditingController();
     TextEditingController emailController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
+    TextEditingController confirmPasswordController = TextEditingController();
 
     return Scaffold(
       body: Padding(
@@ -25,8 +27,8 @@ class RegisterPage extends StatelessWidget {
               ),
               CustomTextField(
                 labelText: 'Enter your full name',
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
+                controller: fullNameController,
+                keyboardType: TextInputType.name,
               ),
               const SizedBox(height: 10),
               CustomTextField(
@@ -44,7 +46,7 @@ class RegisterPage extends StatelessWidget {
               const SizedBox(height: 10),
               CustomTextField(
                 labelText: 'Confirm Password',
-                controller: passwordController,
+                controller: confirmPasswordController,
                 obscureText: true,
                 suffixIcon: const Icon(Icons.visibility_off),
               ),
@@ -52,7 +54,7 @@ class RegisterPage extends StatelessWidget {
               CustomElevatedButton(
                 buttonText: 'Register',
                 onPressed: () {
-                  // Register logic here
+                  // Tambahkan logika register di sini
                 },
               ),
               const SizedBox(height: 20),
@@ -72,19 +74,19 @@ class RegisterPage extends StatelessWidget {
                 children: [
                   IconButton(
                     onPressed: () {
-                      // QR code login logic here
+                      context.go('/qr_register'); // sementara redirect ke halaman QR Register User Resident
                     },
                     icon: const Icon(Icons.qr_code, size: 30),
                   ),
                   IconButton(
                     onPressed: () {
-                      // Google login logic here
+                      // Google login logic di sini
                     },
                     icon: const Icon(Icons.g_mobiledata, size: 30),
                   ),
                   IconButton(
                     onPressed: () {
-                      // GitHub login logic here
+                      // GitHub login logic di sini
                     },
                     icon: const Icon(Icons.code, size: 30),
                   ),
@@ -94,12 +96,18 @@ class RegisterPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Already have an account? ", style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text(
+                    "Already have an account? ",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   TextButton(
                     onPressed: () {
                       context.go('/');
                     },
-                    child: const Text('Login Now', style: TextStyle(color: Colors.grey)),
+                    child: const Text(
+                      'Login Now',
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ),
                 ],
               ),
