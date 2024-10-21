@@ -11,8 +11,8 @@ iSentry adalah aplikasi pengawasan mobile yang dirancang untuk meningkatkan keam
 ## 🛠️ Teknologi yang Digunakan
 - **Frontend & Mobile: Flutter**
     * Flutter digunakan untuk membangun antarmuka pengguna (UI) aplikasi iSentry, baik untuk versi web maupun mobile. Sehingga, aplikasi dapat dijalankan dan memberikan pengalaman pengguna yang responsif.
-- **Backend: Elysia dengan Node.js**
-    * Elysia adalah framework yang digunakan untuk membangun backend aplikasi, yang didukung oleh Node.js.
+- **Backend: Elysia dengan Bun**
+    * Elysia adalah framework modern untuk membangun backend yang cepat dan ringan. Proyek ini menggunakan Bun sebagai runtime JavaScript/TypeScript untuk meningkatkan performa dan efisiensi.
 - **Artificial Intelligence & Machine Learning: Burn dengan Rust**
     * Framework AI/ML yang digunakan untuk pengolahan data dan penerapan model pembelajaran mesin dalam aplikasi. Dengan menggunakan Rust, Burn memastikan performa yang optimal dan efisiensi dalam menjalankan model AI, terutama untuk fitur pengenalan wajah pada aplikasi.
 - **Database: MariaDB**
