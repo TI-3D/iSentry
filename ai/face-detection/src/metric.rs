@@ -59,7 +59,7 @@ impl<B: Backend> IoUMetric<B> {
     }
 
     fn update_batch(&mut self, pred_boxes: Tensor<B, 3>, target_boxes: Tensor<B, 3>) -> f64 {
-        let [batch_size, num_boxes, _] = pred_boxes.dims();
+        let [batch_size, _, _] = pred_boxes.dims();
         let mut correct_detections = 0.0;
         let pred_boxes = pred_boxes.flatten::<1>(0, 2).to_data();
         let pred_boxes = pred_boxes.as_slice::<f64>().unwrap();
@@ -67,11 +67,22 @@ impl<B: Backend> IoUMetric<B> {
         let target_boxes = target_boxes.flatten::<1>(0, 2).to_data();
         let target_boxes = target_boxes.as_slice::<f64>().unwrap();
 
-        for (pred_box, target_box) in pred_boxes.chunks(4).zip(target_boxes.chunks(4)) {
-            correct_detections += self.calculate_iou(pred_box, target_box);
+        for image in pred_boxes.chunks(batch_size).zip(target_boxes.chunks(batch_size)) {
+            let mut correct_detection_single = 0.0;
+            for (pred_box, target_box) in image.0.chunks(4).zip(image.1.chunks(4)) {
+                correct_detection_single += self.calculate_iou(pred_box, target_box);
+            }
+            correct_detections += correct_detection_single;
         }
 
-        correct_detections / (batch_size as f64 * num_boxes as f64)
+        correct_detections / batch_size as f64
+
+        //
+        // for (pred_box, target_box) in pred_boxes.chunks(4).zip(target_boxes.chunks(4)) {
+        //     correct_detections += self.calculate_iou(pred_box, target_box);
+        // }
+        //
+        // correct_detections / (batch_size as f64 * num_boxes as f64)
     }
 }
 

@@ -1,7 +1,22 @@
+import swagger from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
+function main() {
+  const app = new Elysia()
+    .use(swagger())
+    .get("/", () => "Hello Elysia")
+    .listen({
+      port: "3000",
+      // tls: {
+      //   key: Bun.file(import.meta.dir + "/../self_signed_certs/key.pem"),
+      //   cert: Bun.file(import.meta.dir + "/../self_signed_certs/cert.pem"),
+      // }
+    });
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+  console.log(
+    `🦊 iSentry-web-server is running at ${app.server?.hostname}:${app.server?.port}`
+  );
+}
+
+main()
+
