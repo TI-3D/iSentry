@@ -67,7 +67,10 @@ impl<B: Backend> IoUMetric<B> {
         let target_boxes = target_boxes.flatten::<1>(0, 2).to_data();
         let target_boxes = target_boxes.as_slice::<f64>().unwrap();
 
-        for image in pred_boxes.chunks(batch_size).zip(target_boxes.chunks(batch_size)) {
+        for image in pred_boxes
+            .chunks(batch_size)
+            .zip(target_boxes.chunks(batch_size))
+        {
             let mut correct_detection_single = 0.0;
             for (pred_box, target_box) in image.0.chunks(4).zip(image.1.chunks(4)) {
                 correct_detection_single += self.calculate_iou(pred_box, target_box);
