@@ -1,0 +1,11 @@
+2024-10-22T16:20:51.927835Z  INFO burn_fusion::stream::store::base: New execution plan 1 - Operations: 1 - Triggers 1    
+2024-10-22T16:20:51.943056Z ERROR wgpu::backend::wgpu_core: Handling wgpu errors as fatal by default    
+2024-10-22T16:20:51.943113Z ERROR burn_train::learner::application_logger: PANIC => panicked at /home/alimulap/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wgpu-22.1.0/src/backend/wgpu_core.rs:3411:5:
+wgpu error: Validation Error
+
+Caused by:
+  In Device::create_compute_pipeline
+    Downlevel flags DownlevelFlags(COMPUTE_SHADERS) are required but not supported on the device.
+This is not an invalid use of WebGPU: the underlying API or device does not support enough features to be a fully compliant implementation. A subset of the features can still be used. If you are running this program on native and not in a browser and wish to work around this issue, call Adapter::downlevel_properties or Device::downlevel_properties to get a listing of the features the current platform supports.
+
+    

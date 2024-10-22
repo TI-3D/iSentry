@@ -1,5 +1,3 @@
-use std::env::var;
-use std::sync::LazyLock;
 use std::{fs, path::PathBuf};
 
 use burn::{
@@ -13,21 +11,22 @@ static IMG_SIZE: u32 = 1024;
 
 static MAX_FACES: usize = 20;
 
-pub static DATASET_PATH: LazyLock<String> = LazyLock::new(|| var("ISENTRY_DATASET_PATH").unwrap());
-
 pub struct WiderFaceDataset {
     items: Vec<WiderFaceDatasetItem>,
 }
 
 impl WiderFaceDataset {
     pub fn new(mut path: PathBuf) -> Self {
+        // println!("{path:?}");
         let str = fs::read_to_string(path.clone()).unwrap();
         path.pop();
         let dataset_path = path;
         let mut items = Vec::new();
         let mut lines = str.lines();
         while let Some(img_path) = lines.next() {
-            let num_faces = lines.next().unwrap().trim().parse::<usize>().unwrap();
+            let num_faces = lines.next().unwrap();
+            // println!("{num_faces}");
+            let num_faces = num_faces.trim().parse::<usize>().unwrap();
             let mut faces: Vec<[i32; 4]> = Vec::new();
             for _ in 0..num_faces {
                 faces.push(
@@ -41,6 +40,9 @@ impl WiderFaceDataset {
                         .try_into()
                         .unwrap(),
                 );
+            }
+            if num_faces == 0 {
+                lines.next(); // the heck why they added 0 0 0 0 0 0 0 0 0 0 on image with no face
             }
 
             if faces.len() > MAX_FACES {
