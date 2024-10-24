@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:iSentry/widgets/auth/button.dart';
 import 'package:iSentry/widgets/auth/heading.dart';
 import 'package:iSentry/widgets/auth/text_field.dart';
@@ -16,7 +17,7 @@ class RegisterPage extends StatelessWidget {
 
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.only(top: 80.0, left: 20.0, right: 20.0),
+        padding: const EdgeInsets.only(top: 100.0, left: 20.0, right: 20.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,29 +27,35 @@ class RegisterPage extends StatelessWidget {
                 title2: 'Register to get started',
               ),
               CustomTextField(
-                labelText: 'Enter your full name',
+                hintText: 'Enter your full name',
                 controller: fullNameController,
                 keyboardType: TextInputType.name,
               ),
               const SizedBox(height: 10),
               CustomTextField(
-                labelText: 'Enter your email',
+                hintText: 'Enter your email',
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 10),
               CustomTextField(
-                labelText: 'Password',
+                hintText: 'Password',
                 controller: passwordController,
                 obscureText: true,
-                suffixIcon: const Icon(Icons.visibility_off),
+                suffixIcon: const Icon(
+                  LucideIcons.eyeOff,
+                  color: Colors.grey, // Tambahkan warna abu-abu pada ikon
+                ),
               ),
               const SizedBox(height: 10),
               CustomTextField(
-                labelText: 'Confirm Password',
+                hintText: 'Confirm Password',
                 controller: confirmPasswordController,
                 obscureText: true,
-                suffixIcon: const Icon(Icons.visibility_off),
+                suffixIcon: const Icon(
+                  LucideIcons.eyeOff,
+                  color: Colors.grey, // Tambahkan warna abu-abu pada ikon
+                ),
               ),
               const SizedBox(height: 20),
               CustomElevatedButton(
@@ -60,12 +67,22 @@ class RegisterPage extends StatelessWidget {
               const SizedBox(height: 20),
               const Row(
                 children: [
-                  Expanded(child: Divider()),
+                  Expanded(
+                    child: Divider(
+                      color: Colors.grey,
+                      thickness: 1.0, 
+                    ),
+                  ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Text('Or Register with'),
+                    child: Text('Or Login with'),
                   ),
-                  Expanded(child: Divider()),
+                  Expanded(
+                    child: Divider(
+                      color: Colors.grey,
+                      thickness: 1.0, 
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),

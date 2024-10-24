@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatefulWidget {
-  final String labelText;
+  final String hintText;
   final bool obscureText;
   final Widget? suffixIcon;
-  final TextEditingController? controller; // Menambahkan controller
-  final TextInputType keyboardType; // Menambahkan opsi untuk tipe keyboard
+  final TextEditingController? controller;
+  final TextInputType keyboardType;
 
   const CustomTextField({
     super.key,
-    required this.labelText,
+    required this.hintText,
     this.obscureText = false,
     this.suffixIcon,
-    this.controller, // Menambahkan parameter controller
-    this.keyboardType = TextInputType.text, // Default tipe keyboard
+    this.controller,
+    this.keyboardType = TextInputType.text,
   });
 
   @override
@@ -24,13 +24,35 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: widget.controller, // Menyambungkan controller
+      controller: widget.controller,
       obscureText: widget.obscureText,
-      keyboardType: widget.keyboardType, // Menyambungkan tipe keyboard
+      keyboardType: widget.keyboardType,
+      style: const TextStyle(color: Colors.black, fontSize: 14.0),
       decoration: InputDecoration(
-        labelText: widget.labelText,
-        border: const OutlineInputBorder(),
-        suffixIcon: widget.suffixIcon, // Menambahkan suffixIcon
+        hintText: widget.hintText,
+        hintStyle: const TextStyle(color: Colors.grey), 
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0), 
+          borderSide: const BorderSide(
+            color: Colors.grey, 
+            width: 1.0,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0), 
+          borderSide: const BorderSide(
+            color: Colors.grey,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0), 
+          borderSide: const BorderSide(
+            color: Colors.black, 
+            width: 1.0,
+          ),
+        ),
+        suffixIcon: widget.suffixIcon, 
       ),
     );
   }

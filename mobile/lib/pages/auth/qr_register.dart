@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:iSentry/widgets/auth/button.dart';
 import 'package:iSentry/widgets/auth/heading.dart';
 import 'package:iSentry/widgets/auth/text_field.dart';
@@ -20,7 +22,7 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.only(top: 80.0, left: 20.0, right: 20.0),
+        padding: const EdgeInsets.only(top: 100.0, left: 20.0, right: 20.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,34 +32,41 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
                 title2: 'Register to get started',
               ),
               CustomTextField(
-                labelText: 'Enter your full name',
+                hintText: 'Enter your full name',
                 controller: fullNameController,
                 keyboardType: TextInputType.text,
               ),
               const SizedBox(height: 10),
               CustomTextField(
-                labelText: 'Enter your email',
+                hintText: 'Enter your email',
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 10),
               CustomTextField(
-                labelText: 'Password',
+                hintText: 'Password',
                 controller: passwordController,
                 obscureText: true,
-                suffixIcon: const Icon(Icons.visibility_off),
+                suffixIcon: const Icon(
+                  LucideIcons.eyeOff,
+                  color: Colors.grey,
+                ),
               ),
               const SizedBox(height: 10),
               CustomTextField(
-                labelText: 'Confirm Password',
+                hintText: 'Confirm Password',
                 controller: confirmPasswordController,
                 obscureText: true,
-                suffixIcon: const Icon(Icons.visibility_off),
+                suffixIcon: const Icon(
+                  LucideIcons.eyeOff,
+                  color: Colors.grey,
+                ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   // Logic untuk scan QR Code
+                  context.go('/account_settings'); // Navigasi ke halaman scan QR jika tersedia
                 },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
@@ -68,12 +77,15 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
                 ),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.center_focus_weak_rounded, color: Colors.white),
+                    Icon(LucideIcons.scanFace, color: Colors.white),
                     SizedBox(width: 10),
                     Text(
                       'Take a Picture',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -83,6 +95,7 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
                 buttonText: 'Register',
                 onPressed: () {
                   // Logic untuk registrasi
+                  context.go('/'); // Kembali ke halaman utama setelah registrasi
                 },
               ),
             ],

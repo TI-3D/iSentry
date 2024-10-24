@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 final ThemeData appTheme = ThemeData(
   // Warna dasar aplikasi
-  scaffoldBackgroundColor: const Color(0xFFF1F4F9), // Background aplikasi
+  scaffoldBackgroundColor: const Color(0xFAFAFAFA), // Background aplikasi
 
   // Font
   fontFamily: 'SFPro', // Pastikan SFPro sudah ditambahkan di pubspec.yaml
   
   // Skema warna
   colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
-      .copyWith(background: const Color(0xFFF1F4F9)),
+      .copyWith(background: const Color(0xFAFAFAFA)),
 
   // Pengaturan teks
   textTheme: const TextTheme(

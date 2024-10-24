@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:iSentry/widgets/auth/button.dart';
 import 'package:iSentry/widgets/auth/heading.dart';
 import 'package:iSentry/widgets/auth/text_field.dart';
@@ -14,7 +15,7 @@ class LoginPage extends StatelessWidget {
 
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.only(top: 80.0, left: 20.0, right: 20.0),
+        padding: const EdgeInsets.only(top: 100.0, left: 20.0, right: 20.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -24,28 +25,37 @@ class LoginPage extends StatelessWidget {
                 title2: 'Glad to see you, Again!',
               ),
               CustomTextField(
-                labelText: 'Enter your email',
+                hintText: 'Enter your email',
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               CustomTextField(
-                labelText: 'Enter your password',
+                hintText: 'Enter your password',
                 controller: passwordController,
                 obscureText: true,
-                suffixIcon: const Icon(Icons.visibility_off),
+                suffixIcon: const Icon(
+                  LucideIcons.eyeOff,
+                  color: Colors.grey, // Tambahkan warna abu-abu pada ikon
+                ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {
                     // Forgot Password logic here
                   },
-                  child: const Text('Forgot Password?', style: TextStyle(color: Colors.black)),
+                  child: const Text(
+                    'Forgot Password?',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600, // Semi-bold menggunakan w600
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
               CustomElevatedButton(
                 buttonText: 'Login',
                 onPressed: () {
@@ -55,12 +65,22 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 20),
               const Row(
                 children: [
-                  Expanded(child: Divider()),
+                  Expanded(
+                    child: Divider(
+                      color: Colors.grey,
+                      thickness: 1.0,
+                    ),
+                  ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10.0),
                     child: Text('Or Login with'),
                   ),
-                  Expanded(child: Divider()),
+                  Expanded(
+                    child: Divider(
+                      color: Colors.grey,
+                      thickness: 1.0,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -91,12 +111,14 @@ class LoginPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account? ", style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text("Don't have an account? ",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   TextButton(
                     onPressed: () {
                       context.go('/register');
                     },
-                    child: const Text('Register Now', style: TextStyle(color: Colors.grey)),
+                    child: const Text('Register Now',
+                        style: TextStyle(color: Colors.grey)),
                   ),
                 ],
               ),
