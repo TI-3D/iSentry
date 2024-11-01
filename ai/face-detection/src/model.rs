@@ -8,7 +8,7 @@ use burn::{
 };
 use nn::{
     conv::{Conv2d, Conv2dConfig},
-    loss::MseLoss,
+    loss::{HuberLossConfig, Reduction},
     pool::{AdaptiveAvgPool2d, AdaptiveAvgPool2dConfig},
     Dropout, DropoutConfig, Linear, LinearConfig, Relu,
 };
@@ -29,7 +29,7 @@ pub struct Model<B: Backend> {
 
 #[derive(Config, Debug)]
 pub struct ModelConfig {
-    #[config(default = "128")]
+    #[config(default = "64")]
     hidden_size: usize,
     #[config(default = "20")]
     max_faces: usize, // Set the max number of faces (boxes) to predict
@@ -59,6 +59,7 @@ impl<B: Backend> Model<B> {
     /// # Outputs:
     ///   - Bounding box coordinates [batch_size, num_boxes, 4]
     pub fn forward(&self, images: Tensor<B, 4>) -> Tensor<B, 3> {
+        println!("forward");
         // Pass through the first convolutional layer.
         let x = self.conv1.forward(images); // [batch_size, 8, _, _]
         let x = self.activation.forward(x);
@@ -90,7 +91,11 @@ impl<B: Backend> Model<B> {
         targets: Tensor<B, 3>,
     ) -> DetectionOutput<B> {
         let output = self.forward(images);
-        let loss = MseLoss::new().forward_no_reduction(output.clone(), targets.clone());
+        let loss = HuberLossConfig::new(1.0).init().forward(
+            output.clone(),
+            targets.clone(),
+            Reduction::Auto,
+        );
 
         DetectionOutput {
             loss,
@@ -101,7 +106,7 @@ impl<B: Backend> Model<B> {
 }
 
 pub struct DetectionOutput<B: Backend> {
-    pub loss: Tensor<B, 3>,
+    pub loss: Tensor<B, 1>,
     pub output: Tensor<B, 3>,
     pub targets: Tensor<B, 3>,
 }
@@ -109,7 +114,8 @@ pub struct DetectionOutput<B: Backend> {
 impl<B: Backend> DetectionOutput<B> {
     pub fn compute_mean_loss(&self) -> Tensor<B, 1> {
         let loss: Tensor<B, 2> = self.loss.clone().mean_dim(1).squeeze(1);
-        loss.mean_dim(1).squeeze(1)
+        let loss: Tensor<B, 1> = loss.mean_dim(1).squeeze(1);
+        loss.mean_dim(0)
     }
 }
 
@@ -124,7 +130,7 @@ impl<B: Backend> Adaptor<IoUInput<B>> for DetectionOutput<B> {
 
 impl<B: Backend> Adaptor<LossInput<B>> for DetectionOutput<B> {
     fn adapt(&self) -> LossInput<B> {
-        LossInput::new(self.compute_mean_loss())
+        LossInput::new(self.loss.clone())
     }
 }
 

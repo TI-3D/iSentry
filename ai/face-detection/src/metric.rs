@@ -62,6 +62,7 @@ impl<B: Backend> IoUMetric<B> {
         let [batch_size, _, _] = pred_boxes.dims();
         let mut correct_detections = 0.0;
         let pred_boxes = pred_boxes.flatten::<1>(0, 2).to_data();
+        println!("to_data");
         let pred_boxes = pred_boxes.as_slice::<f64>().unwrap();
 
         let target_boxes = target_boxes.flatten::<1>(0, 2).to_data();
