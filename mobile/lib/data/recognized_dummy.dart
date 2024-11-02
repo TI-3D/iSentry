@@ -1,4 +1,4 @@
-import 'package:pbl_op/models/recognized.dart';
+import 'package:isentry/models/recognized.dart';
 
 final recoqnize = [
   Recognized(

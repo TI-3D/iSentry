@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:pbl_op/pages/dashboard_screen.dart';
-import 'package:pbl_op/pages/recognized_screen.dart';
-import 'package:go_router/go_router.dart';
+import 'package:isentry/common/helper/navigation/app_navigation.dart';
+import 'package:isentry/presentation/home/pages/camera.dart';
+import 'package:isentry/presentation/home/pages/dashboard.dart';
+import 'package:isentry/presentation/home/pages/recognized.dart';
 
-class BottomAppBarExample extends StatefulWidget {
-  const BottomAppBarExample({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
-  _BottomAppBarExampleState createState() => _BottomAppBarExampleState();
+  _BottomAppBarState createState() => _BottomAppBarState();
 }
 
-class _BottomAppBarExampleState extends State<BottomAppBarExample> {
+class _BottomAppBarState extends State<HomePage> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    DashboardScreen(),
-    MyTest(),
+    DashboardPage(),
+    RecognizedPage(),
     Center(child: Text('Camera')),
     Center(child: Text('Unrecognized Screen')),
     Center(child: Text('Gallery Screen')),
@@ -25,7 +26,7 @@ class _BottomAppBarExampleState extends State<BottomAppBarExample> {
   void _onItemTapped(int index) {
     setState(() {
       if (index == 2) {
-        GoRouter.of(context).go('/camera');
+        AppNavigator.push(context, const CameraPage());
       } else {
         _selectedIndex = index;
       }

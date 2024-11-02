@@ -5,10 +5,10 @@ class MySort extends StatelessWidget {
   final int selectedIndex;
 
   const MySort({
-    Key? key,
+    super.key,
     required this.texts,
     required this.selectedIndex,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

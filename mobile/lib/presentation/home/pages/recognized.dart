@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pbl_op/data/recognized_dummy.dart';
+import 'package:isentry/data/recognized_dummy.dart';
 import 'package:intl/intl.dart';
 
-class MyTest extends StatelessWidget {
-  const MyTest({super.key});
+class RecognizedPage extends StatelessWidget {
+  const RecognizedPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,6 +11,7 @@ class MyTest extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xfff1f4f9),
         elevation: 0,
+        automaticallyImplyLeading: false,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(0),
           child: Container(

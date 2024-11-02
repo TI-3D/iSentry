@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:pbl_op/widgets/sort.dart';
+import 'package:isentry/common/helper/navigation/app_navigation.dart';
+import 'package:isentry/core/configs/theme/app_colors.dart';
+import 'package:isentry/presentation/home/widgets/sort.dart';
+import 'package:isentry/presentation/profile/pages/account_setting.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+class DashboardPage extends StatelessWidget {
+  const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     Widget dashboard = Container(
-      color: const Color.fromARGB(255, 241, 244, 249),
-      padding: const EdgeInsets.only(left: 35, right: 35, bottom: 20, top: 55),
-      child: const Row(
+      color: AppColors.primary,
+      padding: const EdgeInsets.only(left: 35, right: 35, top: 40),
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Column(
+          const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 "Hello!",
@@ -33,16 +36,20 @@ class DashboardScreen extends StatelessWidget {
               )
             ],
           ),
-          Icon(
-            Icons.notification_add_outlined,
-            size: 30,
-          )
+          IconButton(
+              onPressed: () {
+                AppNavigator.push(context, const AccountSettingPage());
+              },
+              icon: const Icon(
+                Icons.account_circle_rounded,
+                size: 50,
+              ))
         ],
       ),
     );
 
     Widget faces = Container(
-      color: const Color.fromARGB(255, 241, 244, 249),
+      color: AppColors.primary,
       padding: const EdgeInsets.only(left: 35, right: 35),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -162,7 +169,7 @@ class DashboardScreen extends StatelessWidget {
     );
 
     Widget activity = Container(
-      color: const Color.fromARGB(255, 241, 244, 249),
+      color: AppColors.primary,
       padding: const EdgeInsets.only(left: 35, right: 35, top: 10, bottom: 20),
       child: Container(
         decoration: BoxDecoration(
