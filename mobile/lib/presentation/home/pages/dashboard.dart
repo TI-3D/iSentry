@@ -3,6 +3,7 @@ import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
 import 'package:isentry/presentation/home/widgets/sort.dart';
 import 'package:isentry/presentation/profile/pages/account_setting.dart';
+import 'package:isentry/presentation/home/pages/log_detection.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -177,29 +178,37 @@ class DashboardPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           color: Colors.black,
         ),
-        padding: const EdgeInsets.all(15),
-        child: const Column(
+        padding: const EdgeInsets.only(left: 15, right: 15, top: 0, bottom: 15),
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   "  Log Detection",
                   style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      letterSpacing: 1),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    letterSpacing: 1,
+                  ),
                 ),
-                Icon(
-                  (LucideIcons.calendarClock),
-                  color: Colors.white,
-                  size: 25,
-                )
+                IconButton(
+                  onPressed: () {
+                    AppNavigator.push(context, const LogDetectionPage());
+                  },
+                  icon: const Icon(
+                    LucideIcons.calendarClock,
+                    color: Colors.white,
+                    size: 25,
+                  ),
+                  padding: EdgeInsets.zero,           
+                  constraints: const BoxConstraints(),
+                ),
               ],
             ),
-            Row(
+            const Row(
               children: [
                 Icon(
                   (LucideIcons.userCircle2),
@@ -222,9 +231,9 @@ class DashboardPage extends StatelessWidget {
                         Icon(
                           LucideIcons.calendarDays,
                           color: Colors.white,
-                          size: 14, 
+                          size: 14,
                         ),
-                        SizedBox(width: 5), 
+                        SizedBox(width: 5),
                         Text(
                           "25 June 2024, 08:00",
                           style: TextStyle(
@@ -240,7 +249,7 @@ class DashboardPage extends StatelessWidget {
                 )
               ],
             ),
-            Row(
+            const Row(
               children: [
                 Icon(
                   (LucideIcons.userCircle2),
@@ -263,9 +272,9 @@ class DashboardPage extends StatelessWidget {
                         Icon(
                           LucideIcons.calendarDays,
                           color: Colors.white,
-                          size: 14, 
+                          size: 14,
                         ),
-                        SizedBox(width: 5), 
+                        SizedBox(width: 5),
                         Text(
                           "25 June 2024, 08:00",
                           style: TextStyle(
@@ -281,7 +290,7 @@ class DashboardPage extends StatelessWidget {
                 )
               ],
             ),
-            Row(
+            const Row(
               children: [
                 Icon(
                   (LucideIcons.userCircle2),
@@ -304,9 +313,9 @@ class DashboardPage extends StatelessWidget {
                         Icon(
                           LucideIcons.calendarDays,
                           color: Colors.white,
-                          size: 14, 
+                          size: 14,
                         ),
-                        SizedBox(width: 5), 
+                        SizedBox(width: 5),
                         Text(
                           "25 June 2024, 08:00",
                           style: TextStyle(
@@ -322,7 +331,7 @@ class DashboardPage extends StatelessWidget {
                 )
               ],
             ),
-            Row(
+            const Row(
               children: [
                 Icon(
                   (LucideIcons.userCircle2),
@@ -345,9 +354,9 @@ class DashboardPage extends StatelessWidget {
                         Icon(
                           LucideIcons.calendarDays,
                           color: Colors.white,
-                          size: 14, 
+                          size: 14,
                         ),
-                        SizedBox(width: 5), 
+                        SizedBox(width: 5),
                         Text(
                           "25 June 2024, 08:00",
                           style: TextStyle(
