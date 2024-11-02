@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
 import 'package:isentry/presentation/home/widgets/sort.dart';
-import 'package:isentry/presentation/profile/pages/account_setting.dart';
+import 'package:isentry/presentation/profile/pages/account_settings.dart';
 import 'package:isentry/presentation/home/pages/log_detection.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -40,7 +40,7 @@ class DashboardPage extends StatelessWidget {
           ),
           IconButton(
               onPressed: () {
-                AppNavigator.push(context, const AccountSettingPage());
+                AppNavigator.push(context, const AccountSettingsPage());
               },
               icon: const Icon(
                 (LucideIcons.userCircle2),
