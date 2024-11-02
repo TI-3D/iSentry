@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isentry/data/recognized_dummy.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class RecognizedPage extends StatelessWidget {
   const RecognizedPage({super.key});
@@ -35,8 +36,9 @@ class RecognizedPage extends StatelessWidget {
                   ),
                 ),
                 prefixIcon: const Icon(
-                  Icons.search,
+                  LucideIcons.search,
                   color: Color(0xffa1a1aa),
+                  size: 18,
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20),
               ),
@@ -44,14 +46,14 @@ class RecognizedPage extends StatelessWidget {
           ),
         ),
       ),
-      body: GridView.count(
-        crossAxisCount: 1,
-        childAspectRatio: 6.7,
-        children: recoqnize.map((recognized) {
+      body: ListView.builder(
+        itemCount: recoqnize.length,
+        itemBuilder: (context, index) {
+          final recognized = recoqnize[index];
           final formattedDate =
               DateFormat("d MMMM yyyy").format(recognized.edit);
           return Container(
-            padding: const EdgeInsets.only(left: 30, right: 30, top: 5),
+            padding: const EdgeInsets.only(left: 30, right: 30, top: 7),
             color: const Color(0xfff1f4f9),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -65,9 +67,8 @@ class RecognizedPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Icon(
-                          Icons.circle,
-                          size: 40,
-                          color: Color(0xffebebeb),
+                          (LucideIcons.userCircle2),
+                          size: 35,
                         ),
                         const SizedBox(width: 10),
                         Column(
@@ -83,15 +84,76 @@ class RecognizedPage extends StatelessWidget {
                             Text(
                               "Last Modified $formattedDate",
                               style: const TextStyle(
-                                  color: Color(0xffa1a1aa),
-                                  letterSpacing: 1.5,
-                                  fontSize: 12),
+                                color: Color(0xffa1a1aa),
+                                letterSpacing: 1.5,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ],
                         ),
                       ],
                     ),
-                    const Icon(Icons.more_vert_outlined),
+                    PopupMenuButton<String>(
+                      icon: const Icon(LucideIcons.moreVertical),
+                      onSelected: (value) {
+                        // Logika untuk setiap aksi
+                        switch (value) {
+                          case 'edit':
+                            debugPrint('Edit: ${recognized.nama}');
+                            break;
+                          case 'detail':
+                            debugPrint('Detail: ${recognized.nama}');
+                            break;
+                          case 'delete':
+                            debugPrint('Delete: ${recognized.nama}');
+                            break;
+                        }
+                      },
+                      itemBuilder: (BuildContext context) {
+                        return [
+                          const PopupMenuItem<String>(
+                            value: 'edit',
+                            child: Row(
+                              children: [
+                                Icon(LucideIcons.pencil, size: 18),
+                                SizedBox(width: 10),
+                                Text('Edit'),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuDivider(),
+                          const PopupMenuItem<String>(
+                            value: 'detail',
+                            child: Row(
+                              children: [
+                                Icon(LucideIcons.info, size: 18),
+                                SizedBox(width: 10),
+                                Text('Detail'),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuDivider(),
+                          const PopupMenuItem<String>(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                Icon(
+                                  LucideIcons.trash2,
+                                  size: 18,
+                                  color: Colors.red,
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  'Delete',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ];
+                      },
+                    ),
                   ],
                 ),
                 Container(
@@ -102,7 +164,17 @@ class RecognizedPage extends StatelessWidget {
               ],
             ),
           );
-        }).toList(),
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          debugPrint('Tombol tambah ditekan');
+        },
+        backgroundColor: Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: const Icon(LucideIcons.plus, color: Colors.white),
       ),
     );
   }
