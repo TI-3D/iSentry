@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-// import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class AccountSettingPage extends StatelessWidget {
-  const AccountSettingPage({Key? key}) : super(key: key);
+  const AccountSettingPage({super.key});
 
   @override
   Widget build(BuildContext context) {

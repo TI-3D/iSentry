@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:isentry/common/helper/navigation/app_navigation.dart';
+import 'package:isentry/presentation/auth/pages/login.dart';
+import 'package:isentry/presentation/auth/pages/qr_register.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:iSentry/widgets/auth/button.dart';
-import 'package:iSentry/widgets/auth/heading.dart';
-import 'package:iSentry/widgets/auth/text_field.dart';
+import 'package:isentry/presentation/auth/widget/text_field.dart';
+import 'package:isentry/presentation/auth/widget/button.dart';
+import 'package:isentry/presentation/auth/widget/heading.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class RegisterPage extends StatelessWidget {
+  const RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController fullNameController = TextEditingController();
     TextEditingController emailController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
+    TextEditingController confirmPasswordController = TextEditingController();
 
     return Scaffold(
       body: Padding(
@@ -21,9 +25,15 @@ class LoginPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const AuthHeading(
-                title1: 'Welcome back!',
-                title2: 'Glad to see you, Again!',
+                title1: 'Hello!',
+                title2: 'Register to get started',
               ),
+              CustomTextField(
+                hintText: 'Enter your full name',
+                controller: fullNameController,
+                keyboardType: TextInputType.name,
+              ),
+              const SizedBox(height: 10),
               CustomTextField(
                 hintText: 'Enter your email',
                 controller: emailController,
@@ -31,7 +41,7 @@ class LoginPage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               CustomTextField(
-                hintText: 'Enter your password',
+                hintText: 'Password',
                 controller: passwordController,
                 obscureText: true,
                 suffixIcon: const Icon(
@@ -39,27 +49,21 @@ class LoginPage extends StatelessWidget {
                   color: Colors.grey, // Tambahkan warna abu-abu pada ikon
                 ),
               ),
-              const SizedBox(height: 5),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    // Forgot Password logic here
-                  },
-                  child: const Text(
-                    'Forgot Password?',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600, // Semi-bold menggunakan w600
-                    ),
-                  ),
+              const SizedBox(height: 10),
+              CustomTextField(
+                hintText: 'Confirm Password',
+                controller: confirmPasswordController,
+                obscureText: true,
+                suffixIcon: const Icon(
+                  LucideIcons.eyeOff,
+                  color: Colors.grey, // Tambahkan warna abu-abu pada ikon
                 ),
               ),
-              const SizedBox(height: 5),
+              const SizedBox(height: 20),
               CustomElevatedButton(
-                buttonText: 'Login',
+                buttonText: 'Register',
                 onPressed: () {
-                  // Login logic here
+                  // Tambahkan logika register di sini
                 },
               ),
               const SizedBox(height: 20),
@@ -89,36 +93,41 @@ class LoginPage extends StatelessWidget {
                 children: [
                   IconButton(
                     onPressed: () {
-                      // QR code login logic here
+                      AppNavigator.pushAndRemove(context,
+                          const QrRegisterPage()); // sementara redirect ke halaman QR Register User Resident
                     },
                     icon: const Icon(Icons.qr_code, size: 30),
                   ),
                   IconButton(
                     onPressed: () {
-                      // Google login logic here
+                      AppNavigator.push(context, const QrRegisterPage());
                     },
                     icon: const Icon(Icons.g_mobiledata, size: 30),
                   ),
                   IconButton(
                     onPressed: () {
-                      // GitHub login logic here
+                      // GitHub login logic di sini
                     },
                     icon: const Icon(Icons.code, size: 30),
                   ),
                 ],
               ),
-              const SizedBox(height: 90),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account? ",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text(
+                    "Already have an account? ",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   TextButton(
                     onPressed: () {
-                      context.go('/register');
+                      AppNavigator.pushAndRemove(context, const LoginPage());
                     },
-                    child: const Text('Register Now',
-                        style: TextStyle(color: Colors.grey)),
+                    child: const Text(
+                      'Login Now',
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ),
                 ],
               ),

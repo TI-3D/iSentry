@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:isentry/common/helper/navigation/app_navigation.dart';
+import 'package:isentry/presentation/auth/pages/qr_register.dart';
+import 'package:isentry/presentation/auth/pages/register.dart';
+import 'package:isentry/presentation/auth/widget/text_field.dart';
+import 'package:isentry/presentation/auth/widget/button.dart';
+import 'package:isentry/presentation/auth/widget/heading.dart';
+import 'package:isentry/presentation/home/pages/home_page.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:iSentry/widgets/auth/button.dart';
-import 'package:iSentry/widgets/auth/heading.dart';
-import 'package:iSentry/widgets/auth/text_field.dart';
 
-class RegisterPage extends StatelessWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController fullNameController = TextEditingController();
     TextEditingController emailController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
-    TextEditingController confirmPasswordController = TextEditingController();
 
     return Scaffold(
       body: Padding(
@@ -23,15 +24,9 @@ class RegisterPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const AuthHeading(
-                title1: 'Hello!',
-                title2: 'Register to get started',
+                title1: 'Welcome back!',
+                title2: 'Glad to see you, Again!',
               ),
-              CustomTextField(
-                hintText: 'Enter your full name',
-                controller: fullNameController,
-                keyboardType: TextInputType.name,
-              ),
-              const SizedBox(height: 10),
               CustomTextField(
                 hintText: 'Enter your email',
                 controller: emailController,
@@ -39,7 +34,7 @@ class RegisterPage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               CustomTextField(
-                hintText: 'Password',
+                hintText: 'Enter your password',
                 controller: passwordController,
                 obscureText: true,
                 suffixIcon: const Icon(
@@ -47,21 +42,27 @@ class RegisterPage extends StatelessWidget {
                   color: Colors.grey, // Tambahkan warna abu-abu pada ikon
                 ),
               ),
-              const SizedBox(height: 10),
-              CustomTextField(
-                hintText: 'Confirm Password',
-                controller: confirmPasswordController,
-                obscureText: true,
-                suffixIcon: const Icon(
-                  LucideIcons.eyeOff,
-                  color: Colors.grey, // Tambahkan warna abu-abu pada ikon
+              const SizedBox(height: 5),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    // Forgot Password logic here
+                  },
+                  child: const Text(
+                    'Forgot Password?',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600, // Semi-bold menggunakan w600
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 5),
               CustomElevatedButton(
-                buttonText: 'Register',
+                buttonText: 'Login',
                 onPressed: () {
-                  // Tambahkan logika register di sini
+                  AppNavigator.push(context, const HomePage());
                 },
               ),
               const SizedBox(height: 20),
@@ -70,7 +71,7 @@ class RegisterPage extends StatelessWidget {
                   Expanded(
                     child: Divider(
                       color: Colors.grey,
-                      thickness: 1.0, 
+                      thickness: 1.0,
                     ),
                   ),
                   Padding(
@@ -80,7 +81,7 @@ class RegisterPage extends StatelessWidget {
                   Expanded(
                     child: Divider(
                       color: Colors.grey,
-                      thickness: 1.0, 
+                      thickness: 1.0,
                     ),
                   ),
                 ],
@@ -91,40 +92,37 @@ class RegisterPage extends StatelessWidget {
                 children: [
                   IconButton(
                     onPressed: () {
-                      context.go('/qr_register'); // sementara redirect ke halaman QR Register User Resident
+                      AppNavigator.pushAndRemove(
+                          context, const QrRegisterPage());
                     },
                     icon: const Icon(Icons.qr_code, size: 30),
                   ),
                   IconButton(
                     onPressed: () {
-                      // Google login logic di sini
+                      // google akun
                     },
                     icon: const Icon(Icons.g_mobiledata, size: 30),
                   ),
                   IconButton(
                     onPressed: () {
-                      // GitHub login logic di sini
+                      // GitHub login logic here
                     },
                     icon: const Icon(Icons.code, size: 30),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 90),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    "Already have an account? ",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  const Text("Don't have an account? ",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   TextButton(
                     onPressed: () {
-                      context.go('/');
+                      AppNavigator.pushAndRemove(context, const RegisterPage());
                     },
-                    child: const Text(
-                      'Login Now',
-                      style: TextStyle(color: Colors.grey),
-                    ),
+                    child: const Text('Register Now',
+                        style: TextStyle(color: Colors.grey)),
                   ),
                 ],
               ),

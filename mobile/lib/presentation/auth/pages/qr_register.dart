@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:iSentry/widgets/auth/button.dart';
-import 'package:iSentry/widgets/auth/heading.dart';
-import 'package:iSentry/widgets/auth/text_field.dart';
+import 'package:isentry/presentation/auth/widget/text_field.dart';
+import 'package:isentry/presentation/auth/widget/button.dart';
+import 'package:isentry/presentation/auth/widget/heading.dart';
 
 class QrRegisterPage extends StatefulWidget {
-  const QrRegisterPage({Key? key}) : super(key: key);
+  const QrRegisterPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _QrRegisterPageState createState() => _QrRegisterPageState();
 }
 
@@ -16,7 +17,8 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +68,6 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
               ElevatedButton(
                 onPressed: () {
                   // Logic untuk scan QR Code
-                  context.go('/account_settings'); // Navigasi ke halaman scan QR jika tersedia
                 },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
@@ -84,8 +85,7 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
                     Text(
                       'Take a Picture',
                       style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
+                          color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -95,7 +95,8 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
                 buttonText: 'Register',
                 onPressed: () {
                   // Logic untuk registrasi
-                  context.go('/'); // Kembali ke halaman utama setelah registrasi
+                  context
+                      .go('/'); // Kembali ke halaman utama setelah registrasi
                 },
               ),
             ],
