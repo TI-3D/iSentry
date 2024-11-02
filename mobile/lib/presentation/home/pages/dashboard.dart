@@ -3,6 +3,7 @@ import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
 import 'package:isentry/presentation/home/widgets/sort.dart';
 import 'package:isentry/presentation/profile/pages/account_setting.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -23,14 +24,14 @@ class DashboardPage extends StatelessWidget {
               Text(
                 "Hello!",
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     letterSpacing: 1.5,
                     color: Color(0xFFc8cad1)),
               ),
               Text(
                 "My Dashboard",
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     letterSpacing: 1.5,
                     fontSize: 16),
               )
@@ -41,8 +42,8 @@ class DashboardPage extends StatelessWidget {
                 AppNavigator.push(context, const AccountSettingPage());
               },
               icon: const Icon(
-                Icons.account_circle_rounded,
-                size: 50,
+                (LucideIcons.userCircle2),
+                size: 40,
               ))
         ],
       ),
@@ -70,7 +71,7 @@ class DashboardPage extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        Icons.person_outline,
+                        (LucideIcons.userCheck2),
                         size: 20,
                         color: Colors.white,
                       ),
@@ -80,7 +81,7 @@ class DashboardPage extends StatelessWidget {
                           fontSize: 12,
                           color: Colors.white,
                           letterSpacing: 1,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -93,14 +94,14 @@ class DashboardPage extends StatelessWidget {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 45,
-                            fontWeight: FontWeight.w900,
+                            fontWeight: FontWeight.w700,
                             height: 0.9),
                       ),
                       Text(
                         " Faces",
                         style: TextStyle(
                             color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w700,
                             letterSpacing: 1),
                       ),
                     ],
@@ -125,7 +126,7 @@ class DashboardPage extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        Icons.person_outline,
+                        (LucideIcons.userX2),
                         size: 20,
                         color: Colors.white,
                       ),
@@ -135,7 +136,7 @@ class DashboardPage extends StatelessWidget {
                           fontSize: 12,
                           color: Colors.white,
                           letterSpacing: 1,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -148,14 +149,14 @@ class DashboardPage extends StatelessWidget {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 45,
-                            fontWeight: FontWeight.w900,
+                            fontWeight: FontWeight.w700,
                             height: 0.9),
                       ),
                       Text(
                         " Faces",
                         style: TextStyle(
                             color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w700,
                             letterSpacing: 1),
                       ),
                     ],
@@ -184,7 +185,7 @@ class DashboardPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "  Log Activity",
+                  "  Log Detection",
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -192,7 +193,7 @@ class DashboardPage extends StatelessWidget {
                       letterSpacing: 1),
                 ),
                 Icon(
-                  Icons.date_range_outlined,
+                  (LucideIcons.calendarClock),
                   color: Colors.white,
                   size: 25,
                 )
@@ -201,9 +202,9 @@ class DashboardPage extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  Icons.account_circle_rounded,
+                  (LucideIcons.userCircle2),
                   color: Colors.white,
-                  size: 40,
+                  size: 30,
                 ),
                 Padding(padding: EdgeInsets.only(left: 10)),
                 Column(
@@ -212,16 +213,29 @@ class DashboardPage extends StatelessWidget {
                     Text(
                       "Olivia Martin",
                       style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    Text(
-                      "25 June 2024, 08:00",
-                      style: TextStyle(
-                          color: Colors.white54,
-                          letterSpacing: 1.0,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600),
-                    )
+                    Row(
+                      children: [
+                        Icon(
+                          LucideIcons.calendarDays,
+                          color: Colors.white,
+                          size: 14, 
+                        ),
+                        SizedBox(width: 5), 
+                        Text(
+                          "25 June 2024, 08:00",
+                          style: TextStyle(
+                            color: Colors.white54,
+                            letterSpacing: 1.0,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 )
               ],
@@ -229,9 +243,9 @@ class DashboardPage extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  Icons.account_circle_rounded,
+                  (LucideIcons.userCircle2),
                   color: Colors.white,
-                  size: 40,
+                  size: 30,
                 ),
                 Padding(padding: EdgeInsets.only(left: 10)),
                 Column(
@@ -240,16 +254,29 @@ class DashboardPage extends StatelessWidget {
                     Text(
                       "Olivia Martin",
                       style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    Text(
-                      "25 June 2024, 08:00",
-                      style: TextStyle(
-                          color: Colors.white54,
-                          letterSpacing: 1.0,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600),
-                    )
+                    Row(
+                      children: [
+                        Icon(
+                          LucideIcons.calendarDays,
+                          color: Colors.white,
+                          size: 14, 
+                        ),
+                        SizedBox(width: 5), 
+                        Text(
+                          "25 June 2024, 08:00",
+                          style: TextStyle(
+                            color: Colors.white54,
+                            letterSpacing: 1.0,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 )
               ],
@@ -257,9 +284,9 @@ class DashboardPage extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  Icons.account_circle_rounded,
+                  (LucideIcons.userCircle2),
                   color: Colors.white,
-                  size: 40,
+                  size: 30,
                 ),
                 Padding(padding: EdgeInsets.only(left: 10)),
                 Column(
@@ -268,16 +295,29 @@ class DashboardPage extends StatelessWidget {
                     Text(
                       "Olivia Martin",
                       style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    Text(
-                      "25 June 2024, 08:00",
-                      style: TextStyle(
-                          color: Colors.white54,
-                          letterSpacing: 1.0,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600),
-                    )
+                    Row(
+                      children: [
+                        Icon(
+                          LucideIcons.calendarDays,
+                          color: Colors.white,
+                          size: 14, 
+                        ),
+                        SizedBox(width: 5), 
+                        Text(
+                          "25 June 2024, 08:00",
+                          style: TextStyle(
+                            color: Colors.white54,
+                            letterSpacing: 1.0,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 )
               ],
@@ -285,9 +325,9 @@ class DashboardPage extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  Icons.account_circle_rounded,
+                  (LucideIcons.userCircle2),
                   color: Colors.white,
-                  size: 40,
+                  size: 30,
                 ),
                 Padding(padding: EdgeInsets.only(left: 10)),
                 Column(
@@ -296,16 +336,29 @@ class DashboardPage extends StatelessWidget {
                     Text(
                       "Olivia Martin",
                       style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    Text(
-                      "25 June 2024, 08:00",
-                      style: TextStyle(
-                          color: Colors.white54,
-                          letterSpacing: 1.0,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600),
-                    )
+                    Row(
+                      children: [
+                        Icon(
+                          LucideIcons.calendarDays,
+                          color: Colors.white,
+                          size: 14, 
+                        ),
+                        SizedBox(width: 5), 
+                        Text(
+                          "25 June 2024, 08:00",
+                          style: TextStyle(
+                            color: Colors.white54,
+                            letterSpacing: 1.0,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 )
               ],

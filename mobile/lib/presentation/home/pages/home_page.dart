@@ -3,6 +3,7 @@ import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/presentation/home/pages/camera.dart';
 import 'package:isentry/presentation/home/pages/dashboard.dart';
 import 'package:isentry/presentation/home/pages/recognized.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -41,11 +42,11 @@ class _BottomAppBarState extends State<HomePage> {
         backgroundColor: const Color(0xfff1f4f9),
         items: [
           BottomNavigationBarItem(
-            icon: const Icon(Icons.dashboard_outlined),
+            icon: const Icon(LucideIcons.layoutDashboard),
             label: _selectedIndex == 0 ? 'Dashboard' : '',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.group_outlined),
+            icon: const Icon(LucideIcons.users),
             label: _selectedIndex == 1 ? 'Recognized' : '',
           ),
           BottomNavigationBarItem(
@@ -54,18 +55,18 @@ class _BottomAppBarState extends State<HomePage> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10), color: Colors.black),
               child: const Icon(
-                Icons.camera,
+                LucideIcons.view,
                 color: Color(0xfff1f4f9),
               ),
             ),
             label: _selectedIndex == 2 ? '' : '',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.person_off_outlined),
+            icon: const Icon(LucideIcons.bot),
             label: _selectedIndex == 3 ? 'Unrecognized' : '',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.photo_library_outlined),
+            icon: const Icon(LucideIcons.listVideo),
             label: _selectedIndex == 4 ? 'Gallery' : '',
           ),
         ],
@@ -83,7 +84,7 @@ class _BottomAppBarState extends State<HomePage> {
         showUnselectedLabels: false,
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: const TextStyle(
-          fontSize: 8,
+          fontSize: 10,
           letterSpacing: 1,
           height: 2.0,
         ),
