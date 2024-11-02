@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/presentation/auth/pages/login.dart';
 import 'package:isentry/presentation/auth/pages/qr_register.dart';
-import 'package:lucide_icons/lucide_icons.dart';
-import 'package:isentry/presentation/auth/widget/text_field.dart';
-import 'package:isentry/presentation/auth/widget/button.dart';
-import 'package:isentry/presentation/auth/widget/heading.dart';
+import 'package:isentry/presentation/widgets/forms/auth_text_field.dart';
+import 'package:isentry/presentation/widgets/buttons/auth_button.dart';
+import 'package:isentry/presentation/widgets/typography/auth_heading.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -29,13 +28,13 @@ class RegisterPage extends StatelessWidget {
                 title2: 'Register to get started',
               ),
               CustomTextField(
-                hintText: 'Enter your full name',
+                hintText: 'Full name',
                 controller: fullNameController,
                 keyboardType: TextInputType.name,
               ),
               const SizedBox(height: 10),
               CustomTextField(
-                hintText: 'Enter your email',
+                hintText: 'Email',
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
               ),
@@ -44,20 +43,12 @@ class RegisterPage extends StatelessWidget {
                 hintText: 'Password',
                 controller: passwordController,
                 obscureText: true,
-                suffixIcon: const Icon(
-                  LucideIcons.eyeOff,
-                  color: Colors.grey, // Tambahkan warna abu-abu pada ikon
-                ),
               ),
               const SizedBox(height: 10),
               CustomTextField(
                 hintText: 'Confirm Password',
                 controller: confirmPasswordController,
                 obscureText: true,
-                suffixIcon: const Icon(
-                  LucideIcons.eyeOff,
-                  color: Colors.grey, // Tambahkan warna abu-abu pada ikon
-                ),
               ),
               const SizedBox(height: 20),
               CustomElevatedButton(

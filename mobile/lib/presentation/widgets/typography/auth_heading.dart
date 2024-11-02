@@ -19,14 +19,14 @@ class AuthHeading extends StatelessWidget {
           title1,
           style: const TextStyle(
             fontSize: 28,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
         Text(
           title2,
           style: const TextStyle(
             fontSize: 28,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: 60),

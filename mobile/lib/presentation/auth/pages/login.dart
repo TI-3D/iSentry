@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/presentation/auth/pages/qr_register.dart';
 import 'package:isentry/presentation/auth/pages/register.dart';
-import 'package:isentry/presentation/auth/widget/text_field.dart';
-import 'package:isentry/presentation/auth/widget/button.dart';
-import 'package:isentry/presentation/auth/widget/heading.dart';
+import 'package:isentry/presentation/widgets/forms/auth_text_field.dart';
+import 'package:isentry/presentation/widgets/buttons/auth_button.dart';
+import 'package:isentry/presentation/widgets/typography/auth_heading.dart';
 import 'package:isentry/presentation/home/pages/home_page.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -28,19 +27,15 @@ class LoginPage extends StatelessWidget {
                 title2: 'Glad to see you, Again!',
               ),
               CustomTextField(
-                hintText: 'Enter your email',
+                hintText: 'Email',
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 10),
               CustomTextField(
-                hintText: 'Enter your password',
+                hintText: 'Password',
                 controller: passwordController,
                 obscureText: true,
-                suffixIcon: const Icon(
-                  LucideIcons.eyeOff,
-                  color: Colors.grey, // Tambahkan warna abu-abu pada ikon
-                ),
               ),
               const SizedBox(height: 5),
               Align(
@@ -53,7 +48,7 @@ class LoginPage extends StatelessWidget {
                     'Forgot Password?',
                     style: TextStyle(
                       color: Colors.black,
-                      fontWeight: FontWeight.w600, // Semi-bold menggunakan w600
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
@@ -92,8 +87,7 @@ class LoginPage extends StatelessWidget {
                 children: [
                   IconButton(
                     onPressed: () {
-                      AppNavigator.pushAndRemove(
-                          context, const QrRegisterPage());
+                      AppNavigator.pushAndRemove(context, const QrRegisterPage());
                     },
                     icon: const Icon(Icons.qr_code, size: 30),
                   ),
@@ -111,18 +105,24 @@ class LoginPage extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 90),
+              const SizedBox(height: 110),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text("Don't have an account? ",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      )
+                    ),
                   TextButton(
                     onPressed: () {
                       AppNavigator.pushAndRemove(context, const RegisterPage());
                     },
                     child: const Text('Register Now',
-                        style: TextStyle(color: Colors.grey)),
+                      style: TextStyle(
+                        color: Colors.grey,
+                      )
+                    ),
                   ),
                 ],
               ),

@@ -18,14 +18,15 @@ class CustomElevatedButton extends StatelessWidget {
         minimumSize: const Size(double.infinity, 50),
         backgroundColor: const Color(0xFF18181B),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(10),
         ),
       ),
       child: Text(
         buttonText,
         style: const TextStyle(
+          fontSize: 15,
           color: Colors.white,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:isentry/common/helper/navigation/app_navigation.dart';
+import 'package:isentry/presentation/auth/pages/register.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:isentry/presentation/auth/widget/text_field.dart';
-import 'package:isentry/presentation/auth/widget/button.dart';
-import 'package:isentry/presentation/auth/widget/heading.dart';
+import 'package:isentry/presentation/widgets/forms/auth_text_field.dart';
+import 'package:isentry/presentation/widgets/buttons/auth_button.dart';
+import 'package:isentry/presentation/widgets/typography/auth_heading.dart';
 
 class QrRegisterPage extends StatefulWidget {
   const QrRegisterPage({super.key});
@@ -34,13 +35,13 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
                 title2: 'Register to get started',
               ),
               CustomTextField(
-                hintText: 'Enter your full name',
+                hintText: 'Full name',
                 controller: fullNameController,
                 keyboardType: TextInputType.text,
               ),
               const SizedBox(height: 10),
               CustomTextField(
-                hintText: 'Enter your email',
+                hintText: 'Email',
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
               ),
@@ -49,20 +50,12 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
                 hintText: 'Password',
                 controller: passwordController,
                 obscureText: true,
-                suffixIcon: const Icon(
-                  LucideIcons.eyeOff,
-                  color: Colors.grey,
-                ),
               ),
               const SizedBox(height: 10),
               CustomTextField(
                 hintText: 'Confirm Password',
                 controller: confirmPasswordController,
                 obscureText: true,
-                suffixIcon: const Icon(
-                  LucideIcons.eyeOff,
-                  color: Colors.grey,
-                ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
@@ -73,7 +66,7 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
                   minimumSize: const Size(double.infinity, 50),
                   backgroundColor: const Color(0xFF3F3F46),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 child: const Row(
@@ -85,7 +78,7 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
                     Text(
                       'Take a Picture',
                       style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                          color: Colors.white, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -95,8 +88,7 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
                 buttonText: 'Register',
                 onPressed: () {
                   // Logic untuk registrasi
-                  context
-                      .go('/'); // Kembali ke halaman utama setelah registrasi
+                  AppNavigator.pushAndRemove(context, const RegisterPage());
                 },
               ),
             ],
