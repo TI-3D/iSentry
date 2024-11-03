@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int               @id @default(autoincrement())
+  name              String  
+  email             String            @unique
+  password          String
+  role              Role              @default(OWNER)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@map("users")
+}
+
+enum Role {
+  OWNER
+  RESIDENT
+}
+
+model System_Log {
+  id                Int               @id @default(autoincrement())
+  timestamp         DateTime          @default(now())
+  message           String
+
+  @@map("systemLogs")
+}
+
+model Detection_Log {
+  id                Int               @id @default(autoincrement())
+  timestamp         DateTime          @default(now())
+  faces             Face              @relation (fields : [face], references: [id])
+  face              Int               @unique
+
+  @@map("detectionLogs")
+}
+
+model Identity {
+  id                Int               @id @default(autoincrement())
+  name              String
+  faces             Face[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@map("identities")
+}
+
+model Face {
+  id                Int               @id @default(autoincrement())
+  recognized        Boolean           @default(false)
+  identity          Int
+  landmarks         Bytes
+  fullPictures      Captured_Picture  @relation ("FullPicture", fields : [picture_full], references: [id])
+  picture_full      Int               @unique
+  singlePictures    Captured_Picture  @relation ("SinglePicture", fields : [picture_single], references: [id])
+  picture_single    Int               @unique
+  bounding_box      Bytes
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  identities        Identity          @relation(fields: [identity], references: [id])
+  detectionLogs     Detection_Log?
+
+  @@map("faces")
+}
+
+model Captured_Picture {
+  id                Int               @id @default(autoincrement())
+  img_path          String
+  width             Int
+  height            Int
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  facesFull         Face?             @relation("FullPicture")
+  facesSingle       Face?             @relation("SinglePicture")
+  galleryItems      Gallery_Item      @relation(fields: [galleryItemId], references: [id])
+  galleryItemId     Int               @unique
+
+  @@map("capturedPictures")
+}
+
+model Captured_Video {
+  id                Int               @id @default(autoincrement())
+  video_path        String
+  width             Int
+  height            Int
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  galleryItems      Gallery_Item      @relation(fields: [galleryItemId], references: [id])
+  galleryItemId     Int               @unique
+
+  @@map("capturedVideos")
+}
+
+model Gallery_Item {
+  id                Int               @id @default(autoincrement())
+  timestamp         DateTime          @default(now())
+  item              Int
+  capture_method    capture_method    @default(AUTO)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  capturedVideos    Captured_Video?
+  capturedPictures  Captured_Picture?
+
+  @@map("galleryItems")
+}
+
+enum capture_method {
+  AUTO
+  MANUAL
+}
