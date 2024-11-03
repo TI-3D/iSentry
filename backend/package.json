@@ -8,6 +8,7 @@
   "dependencies": {
     "@elysiajs/swagger": "^1.1.5",
     "@paralleldrive/cuid2": "^2.2.2",
+    "@prisma/client": "5.13.0",
     "drizzle-orm": "^0.35.2",
     "drizzle-typebox": "^0.1.1",
     "elysia": "latest",
