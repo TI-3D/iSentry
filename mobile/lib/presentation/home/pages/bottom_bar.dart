@@ -3,6 +3,7 @@ import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/presentation/home/pages/camera/camera.dart';
 import 'package:isentry/presentation/home/pages/dashboard.dart';
 import 'package:isentry/presentation/home/pages/recognized/recognized.dart';
+import 'package:isentry/presentation/home/pages/unrecognized/unrecognized.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,7 +21,8 @@ class _BottomAppBarState extends State<HomePage> {
     DashboardPage(),
     RecognizedPage(),
     Center(child: Text('Camera')),
-    Center(child: Text('Unrecognized Screen')),
+    UnrecognizedPage(),
+    // Center(child: Text('Unrecognized Screen')),
     Center(child: Text('Gallery Screen')),
   ];
 
