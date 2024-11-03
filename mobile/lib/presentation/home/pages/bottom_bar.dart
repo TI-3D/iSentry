@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
-import 'package:isentry/presentation/home/pages/camera.dart';
+import 'package:isentry/presentation/home/pages/camera/camera.dart';
 import 'package:isentry/presentation/home/pages/dashboard.dart';
-import 'package:isentry/presentation/home/pages/recognized.dart';
+import 'package:isentry/presentation/home/pages/recognized/recognized.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class HomePage extends StatefulWidget {
@@ -66,7 +66,7 @@ class _BottomAppBarState extends State<HomePage> {
             label: _selectedIndex == 3 ? 'Unrecognized' : '',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(LucideIcons.listVideo),
+            icon: const Icon(LucideIcons.image),
             label: _selectedIndex == 4 ? 'Gallery' : '',
           ),
         ],

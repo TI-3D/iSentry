@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
-import 'package:isentry/presentation/home/widgets/sort.dart';
-import 'package:isentry/presentation/profile/pages/account_settings.dart';
+import 'package:isentry/presentation/widgets/components/sort.dart';
+import 'package:isentry/presentation/home/pages/profile/account_settings.dart';
 import 'package:isentry/presentation/home/pages/log_detection.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 

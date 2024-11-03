@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:isentry/data/recognized_dummy.dart';
 import 'package:intl/intl.dart';
+import 'package:isentry/presentation/home/pages/recognized/bottom_sheets/add_data.dart';
+import 'package:isentry/presentation/home/pages/recognized/bottom_sheets/detail_data.dart';
+import 'package:isentry/presentation/home/pages/recognized/bottom_sheets/edit_data.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class RecognizedPage extends StatelessWidget {
   const RecognizedPage({super.key});
+
+  void _showAddDataBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => const AddDataBottomSheet(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +73,7 @@ class RecognizedPage extends StatelessWidget {
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -97,13 +110,20 @@ class RecognizedPage extends StatelessWidget {
                     PopupMenuButton<String>(
                       icon: const Icon(LucideIcons.moreVertical),
                       onSelected: (value) {
-                        // Logika untuk setiap aksi
                         switch (value) {
                           case 'edit':
-                            debugPrint('Edit: ${recognized.nama}');
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              builder: (_) => EditDataBottomSheet(name: recognized.nama),
+                            );
                             break;
                           case 'detail':
-                            debugPrint('Detail: ${recognized.nama}');
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              builder: (_) => DetailDataBottomSheet(name: recognized.nama),
+                            );
                             break;
                           case 'delete':
                             debugPrint('Delete: ${recognized.nama}');
@@ -167,9 +187,7 @@ class RecognizedPage extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          debugPrint('Tombol tambah ditekan');
-        },
+        onPressed: () => _showAddDataBottomSheet(context),
         backgroundColor: Colors.black,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),

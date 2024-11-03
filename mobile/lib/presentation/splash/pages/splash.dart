@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/assets/app_images.dart';
 import 'package:isentry/presentation/auth/pages/login.dart';
-import 'package:isentry/presentation/home/pages/home_page.dart';
+import 'package:isentry/presentation/home/pages/bottom_bar.dart';
 import 'package:isentry/presentation/splash/bloc/splash_cubit.dart';
 import 'package:isentry/presentation/splash/bloc/splash_state.dart';
 

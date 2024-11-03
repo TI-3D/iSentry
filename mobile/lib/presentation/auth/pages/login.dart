@@ -5,7 +5,7 @@ import 'package:isentry/presentation/auth/pages/register.dart';
 import 'package:isentry/presentation/widgets/forms/auth_text_field.dart';
 import 'package:isentry/presentation/widgets/buttons/auth_button.dart';
 import 'package:isentry/presentation/widgets/typography/auth_heading.dart';
-import 'package:isentry/presentation/home/pages/home_page.dart';
+import 'package:isentry/presentation/home/pages/bottom_bar.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
