@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
-import 'package:isentry/presentation/auth/pages/register.dart';
+import 'package:isentry/presentation/home/pages/bottom_bar.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:isentry/presentation/widgets/forms/auth_text_field.dart';
 import 'package:isentry/presentation/widgets/buttons/auth_button.dart';
@@ -86,9 +86,10 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
               const SizedBox(height: 15),
               CustomElevatedButton(
                 buttonText: 'Register',
+                Backcolor: const Color(0xFF18181B),
+                TextColor: Colors.white,
                 onPressed: () {
-                  // Logic untuk registrasi
-                  AppNavigator.pushAndRemove(context, const RegisterPage());
+                  AppNavigator.push(context, const HomePage());
                 },
               ),
             ],

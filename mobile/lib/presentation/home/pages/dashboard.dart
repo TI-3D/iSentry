@@ -203,7 +203,7 @@ class DashboardPage extends StatelessWidget {
                     color: Colors.white,
                     size: 25,
                   ),
-                  padding: EdgeInsets.zero,           
+                  padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                 ),
               ],
@@ -387,11 +387,20 @@ class DashboardPage extends StatelessWidget {
           flex: 11,
           child: faces,
         ),
-        const Expanded(
+        Expanded(
           flex: 26,
-          child: MySort(
-            texts: ['Today', 'Week', 'Month', 'Year'],
-            selectedIndex: 0,
+          child: Column(
+            children: [
+              const MySort(
+                texts: ['Today', 'Week', 'Month', 'Year'],
+                selectedIndex: 0,
+              ),
+              Expanded(
+                child: Container(
+                  color: AppColors.primary,
+                ),
+              )
+            ],
           ),
         ),
         Expanded(

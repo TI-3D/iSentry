@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:isentry/presentation/home/pages/unrecognized/bottom_sheets/add_data.dart';
+import 'package:isentry/presentation/widgets/components/sort.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class UnrecognizedPage extends StatefulWidget {
@@ -26,7 +27,7 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
 
   void _toggleSelection(int index) {
     setState(() {
-      _isSelected[index] = !_isSelected[index]; 
+      _isSelected[index] = !_isSelected[index];
     });
   }
 
@@ -35,18 +36,14 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xfff1f4f9),
-        elevation: 0,
         automaticallyImplyLeading: false,
-        title: const SizedBox(
-          height: 56.0,
-          // child: MySort(
-          //   texts: ['Today', 'Week', 'Month', 'Year'],
-          //   selectedIndex: 0,
-          // ),
-        ),
+        bottom: const PreferredSize(
+            preferredSize: Size.fromHeight(0),
+            child: MySort(
+                texts: ['Today', 'Week', 'Month', 'Year'], selectedIndex: 0)),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 25),
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,

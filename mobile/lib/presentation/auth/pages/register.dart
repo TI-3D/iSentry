@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/presentation/auth/pages/login.dart';
@@ -17,113 +18,78 @@ class RegisterPage extends StatelessWidget {
     TextEditingController confirmPasswordController = TextEditingController();
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Padding(
-        padding: const EdgeInsets.only(top: 100.0, left: 20.0, right: 20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const AuthHeading(
-                title1: 'Hello!',
-                title2: 'Register to get started',
-              ),
-              CustomTextField(
-                hintText: 'Full name',
-                controller: fullNameController,
-                keyboardType: TextInputType.name,
-              ),
-              const SizedBox(height: 10),
-              CustomTextField(
-                hintText: 'Email',
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 10),
-              CustomTextField(
-                hintText: 'Password',
-                controller: passwordController,
-                obscureText: true,
-              ),
-              const SizedBox(height: 10),
-              CustomTextField(
-                hintText: 'Confirm Password',
-                controller: confirmPasswordController,
-                obscureText: true,
-              ),
-              const SizedBox(height: 20),
-              CustomElevatedButton(
-                buttonText: 'Register',
-                onPressed: () {
-                  // Tambahkan logika register di sini
-                },
-              ),
-              const SizedBox(height: 20),
-              const Row(
-                children: [
-                  Expanded(
-                    child: Divider(
-                      color: Colors.grey,
-                      thickness: 1.0,
+        padding:
+            const EdgeInsets.only(top: 100, left: 20, right: 20, bottom: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AuthHeading(
+                  title1: 'Hello!',
+                  title2: 'Register to get started',
+                ),
+                CustomTextField(
+                  hintText: 'Full name',
+                  controller: fullNameController,
+                  keyboardType: TextInputType.name,
+                ),
+                const SizedBox(height: 10),
+                CustomTextField(
+                  hintText: 'Email',
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 10),
+                CustomTextField(
+                  hintText: 'Password',
+                  controller: passwordController,
+                  obscureText: true,
+                ),
+                const SizedBox(height: 10),
+                CustomTextField(
+                  hintText: 'Confirm Password',
+                  controller: confirmPasswordController,
+                  obscureText: true,
+                ),
+                const SizedBox(height: 20),
+                CustomElevatedButton(
+                  buttonText: 'Register',
+                  Backcolor: const Color(0xFF18181B),
+                  TextColor: Colors.white,
+                  onPressed: () {
+                    AppNavigator.push(context, const QrRegisterPage());
+                  },
+                ),
+              ],
+            ),
+            Center(
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    const TextSpan(
+                      text: "Already have an account?",
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Text('Or Login with'),
-                  ),
-                  Expanded(
-                    child: Divider(
-                      color: Colors.grey,
-                      thickness: 1.0,
-                    ),
-                  ),
-                ],
+                    TextSpan(
+                      text: " Login Now",
+                      style: const TextStyle(color: Colors.blue),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          AppNavigator.pushAndRemove(
+                            context,
+                            const LoginPage(),
+                          );
+                        },
+                    )
+                  ],
+                ),
               ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      AppNavigator.pushAndRemove(context,
-                          const QrRegisterPage()); // sementara redirect ke halaman QR Register User Resident
-                    },
-                    icon: const Icon(Icons.qr_code, size: 30),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      AppNavigator.push(context, const QrRegisterPage());
-                    },
-                    icon: const Icon(Icons.g_mobiledata, size: 30),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      // GitHub login logic di sini
-                    },
-                    icon: const Icon(Icons.code, size: 30),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Already have an account? ",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      AppNavigator.pushAndRemove(context, const LoginPage());
-                    },
-                    child: const Text(
-                      'Login Now',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

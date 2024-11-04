@@ -115,14 +115,16 @@ class RecognizedPage extends StatelessWidget {
                             showModalBottomSheet(
                               context: context,
                               isScrollControlled: true,
-                              builder: (_) => EditDataBottomSheet(name: recognized.nama),
+                              builder: (_) =>
+                                  EditDataBottomSheet(name: recognized.nama),
                             );
                             break;
                           case 'detail':
                             showModalBottomSheet(
                               context: context,
                               isScrollControlled: true,
-                              builder: (_) => DetailDataBottomSheet(name: recognized.nama),
+                              builder: (_) =>
+                                  DetailDataBottomSheet(name: recognized.nama),
                             );
                             break;
                           case 'delete':
@@ -132,17 +134,30 @@ class RecognizedPage extends StatelessWidget {
                       },
                       itemBuilder: (BuildContext context) {
                         return [
-                          const PopupMenuItem<String>(
+                          PopupMenuItem<String>(
+                            padding: EdgeInsets.zero,
                             value: 'edit',
-                            child: Row(
+                            child: Column(
                               children: [
-                                Icon(LucideIcons.pencil, size: 18),
-                                SizedBox(width: 10),
-                                Text('Edit'),
+                                const Padding(
+                                  padding: EdgeInsets.only(
+                                      bottom: 14, left: 12, top: 6),
+                                  child: Row(
+                                    children: [
+                                      Icon(LucideIcons.pencil, size: 18),
+                                      SizedBox(width: 10),
+                                      Text('Edit'),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  width: double.infinity,
+                                  height: 1,
+                                  color: Colors.black,
+                                ),
                               ],
                             ),
                           ),
-                          const PopupMenuDivider(),
                           const PopupMenuItem<String>(
                             value: 'detail',
                             child: Row(
@@ -153,24 +168,38 @@ class RecognizedPage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          const PopupMenuDivider(),
-                          const PopupMenuItem<String>(
+                          PopupMenuItem<String>(
+                            padding: EdgeInsets.zero,
                             value: 'delete',
-                            child: Row(
+                            child: Column(
                               children: [
-                                Icon(
-                                  LucideIcons.trash2,
-                                  size: 18,
-                                  color: Colors.red,
+                                Container(
+                                  width: double.infinity,
+                                  height: 1,
+                                  color: Colors.black,
                                 ),
-                                SizedBox(width: 10),
-                                Text(
-                                  'Delete',
-                                  style: TextStyle(color: Colors.red),
+                                const Padding(
+                                  padding: EdgeInsets.only(
+                                      top: 14, left: 12, bottom: 6),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        LucideIcons.trash2,
+                                        size: 18,
+                                        color: Colors.red,
+                                      ),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        'Delete',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
                           ),
+                          // const PopupMenuDivider(),
                         ];
                       },
                     ),
