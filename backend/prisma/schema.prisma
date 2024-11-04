@@ -62,11 +62,11 @@ model Face {
   recognized        Boolean           @default(false)
   identity          Int
   landmarks         Bytes
-  fullPictures      Captured_Picture  @relation ("FullPicture", fields : [picture_full], references: [id])
-  picture_full      Int               @unique
-  singlePictures    Captured_Picture  @relation ("SinglePicture", fields : [picture_single], references: [id])
-  picture_single    Int               @unique
   bounding_box      Bytes
+  singlePictures    Gallery_Item      @relation ("SinglePicture", fields : [picture_single], references: [id])
+  picture_single    Int               @unique
+  fullPictures      Gallery_Item      @relation ("FullPicture", fields : [picture_full], references: [id])
+  picture_full      Int
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   identities        Identity          @relation(fields: [identity], references: [id])
@@ -75,43 +75,15 @@ model Face {
   @@map("faces")
 }
 
-model Captured_Picture {
-  id                Int               @id @default(autoincrement())
-  img_path          String
-  width             Int
-  height            Int
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  facesFull         Face?             @relation("FullPicture")
-  facesSingle       Face?             @relation("SinglePicture")
-  galleryItems      Gallery_Item      @relation(fields: [galleryItemId], references: [id])
-  galleryItemId     Int               @unique
-
-  @@map("capturedPictures")
-}
-
-model Captured_Video {
-  id                Int               @id @default(autoincrement())
-  video_path        String
-  width             Int
-  height            Int
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  galleryItems      Gallery_Item      @relation(fields: [galleryItemId], references: [id])
-  galleryItemId     Int               @unique
-
-  @@map("capturedVideos")
-}
-
 model Gallery_Item {
   id                Int               @id @default(autoincrement())
-  timestamp         DateTime          @default(now())
-  item              Int
+  path              String
+  type              item_type         @default(VIDEO) 
   capture_method    capture_method    @default(AUTO)
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
-  capturedVideos    Captured_Video?
-  capturedPictures  Captured_Picture?
+  facesFull         Face[]            @relation("FullPicture")
+  facesSingle       Face?             @relation("SinglePicture")
 
   @@map("galleryItems")
 }
@@ -119,4 +91,9 @@ model Gallery_Item {
 enum capture_method {
   AUTO
   MANUAL
+}
+
+enum item_type {
+  PICTURE
+  VIDEO
 }
