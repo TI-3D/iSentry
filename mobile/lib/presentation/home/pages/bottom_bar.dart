@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/presentation/home/pages/camera/camera.dart';
 import 'package:isentry/presentation/home/pages/dashboard.dart';
+import 'package:isentry/presentation/home/pages/gallery/gallery.dart';
 import 'package:isentry/presentation/home/pages/recognized/recognized.dart';
 import 'package:isentry/presentation/home/pages/unrecognized/unrecognized.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -22,8 +23,7 @@ class _BottomAppBarState extends State<HomePage> {
     RecognizedPage(),
     Center(child: Text('Camera')),
     UnrecognizedPage(),
-    // Center(child: Text('Unrecognized Screen')),
-    Center(child: Text('Gallery Screen')),
+    GalleryPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -48,7 +48,7 @@ class _BottomAppBarState extends State<HomePage> {
             label: _selectedIndex == 0 ? 'Dashboard' : '',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(LucideIcons.users),
+            icon: const Icon(LucideIcons.userCheck2),
             label: _selectedIndex == 1 ? 'Recognized' : '',
           ),
           BottomNavigationBarItem(
@@ -64,7 +64,7 @@ class _BottomAppBarState extends State<HomePage> {
             label: _selectedIndex == 2 ? '' : '',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(LucideIcons.bot),
+            icon: const Icon(LucideIcons.userX2),
             label: _selectedIndex == 3 ? 'Unrecognized' : '',
           ),
           BottomNavigationBarItem(

@@ -108,6 +108,9 @@ class RecognizedPage extends StatelessWidget {
                       ],
                     ),
                     PopupMenuButton<String>(
+                      color: const Color(0xfff1f4f9),
+                      elevation: 8,
+                      shadowColor: Colors.black,
                       icon: const Icon(LucideIcons.moreVertical),
                       onSelected: (value) {
                         switch (value) {

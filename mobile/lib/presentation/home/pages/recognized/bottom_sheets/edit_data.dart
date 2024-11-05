@@ -9,7 +9,7 @@ class EditDataBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ReusableBottomSheet(
+    return CustomBottomSheet(
       title: "Edit Data",
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

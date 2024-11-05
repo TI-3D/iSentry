@@ -8,7 +8,7 @@ class AddDataBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ReusableBottomSheet(
+    return CustomBottomSheet(
       title: "Add Data",
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

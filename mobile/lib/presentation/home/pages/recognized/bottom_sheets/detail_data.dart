@@ -9,7 +9,7 @@ class DetailDataBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ReusableBottomSheet(
+    return CustomBottomSheet(
       title: "Detail Data",
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -22,11 +22,15 @@ class LogDetailWidget extends StatelessWidget {
       "23 June 2024, 08:00",
     ];
 
-    return Padding(
+    return Container(
       padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: const Color(0xfff1f4f9),
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min, // Adjust height to content
+        mainAxisSize: MainAxisSize.min,
         children: [
           // Title of the log detail view
           const Center(
@@ -40,7 +44,6 @@ class LogDetailWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          
           // User details row
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -74,7 +77,6 @@ class LogDetailWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          
           // History section title
           const Text(
             "History :",
@@ -85,7 +87,6 @@ class LogDetailWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          
           // History list with bullet points and connecting lines
           ListView.builder(
             shrinkWrap: true,

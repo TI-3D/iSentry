@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class ReusableBottomSheet extends StatelessWidget {
+class CustomBottomSheet extends StatelessWidget {
   final String title;
   final Widget content;
   final Widget actionButton;
 
-  const ReusableBottomSheet({
+  const CustomBottomSheet({
     super.key,
     required this.title,
     required this.content,
@@ -17,7 +17,7 @@ class ReusableBottomSheet extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: Color(0xfff1f4f9),
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
