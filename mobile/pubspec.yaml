@@ -28,11 +28,11 @@ dev_dependencies:
     sdk: flutter
   flutter_launcher_icons: ^0.14.1
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   # iOS is disabled for now
   # ios: true
-  image_path: "assets/icons/icon_iSentry.png"
+  image_path: "assets/icons/isentry.png"
   adaptive_icon_background: "#F1F4F9"
 
   flutter_lints: ^4.0.0
@@ -43,6 +43,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/icons/
   
   fonts:
     - family: SFPro
