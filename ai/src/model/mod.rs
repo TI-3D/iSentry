@@ -10,7 +10,7 @@ use dlib_face_recognition::{
 };
 use image::{imageops::FilterType, DynamicImage, Rgb, RgbImage};
 use imageproc::drawing::draw_text_mut;
-use indentity::Identities;
+use indentity::{Faces, Identities};
 use mysql::{prelude::Queryable, Conn};
 use tokio::sync::mpsc::Receiver;
 use tracing::{error, info};
@@ -35,20 +35,25 @@ pub async fn run(opts: mysql::Opts, mut rx: Receiver<Job>) {
 
     let stmt1 = db_conn.prep("INSERT INTO gallery_items (path, type, capture_method) VALUES (?1, \"PICTURE\", \"REGISTRATION\")").unwrap();
     let stmt2 = db_conn.prep("SELECT id, name, landmark FROM faces");
+    let stmt3 = db_conn.prep("");
 
+    let mut faces = Faces::default();
     let mut identities = Identities::default();
 
-    if let Err(err) = db_conn.query_map::<(u64, String, [u8; 128]), _, _, _>(
+    if let Err(err) = db_conn.query_map::<(u64, [u8; 128], Option<u64>, Option<String>), _, _, _>(
         "
-        SELECT identity.id, identity.name, faces.embedding
+        SELECT faces.id as face_id, faces.embedding, identity.id, identity.name
         FROM faces
-        JOIN identity 
+        LEFT JOIN identity 
         ON faces.identity = identity.id;
     ",
-        |(id, name, embedding)| {
+        |(face_id, embedding, identity_id, name)| {
             let embedding: Vec<f64> = bincode::deserialize(&embedding).unwrap();
             let embedding = FaceEncoding::from_vec(&embedding).unwrap();
-            identities.insert(id, name, embedding)
+            faces.insert(face_id, identity_id, embedding);
+            if let Some(id) = identity_id {
+                identities.insert(id, name.unwrap());
+            }
         },
     ) {
         error!("{err}");
@@ -65,7 +70,7 @@ pub async fn run(opts: mysql::Opts, mut rx: Receiver<Job>) {
                     .iter()
                     .map(|face| landmark_predictor.face_landmarks(&image_matrix, face))
                     .collect::<Vec<FaceLandmarks>>();
-                let landmarks_encoded =
+                let embeddings =
                     face_encoder.get_face_encodings(&image_matrix, &landmarks, 0);
 
                 let image = DynamicImage::ImageRgb8(job.image);
@@ -101,7 +106,7 @@ pub async fn run(opts: mysql::Opts, mut rx: Receiver<Job>) {
                     x: font_height,
                     y: font_height,
                 };
-                for (bbox, face_encoded) in faces.iter().zip(landmarks_encoded.iter()) {
+                for (bbox, face_encoded) in faces.iter().zip(embeddings.iter()) {
                     image.label(bbox, name, &font, font_height, scale);
                 }
 
@@ -109,7 +114,7 @@ pub async fn run(opts: mysql::Opts, mut rx: Receiver<Job>) {
                     .tx
                     .send(JobResult::MBBnLandMWI(
                         bbox.then_some(faces),
-                        face_enc.then_some(landmarks_encoded),
+                        face_enc.then_some(embeddings),
                         cropped_img.then_some(cropped_images),
                         labelled_img.then_some(image),
                     ))
