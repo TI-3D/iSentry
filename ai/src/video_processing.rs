@@ -1,16 +1,21 @@
-use std::time::Duration;
+use std::{task::Wake, time::Duration};
 
 use chrono::Utc;
-use tokio::time::sleep;
+use mysql::{prelude::Queryable, Conn};
+use tokio::{sync::mpsc::Sender, time::sleep};
 
-use crate::ffmpeg;
+use crate::{ffmpeg, job::Job};
 
-pub async fn run() {
-    tokio::spawn(auto_record());
+pub async fn run(db_opts: mysql::Opts, tx: Sender<Job>) {
+    tokio::spawn(auto_record(db_opts, tx));
 }
 
 // pub async fn auto_record(tx: Sender<Msg>) {
-pub async fn auto_record() {
+pub async fn auto_record(db_opts: mysql::Opts, tx: Sender<Job>) {
+    let mut db_conn = Conn::new(db_opts).unwrap();
+
+    let stmt1 = db_conn.prep("INSERT INTO gallery_items (path, type, capture_method) VALUES (?1, VIDEO, AUTO)").unwrap();
+
     loop {
         // ffmpeg -i rtsp://localhost:8554/stream -c copy -f segment -segment_time 3600 -reset_timestamps 1 output_%03d.mp4
         // ffmpeg -i rtsp://localhost:8554/stream -c copy -t 3600 output.mp4
@@ -29,13 +34,16 @@ pub async fn auto_record() {
         };
 
         let link = dotenvy::var("RTSP_CAMERA").unwrap();
+        let timestamp = Utc::now();
+        let filename = format!("AutoRecord-{}.mp4", timestamp.format("%Y-%m-%d-%H:%M"));
 
         ffmpeg::save_chunk(
             &link,
             record_time as u64,
-            &format!("AutoRecord-{}.mp4", Utc::now().format("%Y-%m-%d-%H:%M")),
+            &filename,
         )
         .await;
+        db_conn.exec_drop(&stmt1, ("abc",)).unwrap();
     }
 }
 

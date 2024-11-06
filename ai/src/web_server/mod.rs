@@ -1,4 +1,8 @@
-use axum::{routing::{get, post}, Router};
+use axum::{
+    routing::{get, post},
+    Router,
+};
+use mysql::Pool;
 use routes::process_frame;
 use tokio::{net::TcpListener, signal, sync::mpsc::Sender};
 use tracing::{error, info, warn};
@@ -9,18 +13,34 @@ mod error;
 mod response;
 mod routes;
 
-pub async fn run(tx: Sender<Job>) {
+pub async fn run(db_opts: mysql::Opts, tx: Sender<Job>) {
+    let db_pool = Pool::new(db_opts).unwrap();
+
     let app = Router::new()
         .route("/", get(root))
         .route("/process-frame", post(process_frame))
-        .with_state(tx);
+        .with_state(AppState {
+            db_pool,
+            tx
+        });
 
-    let listener = TcpListener::bind("localhost:3000").await.unwrap();
+    let ai_server_address = dotenvy::var("AI_SERVER_ADDRESS").unwrap();
+    let ai_server_port = dotenvy::var("AI_SERVER_PORT").unwrap();
+
+    let listener = TcpListener::bind(ai_server_address + ":" + &ai_server_port)
+        .await
+        .unwrap();
 
     axum::serve(listener, app)
         .with_graceful_shutdown(shutdown_signal())
         .await
         .unwrap();
+}
+
+#[derive(Clone)]
+struct AppState {
+    pub db_pool: Pool,
+    pub tx: Sender<Job>,
 }
 
 async fn root() -> &'static str {

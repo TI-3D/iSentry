@@ -1,5 +1,4 @@
 use axum::extract::{Multipart, State};
-use image::RgbImage;
 use tokio::sync::{
     mpsc::Sender,
     oneshot::{self, error::TryRecvError},
@@ -7,12 +6,12 @@ use tokio::sync::{
 use tracing::{error, info};
 use uuid::Uuid;
 
-use crate::job::{Job, JobSender};
+use crate::job::{Job, JobKind, JobResult, JobSender};
 
-use super::{error::WebError, response::Image};
+use super::{error::WebError, response::Image, AppState};
 
 pub async fn process_frame(
-    State(sender): State<Sender<Job>>,
+    State(state): State<AppState>,
     mut multipart: Multipart,
 ) -> Result<Image, WebError> {
     let mut filename = String::new();
@@ -24,18 +23,19 @@ pub async fn process_frame(
         }
     }
     if let Some(image) = image {
-        let (tx, mut rx) = oneshot::channel::<RgbImage>();
+        let (tx, mut rx) = oneshot::channel::<JobResult>();
 
         // let image = image.resize_exact(112, 112, FilterType::CatmullRom);
         let image = image.into_rgb8();
 
         let id = Uuid::new_v4();
 
-        sender
+        state.tx
             .send(Job {
                 id,
                 sender: JobSender::WebServer,
                 image,
+                kind: JobKind::DetThenRec((true, true, true, true)),
                 tx,
             })
             .await
@@ -43,12 +43,16 @@ pub async fn process_frame(
 
         loop {
             match rx.try_recv() {
-                Ok(image) => {
-                    info!("Channel id: {} success with filename: {}", id, filename);
-                    break Ok(Image {
-                        filename,
-                        data: image,
-                    })
+                Ok(result) => {
+                    if let JobResult::Image(image) = result {
+                        info!("Channel id: {} success with filename: {}", id, filename);
+                        break Ok(Image {
+                            filename,
+                            data: image,
+                        });
+                    } else {
+                        error!("Channel id: {} got unexpected result from model", id);
+                    }
                 }
                 Err(TryRecvError::Empty) => (),
                 Err(TryRecvError::Closed) => {
