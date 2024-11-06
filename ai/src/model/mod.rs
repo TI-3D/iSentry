@@ -10,8 +10,9 @@ use dlib_face_recognition::{
 };
 use image::{imageops::FilterType, DynamicImage, Rgb, RgbImage};
 use imageproc::drawing::draw_text_mut;
-use mysql::{binlog, prelude::Queryable, Conn};
+use mysql::{prelude::Queryable, Conn};
 use tokio::sync::mpsc::Receiver;
+use tracing::info;
 use utils::LabelID;
 
 use crate::job::{Job, JobKind, JobResult};
@@ -32,7 +33,7 @@ pub async fn run(opts: mysql::Opts, mut rx: Receiver<Job>) {
     let stmt1 = db_conn.prep("INSERT INTO gallery_items (path, type, capture_method) VALUES (?1, \"PICTURE\", \"REGISTRATION\")").unwrap();
     let stmt2 = db_conn.prep("SELECT bounding_box, landmark FROM faces");
 
-    while let Some(mut job) = rx.recv().await {
+    while let Some(job) = rx.recv().await {
         match job.kind {
             JobKind::Detection => (),
             JobKind::Recognition => (),
@@ -50,7 +51,8 @@ pub async fn run(opts: mysql::Opts, mut rx: Receiver<Job>) {
 
                 let image = DynamicImage::ImageRgb8(job.image);
 
-                let mut cropped_images = Vec::with_capacity(if cropped_img { faces.len() } else { 0 });
+                let mut cropped_images =
+                    Vec::with_capacity(if cropped_img { faces.len() } else { 0 });
                 if cropped_img {
                     for face in faces.iter() {
                         cropped_images.push(image.crop_imm(
@@ -58,7 +60,7 @@ pub async fn run(opts: mysql::Opts, mut rx: Receiver<Job>) {
                             face.top as u32,
                             (face.right - face.left) as u32,
                             (face.bottom - face.top) as u32,
-                        ));
+                        ).to_rgb8());
                     }
                 }
 
@@ -80,7 +82,18 @@ pub async fn run(opts: mysql::Opts, mut rx: Receiver<Job>) {
                     image.label(face, name, &font, font_height, scale);
                 }
 
-                job.tx.send(JobResult::MBBnLandMWI(()))
+                if job
+                    .tx
+                    .send(JobResult::MBBnLandMWI((
+                        bbox.then_some(faces),
+                        face_enc.then_some(landmarks_encoded),
+                        cropped_img.then_some(cropped_images),
+                        labelled_img.then_some(image),
+                    )))
+                    .is_err()
+                {
+                    info!("Requester id: {} hung up before receiving data", job.id);
+                }
             }
         }
     }
