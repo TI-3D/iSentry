@@ -24,7 +24,7 @@ pub enum JobKind {
     Detection,
     Recognition,
     /// (bbox, face_encoding, cropped_face, labelled_image)
-    DetThenRec((bool, bool, bool, bool)),
+    DetThenRec(bool, bool, bool, bool),
 }
 
 pub enum JobResult {
@@ -36,12 +36,10 @@ pub enum JobResult {
     BBnLandM((Rectangle, FaceLandmarks)),
     BBnLandMWI((Rectangle, FaceLandmarks, RgbImage)),
     MBBnLandMWI(
-        (
-            Option<FaceLocations>,
-            Option<FaceEncodings>,
-            Option<Vec<RgbImage>>,
-            Option<RgbImage>,
-        ),
+        Option<FaceLocations>,
+        Option<FaceEncodings>,
+        Option<Vec<RgbImage>>,
+        Option<RgbImage>,
     ),
     Err(AppError),
 }

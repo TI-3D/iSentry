@@ -5,19 +5,21 @@ use std::time::Instant;
 use ab_glyph::{FontRef, PxScale};
 // use ab_glyph::{FontRef, Scale};
 use dlib_face_recognition::{
-    FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, FaceLandmarks,
-    ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait, Point, Rectangle,
+    FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, FaceEncoding,
+    FaceLandmarks, ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait, Point, Rectangle,
 };
 use image::{imageops::FilterType, DynamicImage, Rgb, RgbImage};
 use imageproc::drawing::draw_text_mut;
+use indentity::Identities;
 use mysql::{prelude::Queryable, Conn};
 use tokio::sync::mpsc::Receiver;
-use tracing::info;
+use tracing::{error, info};
 use utils::LabelID;
 
 use crate::job::{Job, JobKind, JobResult};
 
 mod face_detection;
+mod indentity;
 mod utils;
 
 pub async fn run(opts: mysql::Opts, mut rx: Receiver<Job>) {
@@ -30,16 +32,33 @@ pub async fn run(opts: mysql::Opts, mut rx: Receiver<Job>) {
     };
 
     let mut db_conn = Conn::new(opts).unwrap();
+
     let stmt1 = db_conn.prep("INSERT INTO gallery_items (path, type, capture_method) VALUES (?1, \"PICTURE\", \"REGISTRATION\")").unwrap();
-    let stmt2 = db_conn.prep("SELECT bounding_box, landmark FROM faces");
+    let stmt2 = db_conn.prep("SELECT id, name, landmark FROM faces");
+
+    let mut identities = Identities::default();
+
+    if let Err(err) = db_conn.query_map::<(u64, String, [u8; 128]), _, _, _>(
+        "
+        SELECT identity.id, identity.name, faces.embedding
+        FROM faces
+        JOIN identity 
+        ON faces.identity = identity.id;
+    ",
+        |(id, name, embedding)| {
+            let embedding: Vec<f64> = bincode::deserialize(&embedding).unwrap();
+            let embedding = FaceEncoding::from_vec(&embedding).unwrap();
+            identities.insert(id, name, embedding)
+        },
+    ) {
+        error!("{err}");
+    };
 
     while let Some(job) = rx.recv().await {
         match job.kind {
             JobKind::Detection => (),
             JobKind::Recognition => (),
-            JobKind::DetThenRec((bbox, face_enc, cropped_img, labelled_img)) => {
-                // let result = Vec::new();
-
+            JobKind::DetThenRec(bbox, face_enc, cropped_img, labelled_img) => {
                 let image_matrix = ImageMatrix::from_image(&job.image);
                 let faces = detector.face_locations(&image_matrix);
                 let landmarks = faces
@@ -55,12 +74,16 @@ pub async fn run(opts: mysql::Opts, mut rx: Receiver<Job>) {
                     Vec::with_capacity(if cropped_img { faces.len() } else { 0 });
                 if cropped_img {
                     for face in faces.iter() {
-                        cropped_images.push(image.crop_imm(
-                            face.left as u32,
-                            face.top as u32,
-                            (face.right - face.left) as u32,
-                            (face.bottom - face.top) as u32,
-                        ).to_rgb8());
+                        cropped_images.push(
+                            image
+                                .crop_imm(
+                                    face.left as u32,
+                                    face.top as u32,
+                                    (face.right - face.left) as u32,
+                                    (face.bottom - face.top) as u32,
+                                )
+                                .into_rgb8(),
+                        );
                     }
                 }
 
@@ -78,18 +101,18 @@ pub async fn run(opts: mysql::Opts, mut rx: Receiver<Job>) {
                     x: font_height,
                     y: font_height,
                 };
-                for face in faces.iter() {
-                    image.label(face, name, &font, font_height, scale);
+                for (bbox, face_encoded) in faces.iter().zip(landmarks_encoded.iter()) {
+                    image.label(bbox, name, &font, font_height, scale);
                 }
 
                 if job
                     .tx
-                    .send(JobResult::MBBnLandMWI((
+                    .send(JobResult::MBBnLandMWI(
                         bbox.then_some(faces),
                         face_enc.then_some(landmarks_encoded),
                         cropped_img.then_some(cropped_images),
                         labelled_img.then_some(image),
-                    )))
+                    ))
                     .is_err()
                 {
                     info!("Requester id: {} hung up before receiving data", job.id);

@@ -35,7 +35,7 @@ pub async fn process_frame(
                 id,
                 sender: JobSender::WebServer,
                 image,
-                kind: JobKind::DetThenRec((true, true, true, true)),
+                kind: JobKind::DetThenRec(true, true, true, true),
                 tx,
             })
             .await
