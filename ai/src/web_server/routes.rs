@@ -1,12 +1,9 @@
 use axum::extract::{Multipart, State};
-use tokio::sync::{
-    mpsc::Sender,
-    oneshot::{self, error::TryRecvError},
-};
+use tokio::sync::oneshot::{self, error::TryRecvError};
 use tracing::{error, info};
 use uuid::Uuid;
 
-use crate::job::{Job, JobKind, JobResult, JobSender};
+use crate::job::{DetThenRecOpts, Job, JobKind, JobResult, JobSender};
 
 use super::{error::WebError, response::Image, AppState};
 
@@ -30,12 +27,13 @@ pub async fn process_frame(
 
         let id = Uuid::new_v4();
 
-        state.tx
+        state
+            .tx
             .send(Job {
                 id,
                 sender: JobSender::WebServer,
                 image,
-                kind: JobKind::DetThenRec(true, true, true, true),
+                kind: JobKind::DetThenRec(DetThenRecOpts::default()),
                 tx,
             })
             .await

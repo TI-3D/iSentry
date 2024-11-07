@@ -23,8 +23,7 @@ pub enum JobSender {
 pub enum JobKind {
     Detection,
     Recognition,
-    /// (bbox, face_encoding, cropped_face, labelled_image)
-    DetThenRec(bool, bool, bool, bool),
+    DetThenRec(DetThenRecOpts),
 }
 
 pub enum JobResult {
@@ -42,4 +41,33 @@ pub enum JobResult {
         Option<RgbImage>,
     ),
     Err(AppError),
+}
+
+pub struct DetThenRecOpts {
+    pub bbox: bool,
+    pub embedding: bool,
+    pub crop_face: bool,
+    pub label_source: bool,
+}
+
+impl Default for DetThenRecOpts {
+    fn default() -> Self {
+        Self {
+            bbox: true,
+            embedding: true,
+            crop_face: true,
+            label_source: true,
+        }
+    }
+}
+
+impl DetThenRecOpts {
+    pub fn new(bbox: bool, embedding: bool, crop_face: bool, label_source: bool) -> Self {
+        Self {
+            bbox,
+            embedding,
+            crop_face,
+            label_source,
+        }
+    }
 }
