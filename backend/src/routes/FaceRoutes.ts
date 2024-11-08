@@ -21,28 +21,16 @@ const FaceRoutes = new Elysia({ prefix: "/faces" })
     .post(
         "/",
         async ({ body }) => {
-            // return await createFace(
-            //     body as {
-            //         recognized: boolean;
-            //         identity: number;
-            //         landmarks: Buffer;
-            //         picture_full: number;
-            //         picture_single: number;
-            //         bounding_box: Buffer;
-            //     }
-            // );
             return await createFace({
-                recognized: body.recognized,
                 identity: body.identity,
-                landmarks: Buffer.from(body.landmarks, "base64"), // Konversi dari base64 ke Buffer
+                landmarks: Buffer.from(body.landmarks, "base64"),
                 picture_full: body.picture_full,
                 picture_single: body.picture_single,
-                bounding_box: Buffer.from(body.bounding_box, "base64"), // Konversi dari base64 ke Buffer
+                bounding_box: Buffer.from(body.bounding_box, "base64"),
             });
         },
         {
             body: t.Object({
-                recognized: t.Number(),
                 identity: t.Number(),
                 landmarks: t.String(),
                 picture_full: t.Number(),
@@ -57,73 +45,42 @@ const FaceRoutes = new Elysia({ prefix: "/faces" })
         return await getFaceById(id);
     })
 
-    // route to update a face
-    // .patch(
-    //     "/:id",
-    //     async ({ params: { id }, body }) => {
-    //         return await updateFace(
-    //             id,
-    //             body as {
-    //                 recognized?: boolean;
-    //                 identity?: number;
-    //                 landmarks?: Buffer;
-    //                 picture_full?: number;
-    //                 picture_single?: number;
-    //                 bounding_box?: Buffer;
-    //             }
-    //         );
-    //     },
-    //     {
-    //         body: t.Object({
-    //             recognized: t.Boolean(),
-    //             identity: t.Number({ minLength: 1, maxLength: 100 }),
-    //             landmarks: t.String(),
-    //             picture_full: t.Number({ minLength: 1, maxLength: 100 }),
-    //             picture_single: t.Number({ minLength: 1, maxLength: 100 }),
-    //             bounding_box: t.String(),
-    //         }),
-    //     }
-    // )
-
     .patch(
         "/:id",
         async (request: {
             params: { id: string };
             body: {
-                recognized?: number;
                 identity?: number;
-                landmarks?: string;
+                landmarks?: String;
                 picture_full?: number;
                 picture_single?: number;
-                bounding_box?: string;
+                bounding_box?: String;
             };
         }) => {
             const { id } = request.params;
             const { body } = request;
-            // Mengonversi dari base64 ke Buffer jika ada
+
             const updatedFaceData = {
-                recognized: body.recognized,
                 identity: body.identity,
                 landmarks: body.landmarks
                     ? Buffer.from(body.landmarks, "base64")
-                    : undefined, // Konversi dari base64 ke Buffer jika ada
+                    : undefined,
                 picture_full: body.picture_full,
                 picture_single: body.picture_single,
                 bounding_box: body.bounding_box
                     ? Buffer.from(body.bounding_box, "base64")
-                    : undefined, // Konversi dari base64 ke Buffer jika ada
+                    : undefined,
             };
 
             return await updateFace(id, updatedFaceData);
         },
         {
             body: t.Object({
-                recognized: t.Number(), // Menggunakan optional agar tidak semua field wajib
                 identity: t.Number({ minLength: 1, maxLength: 100 }),
-                landmarks: t.String({ minLength: 5, maxLength: 100 }), // Diterima sebagai base64 string
+                landmarks: t.String(),
                 picture_full: t.Number({ minLength: 1, maxLength: 100 }),
                 picture_single: t.Number({ minLength: 1, maxLength: 100 }),
-                bounding_box: t.String({ minLength: 5, maxLength: 100 }), // Diterima sebagai base64 string
+                bounding_box: t.String(),
             }),
         }
     )
