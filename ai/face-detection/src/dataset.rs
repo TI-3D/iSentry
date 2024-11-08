@@ -1,19 +1,15 @@
-use std::env::var;
-use std::sync::LazyLock;
 use std::{fs, path::PathBuf};
 
 use burn::{
     data::{dataloader::batcher::Batcher, dataset::Dataset},
     prelude::Backend,
-    tensor::{Device, Tensor},
+    tensor::{Device, Shape, Tensor, TensorData},
 };
-use image::{imageops::FilterType, GenericImage, GenericImageView, ImageBuffer};
+use image::{imageops::FilterType, GenericImage, GenericImageView, ImageBuffer, Rgb, Rgba};
 
-static IMG_SIZE: u32 = 1024;
+static IMG_SIZE: u32 = 256;
 
 static MAX_FACES: usize = 20;
-
-pub static DATASET_PATH: LazyLock<String> = LazyLock::new(|| var("ISENTRY_DATASET_PATH").unwrap());
 
 pub struct WiderFaceDataset {
     items: Vec<WiderFaceDatasetItem>,
@@ -27,7 +23,8 @@ impl WiderFaceDataset {
         let mut items = Vec::new();
         let mut lines = str.lines();
         while let Some(img_path) = lines.next() {
-            let num_faces = lines.next().unwrap().trim().parse::<usize>().unwrap();
+            let num_faces = lines.next().unwrap();
+            let num_faces = num_faces.trim().parse::<usize>().unwrap();
             let mut faces: Vec<[i32; 4]> = Vec::new();
             for _ in 0..num_faces {
                 faces.push(
@@ -41,6 +38,9 @@ impl WiderFaceDataset {
                         .try_into()
                         .unwrap(),
                 );
+            }
+            if num_faces == 0 {
+                lines.next(); // the heck why they added 0 0 0 0 0 0 0 0 0 0 on image with no face
             }
 
             if faces.len() > MAX_FACES {
@@ -61,7 +61,8 @@ impl WiderFaceDataset {
                 label: faces,
             })
         }
-        Self { items: Vec::new() }
+        println!("{}", items.len());
+        Self { items }
     }
 }
 
@@ -97,16 +98,23 @@ impl WiderFaceDatasetItem {
             .copy_from(&resized_img, pad_x, pad_y)
             .expect("failed to pad image");
 
-        let img_data: Vec<f32> = padded_img
-            .pixels()
-            .flat_map(|p| p.0.iter().map(|&v| v as f32 / 255.0))
-            .collect();
+        let padded_img = rgba_to_rgb(padded_img);
 
-        let img_tensor = Tensor::<B, 3>::from_data(img_data.as_slice(), device).reshape([
-            3,
-            target_size as usize,
-            target_size as usize,
-        ]);
+        // let img_data: Vec<f32> = padded_img
+        //     .pixels()
+        //     .flat_map(|p| p.0.iter().map(|&v| v as f32 / 255.0))
+        //     .collect();
+
+        let img_tensor_data = TensorData::new(
+            padded_img.into_raw(),
+            Shape::new([target_size as usize, target_size as usize, 3]),
+        );
+
+        let img_tensor =
+            Tensor::<B, 3>::from_data(img_tensor_data.convert::<B::FloatElem>(), device)
+                .swap_dims(2, 1)
+                .swap_dims(1, 0);
+        let img_tensor = img_tensor / 255;
 
         let mut bbxs = Vec::new();
 
@@ -127,8 +135,11 @@ impl WiderFaceDatasetItem {
             bbxs.push([0., 0., 0., 0.])
         }
 
+        let targets_tensor_data =
+            TensorData::new(bbxs.as_flattened().to_vec(), Shape::new([MAX_FACES, 4]));
+
         let targets =
-            Tensor::<B, 2>::from_data(self.label.as_flattened(), device).reshape([MAX_FACES, 4]);
+            Tensor::<B, 2>::from_data(targets_tensor_data.convert::<B::FloatElem>(), device);
 
         (img_tensor, targets)
     }
@@ -218,6 +229,7 @@ impl<B: Backend> DetectionBatcher<B> {
 
 impl<B: Backend> Batcher<WiderFaceDatasetItem, DetectionBatch<B>> for DetectionBatcher<B> {
     fn batch(&self, mut items: Vec<WiderFaceDatasetItem>) -> DetectionBatch<B> {
+        println!("batched");
         let mut images: Vec<Tensor<B, 3>> = Vec::with_capacity(items.len());
         let mut targets: Vec<Tensor<B, 2>> = Vec::with_capacity(items.len());
 
@@ -236,4 +248,18 @@ impl<B: Backend> Batcher<WiderFaceDatasetItem, DetectionBatch<B>> for DetectionB
         let targets: Tensor<B, 3> = Tensor::stack(targets, 0);
         DetectionBatch { images, targets }
     }
+}
+
+fn rgba_to_rgb(img: ImageBuffer<Rgba<u8>, Vec<u8>>) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
+    let (width, height) = img.dimensions();
+
+    // Create a new ImageBuffer for RGB with the same dimensions
+    let mut rgb_image = ImageBuffer::new(width, height);
+
+    for (x, y, pixel) in img.enumerate_pixels() {
+        let Rgba([r, g, b, _a]) = *pixel; // Discard the alpha channel
+        rgb_image.put_pixel(x, y, Rgb([r, g, b])); // Assign the RGB values to the new image
+    }
+
+    rgb_image
 }

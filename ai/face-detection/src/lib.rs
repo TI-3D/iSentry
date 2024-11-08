@@ -1,7 +1,9 @@
 mod dataset;
+mod inference;
 mod metric;
 mod model;
 mod training;
 
-pub use training::{train, TrainingConfig};
-pub use model::Model;
+pub use inference::infer;
+pub use model::{Model, ModelConfig};
+pub use training::{train, train_alt, TrainingConfig};

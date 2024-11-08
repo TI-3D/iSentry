@@ -1,0 +1,17 @@
+{
+  "model": {
+    "hidden_size": 64,
+    "max_faces": 20,
+    "dropout": 0.5
+  },
+  "optimizer": {
+    "weight_decay": null,
+    "momentum": null,
+    "gradient_clipping": null
+  },
+  "num_epochs": 10,
+  "batch_size": 64,
+  "num_workers": 4,
+  "seed": 42,
+  "learning_rate": 0.0001
+}
