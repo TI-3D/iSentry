@@ -41,11 +41,13 @@ model System_Log {
 model Detection_Log {
   id                Int               @id @default(autoincrement())
   timestamp         DateTime          @default(now())
-  faces             Face              @relation (fields : [face], references: [id])
-  face              Int               @unique
+  face              Int
+  faceRelation      Face              @relation(fields: [face], references: [id])
 
   @@map("detectionLogs")
 }
+
+
 
 model Identity {
   id                Int               @id @default(autoincrement())
@@ -59,41 +61,41 @@ model Identity {
 
 model Face {
   id                Int               @id @default(autoincrement())
-  recognized        Boolean           @default(false)
   identity          Int
   landmarks         Bytes
   bounding_box      Bytes
   singlePictures    Gallery_Item      @relation ("SinglePicture", fields : [picture_single], references: [id])
-  picture_single    Int               @unique
+  picture_single    Int
   fullPictures      Gallery_Item      @relation ("FullPicture", fields : [picture_full], references: [id])
   picture_full      Int
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   identities        Identity          @relation(fields: [identity], references: [id])
-  detectionLogs     Detection_Log?
+  detectionLogs     Detection_Log[]
 
   @@map("faces")
 }
 
+
 model Gallery_Item {
   id                Int               @id @default(autoincrement())
   path              String
-  type              item_type         @default(VIDEO) 
-  capture_method    capture_method    @default(AUTO)
+  type              Item_type         @default(VIDEO) 
+  capture_method    Capture_method    @default(AUTO)
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   facesFull         Face[]            @relation("FullPicture")
-  facesSingle       Face?             @relation("SinglePicture")
+  facesSingle       Face[]            @relation("SinglePicture")
 
   @@map("galleryItems")
 }
 
-enum capture_method {
+enum Capture_method {
   AUTO
   MANUAL
 }
 
-enum item_type {
+enum Item_type {
   PICTURE
   VIDEO
 }
