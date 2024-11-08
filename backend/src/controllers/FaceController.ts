@@ -14,7 +14,7 @@ export async function getFace() {
         //return response json
         return {
             success: true,
-            message: "List Data Face Item!",
+            message: "List Data Face!",
             data: faces,
         };
     } catch (e: unknown) {
@@ -26,7 +26,6 @@ export async function getFace() {
  * Creating a face
  */
 export async function createFace(options: {
-    recognized: number;
     identity: number;
     landmarks: Buffer;
     picture_full: number;
@@ -36,7 +35,6 @@ export async function createFace(options: {
     try {
         const faces = await prisma.face.create({
             data: {
-                recognized: options.recognized,
                 identity: options.identity,
                 landmarks: options.landmarks,
                 picture_full: options.picture_full,
@@ -46,7 +44,7 @@ export async function createFace(options: {
         });
         return {
             success: true,
-            message: "Face Item Created Successfully!",
+            message: "Face Created Successfully!",
             data: faces,
         };
     } catch (e: unknown) {
@@ -72,18 +70,18 @@ export async function getFaceById(id: string) {
         if (!faces) {
             return {
                 success: false,
-                message: "Face Item Not Found!",
+                message: "Face Not Found!",
                 data: null,
             };
         }
 
         return {
             success: true,
-            message: `Face Item Details for ID: ${id}`,
+            message: `Face Details for ID: ${id}`,
             data: faces,
         };
     } catch (e: unknown) {
-        console.error(`Error getting face item: ${e}`);
+        console.error(`Error getting face : ${e}`);
         return { success: false, message: "Internal Server Error" };
     }
 }
@@ -94,7 +92,6 @@ export async function getFaceById(id: string) {
 export async function updateFace(
     id: string,
     options: {
-        recognized?: number;
         identity?: number;
         landmarks?: Buffer;
         picture_full?: number;
@@ -105,7 +102,6 @@ export async function updateFace(
     try {
         const faceId = parseInt(id);
         const {
-            recognized,
             identity,
             landmarks,
             picture_full,
@@ -116,7 +112,6 @@ export async function updateFace(
         const faces = await prisma.face.update({
             where: { id: faceId },
             data: {
-                ...(recognized ? { recognized } : {}),
                 ...(identity ? { identity } : {}),
                 ...(landmarks ? { landmarks } : {}),
                 ...(picture_full ? { picture_full } : {}),
@@ -127,11 +122,11 @@ export async function updateFace(
 
         return {
             success: true,
-            message: "Face Item Updated Successfully!",
+            message: "Face Updated Successfully!",
             data: faces,
         };
     } catch (e: unknown) {
-        console.error(`Error updating gallery item: ${e}`);
+        console.error(`Error updating face: ${e}`);
     }
 }
 

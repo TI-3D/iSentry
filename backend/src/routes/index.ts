@@ -8,6 +8,7 @@ import SystemLogRoutes from "./SystemLogRoutes";
 import DetectionLogRoutes from "./DetectionLogRoutes";
 import GalleryItemRoutes from "./GalleryItemRoutes";
 import FaceRoutes from "./FaceRoutes";
+import AuthRoutes from "./AuthRoutes";
 
 const Routes = new Elysia()
     .use(UserRoutes)
@@ -15,7 +16,8 @@ const Routes = new Elysia()
     .use(SystemLogRoutes)
     .use(DetectionLogRoutes)
     .use(GalleryItemRoutes)
-    .use(FaceRoutes);
+    .use(FaceRoutes)
+    .use(AuthRoutes);
 
 // Export Routes sebagai default
 export default Routes;
