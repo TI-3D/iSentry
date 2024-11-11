@@ -13,9 +13,7 @@ mod error;
 mod response;
 mod routes;
 
-pub async fn run(db_opts: mysql::Opts, tx: Sender<Job>) {
-    let db_pool = Pool::new(db_opts).unwrap();
-
+pub async fn run(db_pool: mysql::Pool, tx: Sender<Job>) {
     let app = Router::new()
         .route("/", get(root))
         .route("/process-frame", post(process_frame))
