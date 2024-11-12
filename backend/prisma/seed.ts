@@ -17,19 +17,33 @@ async function main() {
     // turn on foreign key checks
     await prisma.$executeRawUnsafe(`SET FOREIGN_KEY_CHECKS = 1;`);
 
+    // identity
+    const identity1 = await prisma.identity.create({
+        data: {
+            name: "Budi",
+        },
+    });
+    const identity2 = await prisma.identity.create({
+        data: {
+            name: "Joko",
+        },
+    });
+
     // user
     const user1 = await prisma.user.create({
         data: {
+            username: "budikabudi",
             name: "Budi",
-            email: "budi@gmail.com",
             password: "12345678",
+            identityId: identity1.id,
             role: "OWNER",
         },
     });
     const user2 = await prisma.user.create({
         data: {
+            username: "jokokoko",
             name: "Joko",
-            email: "joko@gmail.com",
+            identityId: identity2.id,
             password: "12345678",
             role: "RESIDENT",
         },
@@ -44,18 +58,6 @@ async function main() {
     const systemLog2 = await prisma.system_Log.create({
         data: {
             message: "user2 created",
-        },
-    });
-
-    // identity
-    const identity1 = await prisma.identity.create({
-        data: {
-            name: "Yoan",
-        },
-    });
-    const identity2 = await prisma.identity.create({
-        data: {
-            name: "Joko",
         },
     });
 
