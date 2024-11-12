@@ -19,7 +19,12 @@ class _GalleryPageState extends State<GalleryPage> {
         automaticallyImplyLeading: false,
         bottom: const PreferredSize(
           preferredSize: Size.fromHeight(0),
-          child: MySort(texts: ['Week', 'Month', 'Year'], selectedIndex: 0),
+          child: MySort(
+            texts: ['Week', 'Month', 'Year'],
+            selectedIndex: 0,
+            leftPadding: 25,
+            rightPadding: 25,
+          ),
         ),
       ),
       body: Padding(
