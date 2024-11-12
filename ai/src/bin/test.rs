@@ -1,5 +1,5 @@
 use ai::model;
 
 fn main() {
-    model::example2();
+    model::example::example2();
 }
