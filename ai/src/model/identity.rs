@@ -1,8 +1,11 @@
-use std::{collections::HashMap, ops::{Deref, DerefMut}};
+use std::{
+    collections::HashMap,
+    ops::{Deref, DerefMut},
+};
 
 use dlib_face_recognition::FaceEncoding;
+use eyre::{eyre, Context};
 use mysql::prelude::Queryable;
-use tracing::error;
 
 pub type Id = u64;
 
@@ -12,25 +15,32 @@ pub struct Faces(HashMap<Id, (Option<Id>, FaceEncoding)>);
 #[derive(Default)]
 pub struct Identities(HashMap<Id, String>);
 
-pub fn update(db_conn: &mut mysql::Conn, faces: &mut Faces, identities: &mut Identities) {
-    if let Err(err) = db_conn.query_map::<(u64, [u8; 128], Option<u64>, Option<String>), _, _, _>(
+pub fn update(
+    db_conn: &mut mysql::Conn,
+    faces: &mut Faces,
+    identities: &mut Identities,
+) -> eyre::Result<()> {
+    for row in db_conn.query::<(u64, Vec<u8>, Option<u64>, Option<String>), _>(
         "
         SELECT faces.id as face_id, faces.embedding, identity.id, identity.name
         FROM faces
         LEFT JOIN identity 
         ON faces.identity = identity.id;
     ",
-        |(face_id, embedding, identity_id, name)| {
-            let embedding: Vec<f64> = bincode::deserialize(&embedding).unwrap();
-            let embedding = FaceEncoding::from_vec(&embedding).unwrap();
-            faces.insert(face_id, identity_id, embedding);
-            if let Some(id) = identity_id {
-                identities.insert(id, name.unwrap());
-            }
-        },
-    ) {
-        error!("{err}");
-    };
+    )? {
+        let (face_id, embedding, identity_id, name) = row;
+        let embedding: Vec<f64> = bincode::deserialize(&embedding)
+            .wrap_err_with(|| format!("Failed to deserialize embedding for face_id {}", face_id))?;
+        if embedding.len() != 128 {
+            return Err(eyre!("Embedding is not [f64; 128] for face_id: {}", face_id));
+        }
+        let embedding = FaceEncoding::from_vec(&embedding).unwrap();
+        faces.insert(face_id, identity_id, embedding);
+        if let Some(id) = identity_id {
+            identities.insert(id, name.unwrap());
+        }
+    }
+    Ok(())
 }
 
 impl Faces {
@@ -42,7 +52,7 @@ impl Faces {
     pub fn identity(&self, other: &FaceEncoding) -> (Option<Id>, Option<Id>) {
         for (face_id, (identity, face)) in &self.0 {
             if face.distance(other) < 0.6 {
-                return (Some(*face_id), *identity)
+                return (Some(*face_id), *identity);
             }
         }
         (None, None)
