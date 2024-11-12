@@ -38,9 +38,14 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
         backgroundColor: const Color(0xfff1f4f9),
         automaticallyImplyLeading: false,
         bottom: const PreferredSize(
-            preferredSize: Size.fromHeight(0),
-            child: MySort(
-                texts: ['Today', 'Week', 'Month', 'Year'], selectedIndex: 0)),
+          preferredSize: Size.fromHeight(0),
+          child: MySort(
+            texts: ['Today', 'Week', 'Month', 'Year'],
+            selectedIndex: 0,
+            leftPadding: 25,
+            rightPadding: 25,
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 25),

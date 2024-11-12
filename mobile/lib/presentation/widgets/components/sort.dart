@@ -3,18 +3,22 @@ import 'package:flutter/material.dart';
 class MySort extends StatelessWidget {
   final List<String> texts;
   final int selectedIndex;
+  final double leftPadding;
+  final double rightPadding;
 
   const MySort({
     super.key,
     required this.texts,
     required this.selectedIndex,
+    required this.leftPadding,
+    required this.rightPadding,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: const Color.fromARGB(255, 241, 244, 249),
-      padding: const EdgeInsets.only(left: 35, right: 35, top: 14),
+      padding: EdgeInsets.only(left: leftPadding, right: rightPadding, top: 14),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),

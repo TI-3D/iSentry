@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
-import 'package:isentry/presentation/home/pages/bottom_bar.dart';
+import 'package:isentry/presentation/home_resident/pages/bottom_bar_resident.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:isentry/presentation/widgets/forms/auth_text_field.dart';
 import 'package:isentry/presentation/widgets/buttons/auth_button.dart';
@@ -89,7 +89,7 @@ class _QrRegisterPageState extends State<QrRegisterPage> {
                 Backcolor: const Color(0xFF18181B),
                 TextColor: Colors.white,
                 onPressed: () {
-                  AppNavigator.push(context, const HomePage());
+                  AppNavigator.push(context, const HomeResidentPage());
                 },
               ),
             ],

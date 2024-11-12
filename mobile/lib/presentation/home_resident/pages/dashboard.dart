@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
-import 'package:isentry/presentation/widgets/components/sort.dart';
-import 'package:isentry/presentation/home/pages/profile/account_settings.dart';
 import 'package:isentry/presentation/home/pages/log_detection.dart';
+import 'package:isentry/presentation/home/pages/profile/account_settings.dart';
+import 'package:isentry/presentation/widgets/components/sort.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class DashboardPage extends StatelessWidget {
-  const DashboardPage({super.key});
+class DashboardResidentPage extends StatelessWidget {
+  const DashboardResidentPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,126 +46,6 @@ class DashboardPage extends StatelessWidget {
                 (LucideIcons.userCircle2),
                 size: 40,
               ))
-        ],
-      ),
-    );
-
-    Widget faces = Container(
-      color: AppColors.primary,
-      padding: const EdgeInsets.only(left: 35, right: 35),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Center(
-            child: Container(
-              height: 90,
-              width: 140,
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(15),
-              ),
-              padding: const EdgeInsets.only(
-                  left: 14, right: 14, top: 10, bottom: 10),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        (LucideIcons.userCheck2),
-                        size: 20,
-                        color: Colors.white,
-                      ),
-                      Text(
-                        " Recognized",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.white,
-                          letterSpacing: 1,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        "50",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 45,
-                            fontWeight: FontWeight.w700,
-                            height: 0.9),
-                      ),
-                      Text(
-                        " Faces",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Center(
-            child: Container(
-              height: 90,
-              width: 140,
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(15),
-              ),
-              padding: const EdgeInsets.only(
-                  left: 13, right: 13, top: 10, bottom: 10),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        (LucideIcons.userX2),
-                        size: 20,
-                        color: Colors.white,
-                      ),
-                      Text(
-                        " Unrecognized",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.white,
-                          letterSpacing: 1,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        "22",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 45,
-                            fontWeight: FontWeight.w700,
-                            height: 0.9),
-                      ),
-                      Text(
-                        " Faces",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -372,6 +252,88 @@ class DashboardPage extends StatelessWidget {
                 )
               ],
             ),
+            const Row(
+              children: [
+                Icon(
+                  (LucideIcons.userCircle2),
+                  color: Colors.white,
+                  size: 30,
+                ),
+                Padding(padding: EdgeInsets.only(left: 10)),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Olivia Martin",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          LucideIcons.calendarDays,
+                          color: Colors.white,
+                          size: 14,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          "25 June 2024, 08:00",
+                          style: TextStyle(
+                            color: Colors.white54,
+                            letterSpacing: 1.0,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              ],
+            ),
+            const Row(
+              children: [
+                Icon(
+                  (LucideIcons.userCircle2),
+                  color: Colors.white,
+                  size: 30,
+                ),
+                Padding(padding: EdgeInsets.only(left: 10)),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Olivia Martin",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          LucideIcons.calendarDays,
+                          color: Colors.white,
+                          size: 14,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          "25 June 2024, 08:00",
+                          style: TextStyle(
+                            color: Colors.white54,
+                            letterSpacing: 1.0,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              ],
+            ),
           ],
         ),
       ),
@@ -380,35 +342,25 @@ class DashboardPage extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          flex: 12,
-          child: dashboard,
-        ),
+            flex: 12,
+            child: Container(
+              child: dashboard,
+            )),
+        const Expanded(
+            flex: 6,
+            child: Center(
+              child: MySort(
+                  texts: ['Week', 'Month', 'Year'],
+                  selectedIndex: 0,
+                  leftPadding: 35,
+                  rightPadding: 35),
+            )),
+        Expanded(flex: 23, child: Container()),
         Expanded(
-          flex: 11,
-          child: faces,
-        ),
-        Expanded(
-          flex: 26,
-          child: Column(
-            children: [
-              const MySort(
-                texts: ['Today', 'Week', 'Month', 'Year'],
-                selectedIndex: 0,
-                leftPadding: 35,
-                rightPadding: 35,
-              ),
-              Expanded(
-                child: Container(
-                  color: AppColors.primary,
-                ),
-              )
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 27,
-          child: activity,
-        ),
+            flex: 35,
+            child: Container(
+              child: activity,
+            )),
       ],
     );
   }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:isentry/common/helper/navigation/app_navigation.dart';
+import 'package:isentry/presentation/auth/pages/login.dart';
+import 'package:isentry/presentation/home/pages/profile/qr_code.dart';
 import 'package:isentry/presentation/widgets/appBar/appbar.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -28,8 +31,7 @@ class AccountSettingsPage extends StatelessWidget {
                     CircleAvatar(
                       radius: 30,
                       backgroundColor: Colors.grey,
-                      child: Text(
-                          'PEH'), 
+                      child: Text('PEH'),
                     ),
                     SizedBox(width: 10),
                     Column(
@@ -38,16 +40,15 @@ class AccountSettingsPage extends StatelessWidget {
                         Text(
                           'Hello!',
                           style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.2,
-                            color: Colors.grey
-                          ),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.2,
+                              color: Colors.grey),
                         ),
                         Text(
                           'Pak Enggal',
                           style: TextStyle(
-                            fontSize: 18, 
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.2,
                           ),
@@ -59,7 +60,7 @@ class AccountSettingsPage extends StatelessWidget {
                 IconButton(
                   icon: const Icon(LucideIcons.qrCode, size: 26),
                   onPressed: () {
-                    // Logic for QR code
+                    AppNavigator.push(context, const QrCodePage());
                   },
                 ),
               ],
@@ -69,19 +70,20 @@ class AccountSettingsPage extends StatelessWidget {
             // Menu Items
             ListTile(
               leading: const Icon(LucideIcons.userCircle2),
-              title: const Text('Edit Account',
+              title: const Text(
+                'Edit Account',
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 15,
                 ),
               ),
-              subtitle: const Text('Update your personal information.',
+              subtitle: const Text(
+                'Update your personal information.',
                 style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 1
-                ),
+                    fontSize: 13,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1),
               ),
               onTap: () {
                 // Logic for Edit Account
@@ -90,19 +92,20 @@ class AccountSettingsPage extends StatelessWidget {
             const Divider(),
             ListTile(
               leading: const Icon(LucideIcons.history),
-              title: const Text('Log Activity',
+              title: const Text(
+                'Log Activity',
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 15,
                 ),
               ),
-              subtitle: const Text('View your activity history.',
+              subtitle: const Text(
+                'View your activity history.',
                 style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 1
-                ),
+                    fontSize: 13,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1),
               ),
               onTap: () {
                 // Logic for Log Activity
@@ -111,19 +114,20 @@ class AccountSettingsPage extends StatelessWidget {
             const Divider(),
             ListTile(
               leading: const Icon(LucideIcons.settings),
-              title: const Text('Setting',
+              title: const Text(
+                'Setting',
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 15,
                 ),
               ),
-              subtitle: const Text('Customize your app experience.',
+              subtitle: const Text(
+                'Customize your app experience.',
                 style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 1
-                ),
+                    fontSize: 13,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1),
               ),
               onTap: () {
                 // Logic for Settings
@@ -132,19 +136,20 @@ class AccountSettingsPage extends StatelessWidget {
             const Divider(),
             ListTile(
               leading: const Icon(LucideIcons.heartHandshake),
-              title: const Text('About Us',
+              title: const Text(
+                'About Us',
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 15,
                 ),
               ),
-              subtitle: const Text('Learn app and development team.',
+              subtitle: const Text(
+                'Learn app and development team.',
                 style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 1
-                ),
+                    fontSize: 13,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1),
               ),
               onTap: () {
                 // Logic for About Us
@@ -163,16 +168,16 @@ class AccountSettingsPage extends StatelessWidget {
                   fontSize: 15,
                 ),
               ),
-              subtitle: const Text('Log out of your account.',
+              subtitle: const Text(
+                'Log out of your account.',
                 style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 1
-                ),
+                    fontSize: 13,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1),
               ),
               onTap: () {
-                // Logic for Log Out
+                AppNavigator.pushAndRemove(context, const LoginPage());
               },
             ),
           ],
