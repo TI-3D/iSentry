@@ -1,11 +1,8 @@
-#![allow(dead_code)]
-
-use std::{env::var, path::PathBuf};
+use std::{env::var, path::PathBuf, sync::Arc, time::Duration};
 
 use ab_glyph::{FontRef, PxScale};
 use bounding_box::BoundingBox;
 use chrono::Utc;
-// use ab_glyph::{FontRef, Scale};
 use dlib_face_recognition::{
     FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, FaceLandmarks,
     ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait,
@@ -13,17 +10,20 @@ use dlib_face_recognition::{
 use identity::{Faces, Identities};
 use image::DynamicImage;
 use mysql::{params, prelude::Queryable};
-use tokio::sync::mpsc::Receiver;
+use tokio::{
+    sync::{mpsc::Receiver, Mutex},
+    time::sleep,
+};
 use tracing::info;
 use utils::LabelID;
 
 use crate::job::{Job, JobKind, JobResult};
 
 pub mod bounding_box;
+pub mod example;
 mod face_detection;
 mod identity;
 mod utils;
-mod example;
 
 pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
     let detector = FaceDetector::default();
@@ -36,8 +36,26 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
 
     let mut db_conn = db_pool.get_conn().unwrap();
 
-    let faces = Faces::default();
-    let identities = Identities::default();
+    let faces = Arc::new(Mutex::new(Faces::default()));
+    let identities = Arc::new(Mutex::new(Identities::default()));
+
+    let faces_clone = faces.clone();
+    let identities_clone = identities.clone();
+
+    tokio::spawn(async move {
+        loop {
+            match db_pool.get_conn() {
+                Ok(mut db_conn) => {
+                    let mut faces = faces_clone.lock().await;
+                    let mut identities = identities_clone.lock().await;
+
+                    identity::update(db_conn.as_mut(), &mut *faces, &mut *identities);
+                }
+                Err(e) => tracing::error!("Failed to get database connection through pool: {e}"),
+            }
+            sleep(Duration::from_secs(60)).await
+        }
+    });
 
     while let Some(job) = rx.recv().await {
         match job.kind {
@@ -81,7 +99,14 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                     Id(u64, bool),
                 }
 
-                let push_face = db_conn.prep("INSERT INTO faces (bounding_box, embedding) VALUES (:bounding_box, :embedding)").unwrap();
+                #[rustfmt::skip]
+                let push_face = db_conn.prep("
+                    INSERT INTO faces (bounding_box, embedding)
+                    VALUES (:bounding_box, :embedding)
+                ").unwrap();
+
+                let mut faces = faces.lock().await;
+                let identities = identities.lock().await;
 
                 let names = embeddings
                     .iter()
@@ -93,17 +118,18 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                         (Some(face_id), None) => Label::Id(face_id, false),
                         (None, None) => {
                             let bbox = bincode::serialize(&bbox).unwrap();
-                            let embedding = bincode::serialize(&embedding.to_vec()).unwrap();
+                            let embedding_bin = bincode::serialize(&embedding.to_vec()).unwrap();
                             db_conn
                                 .exec_drop(
                                     &push_face,
                                     params! {
                                         "bounding_box" => bbox,
-                                        "embedding" => embedding
+                                        "embedding" => embedding_bin
                                     },
                                 )
                                 .unwrap();
                             let id = db_conn.last_insert_id();
+                            faces.insert(id, None, embedding.clone());
                             Label::Id(id, true)
                             // db_conn.exec(push_face, params)
                         }
@@ -167,19 +193,26 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                         let mut single_pic_path = tmp_dir.clone();
                         single_pic_path.push(format!("cropped-{}", now));
 
-                        db_conn.exec_drop(&push_pic, params! {
-                            "path" => single_pic_path.to_str()
-                        }).unwrap();
+                        db_conn
+                            .exec_drop(
+                                &push_pic,
+                                params! {
+                                    "path" => single_pic_path.to_str()
+                                },
+                            )
+                            .unwrap();
                         let single_pic_id = db_conn.last_insert_id();
 
-                        db_conn.exec_drop(
-                            &update_face,
-                            params! {
-                                "id" => id,
-                                "single_pic" => single_pic_id,
-                                "full_pic" => full_pic_id
-                            },
-                        ).unwrap();
+                        db_conn
+                            .exec_drop(
+                                &update_face,
+                                params! {
+                                    "id" => id,
+                                    "single_pic" => single_pic_id,
+                                    "full_pic" => full_pic_id
+                                },
+                            )
+                            .unwrap();
                     }
                 }
 

@@ -4,8 +4,6 @@ use imageproc::drawing::{draw_hollow_rect_mut, draw_text_mut};
 
 use super::bounding_box::BoundingBox;
 
-type DlibRectangle = dlib_face_recognition::Rectangle;
-
 pub trait LabelID {
     fn label(
         &mut self,
