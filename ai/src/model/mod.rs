@@ -15,7 +15,7 @@ use tokio::{
     time::sleep,
 };
 use tracing::info;
-use utils::LabelID;
+use crate::utils::LabelID;
 
 use crate::job::{Job, JobKind, JobResult};
 
@@ -23,7 +23,6 @@ pub mod bounding_box;
 pub mod example;
 mod face_detection;
 mod identity;
-mod utils;
 
 pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
     let detector = FaceDetector::default();
@@ -49,7 +48,9 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                     let mut faces = faces_clone.lock().await;
                     let mut identities = identities_clone.lock().await;
 
-                    identity::update(db_conn.as_mut(), &mut *faces, &mut *identities);
+                    if let Err(e) = identity::update(db_conn.as_mut(), &mut faces, &mut identities) {
+                        tracing::error!("Error updating identity: {e}");
+                    }
                 }
                 Err(e) => tracing::error!("Failed to get database connection through pool: {e}"),
             }
