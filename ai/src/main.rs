@@ -1,5 +1,6 @@
-use ai::{video_processing, web_server};
+use ai::{model, video_processing, web_server};
 use dotenvy::var;
+use mysql::Pool;
 use tokio::sync::mpsc;
 
 #[tokio::main]
@@ -19,10 +20,14 @@ async fn main() {
         .tcp_port(db_port.parse::<u16>().unwrap())
         .user(Some(db_user))
         .pass(Some(db_pass))
-        .db_name(Some(db_name)).into();
+        .db_name(Some(db_name))
+        .into();
 
-    let (tx, _rx) = mpsc::channel(128);
+    let db_pool = Pool::new(db_opts.clone()).unwrap();
 
-    tokio::spawn(web_server::run(db_opts.clone(), tx.clone()));
+    let (tx, rx) = mpsc::channel(128);
+
+    tokio::spawn(web_server::run(db_pool.clone(), tx.clone()));
     tokio::spawn(video_processing::run(db_opts, tx));
+    tokio::spawn(model::run(db_pool, rx));
 }
