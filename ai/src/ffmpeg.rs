@@ -1,15 +1,8 @@
-#![allow(unused_imports)]
+use std::process::Stdio;
 
-use std::{process::Stdio, time::Duration};
-
-use crate::utils::Msg;
-use chrono::Utc;
-use image::{ImageBuffer, Rgb, RgbImage};
 use tokio::{
-    io::{self, AsyncReadExt},
+    io,
     process::{Child, Command},
-    sync::mpsc::Sender,
-    time::sleep,
 };
 use tracing::info;
 
@@ -45,7 +38,7 @@ pub async fn generate_thumbails(link: &str) -> io::Result<Child> {
 }
 
 #[rustfmt::skip]
-pub async fn push_frames_to_rtsp(audio_link: &str, target_link: &str) -> io::Result<Child> {
+pub async fn push_frames_to_rtsp(_audio_link: &str, target_link: &str) -> io::Result<Child> {
     Command::new("ffmpeg")
         .args([
             "-hide_banner", "-loglevel", "error",

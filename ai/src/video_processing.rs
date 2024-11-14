@@ -2,16 +2,16 @@ use std::{sync::Arc, time::Duration};
 
 use ab_glyph::{FontRef, PxScale};
 use chrono::Utc;
-use image::{imageops::FilterType, DynamicImage, RgbImage};
+use image::RgbImage;
 use mysql::{prelude::Queryable, Conn};
 use opencv::{
     prelude::*,
     videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_ANY},
 };
 use tokio::{
-    io::{AsyncReadExt, AsyncWriteExt},
+    io::AsyncWriteExt,
     sync::{mpsc::Sender, oneshot, Mutex},
-    time::{sleep, Instant},
+    time::sleep,
 };
 use uuid::Uuid;
 
@@ -21,12 +21,11 @@ use crate::{
     utils::LabelID,
 };
 
-pub async fn run(db_opts: mysql::Opts, tx: Sender<Job>) {
+pub async fn run(_db_opts: mysql::Opts, tx: Sender<Job>) {
     // tokio::spawn(auto_record(db_opts, tx.clone()));
     tokio::spawn(auto_label(tx));
 }
 
-// pub async fn auto_record(tx: Sender<Msg>) {
 pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
     let mut db_conn = Conn::new(db_opts).unwrap();
 
@@ -62,8 +61,6 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
 
 pub async fn auto_label(tx: Sender<Job>) {
     let link = dotenvy::var("RTMP_RAW").unwrap();
-    // let mut input = ffmpeg::generate_thumbails(&link).await.unwrap();
-    // let mut input_stdout = input.stdout.take().unwrap();
 
     let mut input2 = VideoCapture::from_file(&link, CAP_ANY).unwrap();
     if !input2.is_opened().unwrap() {
@@ -91,11 +88,7 @@ pub async fn auto_label(tx: Sender<Job>) {
         y: font_height,
     };
 
-    tracing::info!("here1");
-
-    // while input_stdout.read_exact(buffer.as_mut()).await.is_ok() {
     loop {
-        // let mut buffer = vec![0u8; 1920 * 1080 * 3];
         let mut buffer = Mat::default();
         input2.read(&mut buffer).unwrap();
         if let Ok((false, width, height)) = buffer.size().map(|size| {
@@ -108,23 +101,16 @@ pub async fn auto_label(tx: Sender<Job>) {
             panic!("Input stream is not 1920x1080; got size {width}x{height}");
         }
         frame_counter += 1;
-        tracing::info!("here2 frame:{frame_counter}");
         let Some(mut img) = RgbImage::from_raw(1920, 1080, buffer.data_bytes().unwrap().to_vec())
         else {
             panic!("Image container not big enough");
         };
-        // let start = Instant::now();
-        // let mut img = DynamicImage::ImageRgb8(img)
-        //     .resize_exact(960, 540, FilterType::CatmullRom)
-        //     .to_rgb8();
-        // tracing::info!("Resize image {}ms", start.elapsed().as_millis());
 
         if frame_counter % 120 == 0 {
             let tx_clone = tx.clone();
             let bounding_boxes_clone = bounding_boxes.clone();
             let img_clone = img.clone();
             tokio::spawn(async move {
-                tracing::info!("here3");
                 let (ons_tx, ons_rx) = oneshot::channel::<JobResult>();
 
                 let job_id = Uuid::new_v4();
