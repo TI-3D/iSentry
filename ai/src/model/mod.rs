@@ -65,6 +65,7 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
             JobKind::DetThenRec(opts) => {
                 let image_matrix = ImageMatrix::from_image(&job.image);
                 let bboxes = detector.face_locations(&image_matrix);
+                tracing::info!("faces: {}", bboxes.len());
                 let landmarks = bboxes
                     .iter()
                     .map(|face| landmark_predictor.face_landmarks(&image_matrix, face))
@@ -102,7 +103,7 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
 
                 #[rustfmt::skip]
                 let push_face = db_conn.prep("
-                    INSERT INTO faces (bounding_box, embedding)
+                    INSERT INTO faces (bounding_box, landmarks)
                     VALUES (:bounding_box, :embedding)
                 ").unwrap();
 
@@ -166,19 +167,24 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                 let push_pic = db_conn
                     .prep(
                         "
-                        INSERT INTO gallery_items (path, type, capture_method) 
-                        VALUES (:path, \"PICTURE\", \"AUTO\")
+                        INSERT INTO galleryitems (path, type, capture_method, updatedAt) 
+                        VALUES (:path, \"PICTURE\", \"AUTO\", NOW())
                     ",
                     )
                     .unwrap();
-                db_conn
-                    .exec_drop(
-                        &push_pic,
-                        params! {
-                            "path" => full_pic_path.to_str()
-                        },
-                    )
-                    .unwrap();
+                if !bboxes.is_empty() {
+                    db_conn
+                        .exec_drop(
+                            &push_pic,
+                            params! {
+                                "path" => full_pic_path.to_str()
+                            },
+                        )
+                        .unwrap();
+                    if let Err(e) = image.save(&full_pic_path) {
+                        tracing::warn!("Can't save image {}: {}", full_pic_path.display(), e);
+                    }
+                }
 
                 let update_face = db_conn
                     .prep(

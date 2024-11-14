@@ -27,7 +27,9 @@ async fn main() {
 
     let (tx, rx) = mpsc::channel(128);
 
-    tokio::spawn(web_server::run(db_pool.clone(), tx.clone()));
-    tokio::spawn(video_processing::run(db_opts, tx));
-    tokio::spawn(model::run(db_pool, rx));
+    // let handler_webserver = tokio::spawn(web_server::run(db_pool.clone(), tx.clone()));
+    let handler_aiservice = tokio::spawn(video_processing::run(db_opts, tx));
+    let handler_videoproc = tokio::spawn(model::run(db_pool, rx));
+
+    let _ = tokio::join!(/*handler_webserver, */handler_aiservice, handler_videoproc);
 }
