@@ -7,11 +7,11 @@ class UnrecognizedPage extends StatefulWidget {
   const UnrecognizedPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _UnrecognizedPageState createState() => _UnrecognizedPageState();
 }
 
 class _UnrecognizedPageState extends State<UnrecognizedPage> {
+  // List to keep track of the selected state for each image
   final List<bool> _isSelected = List.generate(6, (_) => false);
 
   void _showAddDataBottomSheet(BuildContext context) {
@@ -38,10 +38,13 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
         backgroundColor: const Color(0xfff1f4f9),
         automaticallyImplyLeading: false,
         bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(0),
-          child: MySort(
-            texts: ['Today', 'Week', 'Month', 'Year'], selectedIndex: 0
-          )
+            preferredSize: Size.fromHeight(0),
+            child: MySort(
+            texts: ['Today', 'Week', 'Month', 'Year'],
+            selectedIndex: 0,
+            leftPadding: 25,
+            rightPadding: 25,
+          ),
         ),
       ),
       body: Padding(
@@ -58,30 +61,30 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Card(
-                  color: Colors.grey[200],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 150,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          image: const DecorationImage(
-                            image: AssetImage('assets/images/nani.jpg'),
-                            fit: BoxFit.cover,
+                GestureDetector(
+                  onTap: () => _toggleSelection(index), // Menambahkan onTap untuk seluruh gambar
+                  child: Card(
+                    color: Colors.grey[200],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 150,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            image: const DecorationImage(
+                              image: AssetImage('assets/images/nani.jpg'),
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              top: 8,
-                              left: 8,
-                              child: GestureDetector(
-                                onTap: () => _toggleSelection(index),
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                top: 8,
+                                left: 8,
                                 child: Icon(
                                   _isSelected[index]
                                       ? Icons.check_circle
@@ -92,11 +95,11 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
                                   size: 24,
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 4),

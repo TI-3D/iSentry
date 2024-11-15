@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
+import 'package:isentry/core/configs/theme/app_colors.dart';
 import 'package:isentry/presentation/home/pages/camera/camera.dart';
 import 'package:isentry/presentation/home/pages/dashboard.dart';
 import 'package:isentry/presentation/home/pages/gallery/gallery.dart';
@@ -50,7 +51,7 @@ class _BottomAppBarState extends State<HomePage> {
     return Scaffold(
       body: widgetOptions[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xfff1f4f9),
+        backgroundColor: AppColors.background,
         items: [
           BottomNavigationBarItem(
             icon: const Icon(LucideIcons.layoutDashboard),
