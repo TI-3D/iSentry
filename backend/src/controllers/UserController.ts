@@ -35,6 +35,14 @@ export async function createUser(options: {
         const username = await prisma.user.findMany({
             where: { username: options.username, role: Role.OWNER },
         });
+
+        if (username.length > 0) {
+            return {
+                success: false,
+                message: "Username already exists!",
+            };
+        }
+
         const users = await prisma.user.create({
             data: {
                 username: options.username,
