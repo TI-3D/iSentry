@@ -18,14 +18,6 @@ class HomePage extends StatefulWidget {
 class _BottomAppBarState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    DashboardPage(),
-    RecognizedPage(),
-    Center(child: Text('Camera')),
-    UnrecognizedPage(),
-    GalleryPage(),
-  ];
-
   void _onItemTapped(int index) {
     setState(() {
       if (index == 2) {
@@ -38,8 +30,25 @@ class _BottomAppBarState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> widgetOptions = <Widget>[
+    DashboardPage(toRecognized: () {
+      setState(() {
+        _selectedIndex = 1;
+      });
+    },
+    toUnrecognized: () {
+      setState(() {
+        _selectedIndex = 3;
+      });
+    }
+    ),
+    const RecognizedPage(),
+    const Center(child: Text('Camera')),
+    const UnrecognizedPage(),
+    const GalleryPage(),
+  ];
     return Scaffold(
-      body: _widgetOptions[_selectedIndex],
+      body: widgetOptions[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xfff1f4f9),
         items: [
