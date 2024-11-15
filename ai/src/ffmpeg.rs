@@ -44,7 +44,7 @@ pub async fn push_frames_to_rtsp(_audio_link: &str, target_link: &str) -> io::Re
             "-hide_banner", "-loglevel", "error",
             "-framerate", "30",                   // Set frame rate
             "-f", "rawvideo",                     // Raw video format
-            "-pix_fmt", "bgr24",                  // Pixel format (RGB)
+            "-pix_fmt", "rgb24",                  // Pixel format (RGB)
             "-s", &format!("{}x{}", 1920, 1080),// Frame size
             "-i", "-",                            // Input from stdin
             // "-itsoffset", "0.5",                  // Sync audio with the video

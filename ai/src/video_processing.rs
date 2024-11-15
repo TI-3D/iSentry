@@ -1,12 +1,17 @@
-use std::{sync::Arc, time::Duration};
+use std::{
+    sync::{
+        atomic::{AtomicU8, Ordering},
+        Arc,
+    },
+    time::Duration,
+};
 
 use ab_glyph::{FontRef, PxScale};
 use chrono::Utc;
 use image::RgbImage;
 use mysql::{prelude::Queryable, Conn};
 use opencv::{
-    prelude::*,
-    videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_ANY},
+    imgproc::COLOR_BGR2RGB, prelude::*, videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_ANY}
 };
 use tokio::{
     io::AsyncWriteExt,
@@ -62,8 +67,8 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
 pub async fn auto_label(tx: Sender<Job>) {
     let link = dotenvy::var("RTMP_RAW").unwrap();
 
-    let mut input2 = VideoCapture::from_file(&link, CAP_ANY).unwrap();
-    if !input2.is_opened().unwrap() {
+    let mut input = VideoCapture::from_file(&link, CAP_ANY).unwrap();
+    if !input.is_opened().unwrap() {
         panic!("Can't open rtsp stream: {link}");
     }
 
@@ -72,8 +77,6 @@ pub async fn auto_label(tx: Sender<Job>) {
         .await
         .unwrap();
     let mut output_stdin = output.stdin.take().unwrap();
-
-    let bounding_boxes = Arc::new(Mutex::new(Vec::new()));
 
     let mut frame_counter = 0;
 
@@ -88,9 +91,12 @@ pub async fn auto_label(tx: Sender<Job>) {
         y: font_height,
     };
 
+    let bounding_boxes = Arc::new(Mutex::new(Vec::new()));
+    let num_scanning_jobs = Arc::new(AtomicU8::new(0));
+
     loop {
         let mut buffer = Mat::default();
-        input2.read(&mut buffer).unwrap();
+        input.read(&mut buffer).unwrap();
         if let Ok((false, width, height)) = buffer.size().map(|size| {
             (
                 size.width == 1920 && size.height == 1080,
@@ -101,15 +107,19 @@ pub async fn auto_label(tx: Sender<Job>) {
             panic!("Input stream is not 1920x1080; got size {width}x{height}");
         }
         frame_counter += 1;
-        let Some(mut img) = RgbImage::from_raw(1920, 1080, buffer.data_bytes().unwrap().to_vec())
+        let mut buffer2 = Mat::default();
+        opencv::imgproc::cvt_color(&buffer, &mut buffer2, COLOR_BGR2RGB, 0).unwrap();
+        let Some(mut img) = RgbImage::from_raw(1920, 1080, buffer2.data_bytes().unwrap().to_vec())
         else {
             panic!("Image container not big enough");
         };
 
-        if frame_counter % 120 == 0 {
+        if frame_counter % 120 == 0 && num_scanning_jobs.load(Ordering::SeqCst) <= 1 {
+            num_scanning_jobs.fetch_add(1, Ordering::SeqCst);
             let tx_clone = tx.clone();
             let bounding_boxes_clone = bounding_boxes.clone();
             let img_clone = img.clone();
+            let num_scanning_jobs_clone = num_scanning_jobs.clone();
             tokio::spawn(async move {
                 let (ons_tx, ons_rx) = oneshot::channel::<JobResult>();
 
@@ -142,6 +152,7 @@ pub async fn auto_label(tx: Sender<Job>) {
                         tracing::error!("Error receiving jobresult with id {job_id}: {e}")
                     }
                 }
+                num_scanning_jobs_clone.fetch_sub(1, Ordering::SeqCst);
             });
         } else {
             for bbox in &*bounding_boxes.lock().await {

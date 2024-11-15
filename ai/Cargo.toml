@@ -31,8 +31,3 @@ tokio = { version = "1.40.0", features = ["rt-multi-thread", "signal", "tracing"
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
 uuid = { version = "1.11.0", features = ["v4"] }
-
-[package.metadata.vcpkg]
-git = "https://github.com/microsoft/vcpkg"
-branch = "master"
-dependencies = ["opencv4[contrib,nonfree]"]
