@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
-import 'package:isentry/presentation/auth/pages/qr_register.dart';
+import 'package:isentry/presentation/auth/pages/login_resident.dart';
 import 'package:isentry/presentation/auth/pages/register.dart';
 import 'package:isentry/presentation/widgets/forms/auth_text_field.dart';
 import 'package:isentry/presentation/widgets/buttons/auth_button.dart';
@@ -87,7 +87,7 @@ class LoginPage extends StatelessWidget {
                   Backcolor: const Color(0xFF18181B),
                   TextColor: Colors.white,
                   onPressed: () async {
-                    var url = Uri.http('192.168.64.128:3000',
+                    var url = Uri.http('192.168.1.5:3000',
                         'api/auth/login'); // change sesuai IP address
                     var response = await http.post(url, body: {
                       'email': emailController.text,
@@ -129,9 +129,9 @@ class LoginPage extends StatelessWidget {
                   buttonText: 'Login as Resident',
                   Backcolor: const Color(0xFFf1f4f9),
                   TextColor: Colors.black,
-                  border: const BorderSide(color: Colors.black, width: 1),
+                  border: const BorderSide(color: Colors.black, width: 2),
                   onPressed: () {
-                    AppNavigator.push(context, const QrRegisterPage());
+                    AppNavigator.push(context, const LoginResidentPage());
                   },
                 ),
               ],
