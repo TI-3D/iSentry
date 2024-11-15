@@ -17,19 +17,33 @@ async function main() {
     // turn on foreign key checks
     await prisma.$executeRawUnsafe(`SET FOREIGN_KEY_CHECKS = 1;`);
 
+    // identity
+    const identity1 = await prisma.identity.create({
+        data: {
+            name: "Budi",
+        },
+    });
+    const identity2 = await prisma.identity.create({
+        data: {
+            name: "Joko",
+        },
+    });
+
     // user
     const user1 = await prisma.user.create({
         data: {
+            username: "budikabudi",
             name: "Budi",
-            email: "budi@gmail.com",
             password: "12345678",
+            identityId: identity1.id,
             role: "OWNER",
         },
     });
     const user2 = await prisma.user.create({
         data: {
+            username: "jokokoko",
             name: "Joko",
-            email: "joko@gmail.com",
+            identityId: identity2.id,
             password: "12345678",
             role: "RESIDENT",
         },
@@ -44,18 +58,6 @@ async function main() {
     const systemLog2 = await prisma.system_Log.create({
         data: {
             message: "user2 created",
-        },
-    });
-
-    // identity
-    const identity1 = await prisma.identity.create({
-        data: {
-            name: "Yoan",
-        },
-    });
-    const identity2 = await prisma.identity.create({
-        data: {
-            name: "Joko",
         },
     });
 
@@ -79,19 +81,35 @@ async function main() {
     const face1 = await prisma.face.create({
         data: {
             identity: identity1.id,
-            landmarks: Buffer.from([0, 1, 2, 3, 4, 5, 255]),
+            embedding: Buffer.from(
+                new Float64Array(
+                    Array.from({ length: 128 }, () => Math.random())
+                ).buffer
+            ),
             picture_full: galleryItem1.id,
             picture_single: galleryItem2.id,
-            bounding_box: Buffer.from([0, 1, 2, 3, 4, 5, 255]),
+            bounding_box: Buffer.from(
+                new Float64Array(
+                    Array.from({ length: 128 }, () => Math.random())
+                ).buffer
+            ),
         },
     });
     const face2 = await prisma.face.create({
         data: {
             identity: identity2.id,
-            landmarks: Buffer.from([0, 1, 2, 3, 4, 5, 255]),
+            embedding: Buffer.from(
+                new Float64Array(
+                    Array.from({ length: 128 }, () => Math.random())
+                ).buffer
+            ),
             picture_full: galleryItem2.id,
             picture_single: galleryItem1.id,
-            bounding_box: Buffer.from([0, 1, 2, 3, 4, 5, 255]),
+            bounding_box: Buffer.from(
+                new Float64Array(
+                    Array.from({ length: 128 }, () => Math.random())
+                ).buffer
+            ),
         },
     });
 

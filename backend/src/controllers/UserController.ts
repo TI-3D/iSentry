@@ -25,18 +25,31 @@ export async function getUsers() {
  * Creating a user
  */
 export async function createUser(options: {
+    username: string;
     name: string;
-    email: string;
     password: string;
     role: Role;
+    identityId?: number | null;
 }) {
     try {
+        const username = await prisma.user.findMany({
+            where: { username: options.username, role: Role.OWNER },
+        });
+
+        if (username.length > 0) {
+            return {
+                success: false,
+                message: "Username already exists!",
+            };
+        }
+
         const users = await prisma.user.create({
             data: {
+                username: options.username,
                 name: options.name,
-                email: options.email,
                 password: options.password,
                 role: options.role,
+                identityId: options.identityId ?? null,
             },
         });
         return {
@@ -46,6 +59,7 @@ export async function createUser(options: {
         };
     } catch (e: unknown) {
         console.error(`Error creating user: ${e}`);
+        return { success: false, message: "Internal Server Error" };
     }
 }
 
@@ -84,21 +98,21 @@ export async function getUserById(id: string) {
 export async function updateUser(
     id: string,
     options: {
+        username?: string;
         name?: string;
-        email?: string;
         password?: string;
         role?: Role;
     }
 ) {
     try {
         const userId = parseInt(id);
-        const { name, email, password, role } = options;
+        const { username, name, password, role } = options;
 
         const users = await prisma.user.update({
             where: { id: userId },
             data: {
+                ...(username ? { username } : {}),
                 ...(name ? { name } : {}),
-                ...(email ? { email } : {}),
                 ...(password ? { password } : {}),
                 ...(role ? { role } : {}),
             },

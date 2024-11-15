@@ -6,7 +6,7 @@ const AuthRoutes = new Elysia({ prefix: "/auth" }).post(
     async ({ body }) => {
         return await login(
             body as {
-                email: string;
+                username: string;
                 password: string;
             }
         );

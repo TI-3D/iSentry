@@ -10,7 +10,7 @@ import {
     deleteSystemLog,
 } from "../controllers/SystemLogController";
 
-const SystemLogRoutes = new Elysia({ prefix: "/system-log" })
+const SystemLogRoutes = new Elysia({ prefix: "/system-logs" })
 
     //route get all identity
     .get("/", () => getSystemLogs())
