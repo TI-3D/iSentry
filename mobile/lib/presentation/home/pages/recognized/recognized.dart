@@ -12,10 +12,11 @@ class RecognizedPage extends StatelessWidget {
   void _showAddDataBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => const AddDataBottomSheet(),
+      builder: (_) => const AddData(),
     );
   }
 
@@ -32,30 +33,39 @@ class RecognizedPage extends StatelessWidget {
             padding: const EdgeInsets.only(left: 25, right: 25, bottom: 2),
             height: 38,
             child: TextField(
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: const Color(0xffe4e4e7),
-                hintText: 'Search...',
-                hintStyle: const TextStyle(color: Color(0xffa1a1aa)),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: const BorderSide(
-                    color: Colors.black,
-                    width: 2,
-                  ),
-                ),
-                prefixIcon: const Icon(
-                  LucideIcons.search,
+                decoration: InputDecoration(
+              filled: true,
+              fillColor: const Color(0xffe4e4e7),
+              hintText: 'Search...',
+              hintStyle: const TextStyle(color: Color(0xffa1a1aa)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: const BorderSide(
                   color: Color(0xffa1a1aa),
-                  size: 18,
+                  width: 2,
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
               ),
-            ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: const BorderSide(
+                  color: Color(0xffa1a1aa),
+                  width: 2,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: const BorderSide(
+                  color: Colors.black,
+                  width: 2,
+                ),
+              ),
+              prefixIcon: const Icon(
+                LucideIcons.search,
+                color: Color(0xffa1a1aa),
+                size: 18,
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+            )),
           ),
         ),
       ),
@@ -112,22 +122,27 @@ class RecognizedPage extends StatelessWidget {
                       elevation: 8,
                       shadowColor: Colors.black,
                       icon: const Icon(LucideIcons.moreVertical),
+                      constraints: const BoxConstraints(
+                        minWidth: 150, // Menyesuaikan lebar popup menu
+                        maxWidth: 180, // Mengatur batas maksimum lebar
+                      ),
                       onSelected: (value) {
                         switch (value) {
                           case 'edit':
                             showModalBottomSheet(
                               context: context,
                               isScrollControlled: true,
-                              builder: (_) =>
-                                  EditDataBottomSheet(name: recognized.nama),
+                              builder: (_) => EditData(name: recognized.nama),
                             );
                             break;
                           case 'detail':
                             showModalBottomSheet(
                               context: context,
                               isScrollControlled: true,
-                              builder: (_) =>
-                                  DetailDataBottomSheet(name: recognized.nama),
+                              builder: (_) => Details(
+                                name: recognized.nama,
+                                lastActivity: '-',
+                              ),
                             );
                             break;
                           case 'delete':
@@ -137,30 +152,17 @@ class RecognizedPage extends StatelessWidget {
                       },
                       itemBuilder: (BuildContext context) {
                         return [
-                          PopupMenuItem<String>(
-                            padding: EdgeInsets.zero,
+                          const PopupMenuItem<String>(
                             value: 'edit',
-                            child: Column(
+                            child: Row(
                               children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(
-                                      bottom: 14, left: 12, top: 6),
-                                  child: Row(
-                                    children: [
-                                      Icon(LucideIcons.pencil, size: 18),
-                                      SizedBox(width: 10),
-                                      Text('Edit'),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  width: double.infinity,
-                                  height: 1,
-                                  color: Colors.black,
-                                ),
+                                Icon(LucideIcons.pencil, size: 18),
+                                SizedBox(width: 10),
+                                Text('Edit'),
                               ],
                             ),
                           ),
+                          const PopupMenuDivider(height: 1),
                           const PopupMenuItem<String>(
                             value: 'detail',
                             child: Row(
@@ -171,38 +173,24 @@ class RecognizedPage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          PopupMenuItem<String>(
-                            padding: EdgeInsets.zero,
+                          const PopupMenuDivider(height: 1),
+                          const PopupMenuItem<String>(
                             value: 'delete',
-                            child: Column(
+                            child: Row(
                               children: [
-                                Container(
-                                  width: double.infinity,
-                                  height: 1,
-                                  color: Colors.black,
+                                Icon(
+                                  LucideIcons.trash2,
+                                  size: 18,
+                                  color: Colors.red,
                                 ),
-                                const Padding(
-                                  padding: EdgeInsets.only(
-                                      top: 14, left: 12, bottom: 6),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        LucideIcons.trash2,
-                                        size: 18,
-                                        color: Colors.red,
-                                      ),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        'Delete',
-                                        style: TextStyle(color: Colors.red),
-                                      ),
-                                    ],
-                                  ),
+                                SizedBox(width: 10),
+                                Text(
+                                  'Delete',
+                                  style: TextStyle(color: Colors.red),
                                 ),
                               ],
                             ),
                           ),
-                          // const PopupMenuDivider(),
                         ];
                       },
                     ),

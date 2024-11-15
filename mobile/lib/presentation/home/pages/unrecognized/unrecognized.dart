@@ -12,16 +12,16 @@ class UnrecognizedPage extends StatefulWidget {
 }
 
 class _UnrecognizedPageState extends State<UnrecognizedPage> {
-  // List to keep track of the selected state for each image
   final List<bool> _isSelected = List.generate(6, (_) => false);
 
   void _showAddDataBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => const AddDataBottomSheet(),
+      builder: (_) => const AddDataUnreg(),
     );
   }
 
@@ -38,9 +38,11 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
         backgroundColor: const Color(0xfff1f4f9),
         automaticallyImplyLeading: false,
         bottom: const PreferredSize(
-            preferredSize: Size.fromHeight(0),
-            child: MySort(
-                texts: ['Today', 'Week', 'Month', 'Year'], selectedIndex: 0)),
+          preferredSize: Size.fromHeight(0),
+          child: MySort(
+            texts: ['Today', 'Week', 'Month', 'Year'], selectedIndex: 0
+          )
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 25),

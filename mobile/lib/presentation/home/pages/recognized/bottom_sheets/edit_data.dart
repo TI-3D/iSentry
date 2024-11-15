@@ -3,16 +3,23 @@ import 'package:isentry/presentation/widgets/components/bottom_sheet.dart';
 import 'package:isentry/services/image_picker_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class EditDataBottomSheet extends StatelessWidget {
+class EditData extends StatefulWidget {
   final String name;
-  const EditDataBottomSheet({super.key, required this.name});
+  const EditData({super.key, required this.name});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _EditDataState createState() => _EditDataState();
+}
+
+class _EditDataState extends State<EditData> {
+  final FocusNode _focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     return CustomBottomSheet(
       title: "Edit Data",
       content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
             child: InkWell(
@@ -33,10 +40,11 @@ class EditDataBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           TextField(
+            focusNode: _focusNode,
             cursorColor: Colors.black,
             decoration: InputDecoration(
-              hintText: name,
-              hintStyle: const TextStyle(color: Colors.grey),
+              hintText: widget.name,
+              hintStyle: const TextStyle(color: Colors.black),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: const BorderSide(
@@ -55,7 +63,7 @@ class EditDataBottomSheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: const BorderSide(
                   color: Colors.black,
-                  width: 1.0,
+                  width: 2.0,
                 ),
               ),
               contentPadding: const EdgeInsets.symmetric(
@@ -68,19 +76,24 @@ class EditDataBottomSheet extends StatelessWidget {
       ),
       actionButton: Align(
         alignment: Alignment.centerRight,
-        child: ElevatedButton(
-          onPressed: () {
-            // Logic to save edited data
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black,
-            padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          child: const Text(
-            "Save",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+            ),
+            child: const Text(
+              "Save",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ),
