@@ -1,6 +1,6 @@
 name: isentry
 description: "A new Flutter project."
-publish_to: 'none' 
+publish_to: 'none'
 
 version: 1.0.0+1
 
@@ -8,30 +8,33 @@ environment:
   sdk: ^3.5.1
 
 dependencies:
+  bloc: ^8.1.4
+  camera: ^0.11.0+2
+  cupertino_icons: ^1.0.8
   flutter:
     sdk: flutter
-
-  cupertino_icons: ^1.0.8
-  camera: ^0.11.0+2
-  image_picker: ^0.8.4+4
-  gal: ^2.3.0
-  intl: ^0.19.0
   flutter_bloc: ^8.1.6
+  gal: ^2.3.0
+  http: ^1.2.2
+  image_picker: ^0.8.4+4
+  intl: ^0.19.0
   lucide_icons: ^0.257.0
-  reactive_button: ^0.0.9
+  mobile_scanner: ^6.0.2
   path_provider: ^2.1.4
   permission_handler: ^11.3.1
   qr_flutter: ^4.1.0
+  reactive_button: ^0.0.9
   screenshot: ^3.0.0
-  url_launcher: ^6.3.1
   share_plus: ^10.1.1
-  mobile_scanner: ^6.0.2
+  url_launcher: ^6.3.1
+  dio:
+  dartz:
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.14.1
   flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.14.1
 
 flutter_launcher_icons:
   android: true
@@ -49,7 +52,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-  
+
   fonts:
     - family: SFPro
       fonts:

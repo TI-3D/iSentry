@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
+import 'package:isentry/core/configs/ip_address.dart';
 import 'package:isentry/presentation/auth/pages/qr_register.dart';
 import 'package:isentry/presentation/auth/pages/register.dart';
 import 'package:isentry/presentation/widgets/forms/auth_text_field.dart';
@@ -87,7 +88,7 @@ class LoginPage extends StatelessWidget {
                   Backcolor: const Color(0xFF18181B),
                   TextColor: Colors.white,
                   onPressed: () async {
-                    var url = Uri.http('192.168.64.128:3000',
+                    var url = Uri.http(ipAddress,
                         'api/auth/login'); // change sesuai IP address
                     var response = await http.post(url, body: {
                       'email': emailController.text,

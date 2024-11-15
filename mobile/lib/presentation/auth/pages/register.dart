@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
+import 'package:isentry/core/configs/ip_address.dart';
 import 'package:isentry/presentation/auth/pages/login.dart';
-import 'package:isentry/presentation/auth/pages/qr_register.dart';
+import 'package:isentry/presentation/home/pages/bottom_bar.dart';
 import 'package:isentry/presentation/widgets/forms/auth_text_field.dart';
 import 'package:isentry/presentation/widgets/buttons/auth_button.dart';
 import 'package:isentry/presentation/widgets/typography/auth_heading.dart';
+import 'package:http/http.dart' as http;
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -60,8 +64,28 @@ class RegisterPage extends StatelessWidget {
                   buttonText: 'Register',
                   Backcolor: const Color(0xFF18181B),
                   TextColor: Colors.white,
-                  onPressed: () {
-                    AppNavigator.push(context, const QrRegisterPage());
+                  onPressed: () async {
+                    var url = Uri.http(
+                        ipAddress, 'api/users'); // change sesuai IP address
+                    var response = await http.post(url, body: {
+                      'name': fullNameController.text,
+                      'email': emailController.text,
+                      'password': passwordController.text,
+                      'role': 'OWNER',
+                    });
+                    var body = json.decode(response.body);
+
+                    print(body);
+                    if (body['success']) {
+                      AppNavigator.push(context, const HomePage());
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('gagal'),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                    }
                   },
                 ),
               ],
