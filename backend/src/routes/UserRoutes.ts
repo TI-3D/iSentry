@@ -24,19 +24,21 @@ const UserRoutes = new Elysia({ prefix: "/users" })
         async ({ body }) => {
             return await createUser(
                 body as {
+                    username: string;
                     name: string;
-                    email: string;
                     password: string;
                     role: Role;
+                    identityId?: number | null;
                 }
             );
         },
         {
             body: t.Object({
+                username: t.String({ minLength: 5, maxLength: 100 }),
                 name: t.String({ minLength: 3, maxLength: 100 }),
-                email: t.String({ minLength: 5, maxLength: 100 }),
                 password: t.String({ minLength: 7, maxLength: 15 }),
                 role: t.Enum(Role),
+                identityId: t.Optional(t.Number()),
             }),
         }
     )
@@ -53,19 +55,23 @@ const UserRoutes = new Elysia({ prefix: "/users" })
             return await updateUser(
                 id,
                 body as {
+                    username?: string;
                     name?: string;
-                    email?: string;
                     password?: string;
                     role?: Role;
+                    identityId?: number | null;
                 }
             );
         },
         {
             body: t.Object({
+                username: t.Optional(
+                    t.String({ minLength: 5, maxLength: 100 })
+                ),
                 name: t.Optional(t.String({ minLength: 3, maxLength: 100 })),
-                email: t.Optional(t.String({ minLength: 5, maxLength: 100 })),
                 password: t.Optional(t.String({ minLength: 7, maxLength: 15 })),
                 role: t.Optional(t.Enum(Role)),
+                identityId: t.Number({ optional: true }),
             }),
         }
     )
