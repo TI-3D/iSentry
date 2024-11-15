@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:isentry/common/helper/navigation/app_navigation.dart';
+import 'package:isentry/presentation/auth/pages/login.dart';
 import 'package:isentry/presentation/widgets/appBar/appbar.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -68,6 +70,7 @@ class AccountSettingsPage extends StatelessWidget {
 
             // Menu Items
             ListTile(
+              dense: true,
               leading: const Icon(LucideIcons.userCircle2),
               title: const Text('Edit Account',
                 style: TextStyle(
@@ -89,6 +92,7 @@ class AccountSettingsPage extends StatelessWidget {
             ),
             const Divider(),
             ListTile(
+              dense: true,
               leading: const Icon(LucideIcons.history),
               title: const Text('Log Activity',
                 style: TextStyle(
@@ -109,28 +113,29 @@ class AccountSettingsPage extends StatelessWidget {
               },
             ),
             const Divider(),
+            // // ListTile(
+            // //   leading: const Icon(LucideIcons.settings),
+            // //   title: const Text('Setting',
+            // //     style: TextStyle(
+            // //       fontWeight: FontWeight.w500,
+            // //       fontSize: 15,
+            // //     ),
+            // //   ),
+            // //   subtitle: const Text('Customize your app experience.',
+            // //     style: TextStyle(
+            // //       fontSize: 13,
+            // //       color: Colors.grey,
+            // //       fontWeight: FontWeight.w500,
+            // //       letterSpacing: 1
+            // //     ),
+            // //   ),
+            // //   onTap: () {
+            // //     // Logic for Settings
+            // //   },
+            // // ),
+            // const Divider(),
             ListTile(
-              leading: const Icon(LucideIcons.settings),
-              title: const Text('Setting',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 15,
-                ),
-              ),
-              subtitle: const Text('Customize your app experience.',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 1
-                ),
-              ),
-              onTap: () {
-                // Logic for Settings
-              },
-            ),
-            const Divider(),
-            ListTile(
+              dense: true,
               leading: const Icon(LucideIcons.heartHandshake),
               title: const Text('About Us',
                 style: TextStyle(
@@ -154,6 +159,7 @@ class AccountSettingsPage extends StatelessWidget {
 
             // Logout
             ListTile(
+              dense: true,
               leading: const Icon(LucideIcons.logOut, color: Colors.red),
               title: const Text(
                 'Log Out',
@@ -172,7 +178,7 @@ class AccountSettingsPage extends StatelessWidget {
                 ),
               ),
               onTap: () {
-                // Logic for Log Out
+                AppNavigator.push(context, const LoginPage());
               },
             ),
           ],
