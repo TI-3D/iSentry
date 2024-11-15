@@ -81,19 +81,35 @@ async function main() {
     const face1 = await prisma.face.create({
         data: {
             identity: identity1.id,
-            landmarks: Buffer.from([0, 1, 2, 3, 4, 5, 255]),
+            embedding: Buffer.from(
+                new Float64Array(
+                    Array.from({ length: 128 }, () => Math.random())
+                ).buffer
+            ),
             picture_full: galleryItem1.id,
             picture_single: galleryItem2.id,
-            bounding_box: Buffer.from([0, 1, 2, 3, 4, 5, 255]),
+            bounding_box: Buffer.from(
+                new Float64Array(
+                    Array.from({ length: 128 }, () => Math.random())
+                ).buffer
+            ),
         },
     });
     const face2 = await prisma.face.create({
         data: {
             identity: identity2.id,
-            landmarks: Buffer.from([0, 1, 2, 3, 4, 5, 255]),
+            embedding: Buffer.from(
+                new Float64Array(
+                    Array.from({ length: 128 }, () => Math.random())
+                ).buffer
+            ),
             picture_full: galleryItem2.id,
             picture_single: galleryItem1.id,
-            bounding_box: Buffer.from([0, 1, 2, 3, 4, 5, 255]),
+            bounding_box: Buffer.from(
+                new Float64Array(
+                    Array.from({ length: 128 }, () => Math.random())
+                ).buffer
+            ),
         },
     });
 

@@ -64,16 +64,16 @@ model Identity {
 
 model Face {
   id                Int               @id @default(autoincrement())
-  identity          Int
-  landmarks         Bytes
+  identity          Int?
+  embedding         Bytes
   bounding_box      Bytes
-  singlePictures    Gallery_Item      @relation ("SinglePicture", fields : [picture_single], references: [id])
-  picture_single    Int
-  fullPictures      Gallery_Item      @relation ("FullPicture", fields : [picture_full], references: [id])
-  picture_full      Int
+  singlePictures    Gallery_Item?     @relation ("SinglePicture", fields : [picture_single], references: [id])
+  picture_single    Int?
+  fullPictures      Gallery_Item?     @relation ("FullPicture", fields : [picture_full], references: [id])
+  picture_full      Int?
   createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  identities        Identity          @relation(fields: [identity], references: [id])
+  updatedAt         DateTime          @updatedAt()
+  identities        Identity?         @relation(fields: [identity], references: [id])
   detectionLogs     Detection_Log[]
 
   @@map("faces")

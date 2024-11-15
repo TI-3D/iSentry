@@ -27,18 +27,18 @@ export async function getFace() {
  */
 export async function createFace(options: {
     identity: number;
-    landmarks: Buffer;
-    picture_full: number;
-    picture_single: number;
+    embedding: Buffer;
+    picture_full: number | null;
+    picture_single: number | null;
     bounding_box: Buffer;
 }) {
     try {
         const faces = await prisma.face.create({
             data: {
                 identity: options.identity,
-                landmarks: options.landmarks,
-                picture_full: options.picture_full,
-                picture_single: options.picture_single,
+                embedding: options.embedding,
+                picture_full: options.picture_full ?? null,
+                picture_single: options.picture_single ?? null,
                 bounding_box: options.bounding_box,
             },
         });
@@ -93,7 +93,7 @@ export async function updateFace(
     id: string,
     options: {
         identity?: number;
-        landmarks?: Buffer;
+        embedding?: Buffer;
         picture_full?: number;
         picture_single?: number;
         bounding_box?: Buffer;
@@ -103,7 +103,7 @@ export async function updateFace(
         const faceId = parseInt(id);
         const {
             identity,
-            landmarks,
+            embedding,
             picture_full,
             picture_single,
             bounding_box,
@@ -113,7 +113,7 @@ export async function updateFace(
             where: { id: faceId },
             data: {
                 ...(identity ? { identity } : {}),
-                ...(landmarks ? { landmarks } : {}),
+                ...(embedding ? { embedding } : {}),
                 ...(picture_full ? { picture_full } : {}),
                 ...(picture_single ? { picture_single } : {}),
                 ...(bounding_box ? { bounding_box } : {}),
