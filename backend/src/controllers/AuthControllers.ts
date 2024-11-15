@@ -1,22 +1,21 @@
 import { error } from "elysia";
 import prisma from "../../prisma/client";
 
-export const login = async (body: { email: string; password: string }) => {
+export const login = async (body: { username: string; password: string }) => {
     try {
         // Memeriksa apakah pengguna ada di database
-        const user = await prisma.user.findUnique({
-            where: { email: body.email },
-        });
+        const user = (
+            await prisma.user.findMany({
+                where: { username: body.username },
+            })
+        )[0];
 
         if (!user) {
             return error(404, { success: false, message: "User not found" });
         }
 
         // Memverifikasi password
-        const isPasswordValid = 
-            body.password ==
-            user.password
-        ;
+        const isPasswordValid = body.password == user.password;
         if (!isPasswordValid) {
             return error(404, { success: false, message: "User not found" });
         }
@@ -28,7 +27,7 @@ export const login = async (body: { email: string; password: string }) => {
             data: {
                 user: {
                     id: user.id,
-                    email: user.email,
+                    username: user.username,
                     name: user.name,
                     role: user.role,
                 },
