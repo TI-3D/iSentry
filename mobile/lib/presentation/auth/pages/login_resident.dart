@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
-import 'package:isentry/presentation/home/pages/bottom_bar.dart';
+import 'package:isentry/presentation/home_resident/pages/bottom_bar_resident.dart';
 // import 'package:isentry/presentation/home/pages/bottom_bar.dart';
 // import 'package:isentry/presentation/home/pages/dashboard.dart';
 import 'package:isentry/presentation/widgets/forms/auth_text_field.dart';
@@ -58,35 +58,35 @@ class LoginResidentPage extends StatelessWidget {
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 CustomTextField(
                   hintText: 'Password',
                   controller: passwordController,
                   obscureText: true,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 5),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: InkWell(
-                    onTap: () {
+                  child: TextButton(
+                    onPressed: () {
                       //
                     },
                     child: const Text(
                       'Forgot Password?',
                       style: TextStyle(
                         color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 5),
                 CustomElevatedButton(
                   buttonText: 'Login',
                   Backcolor: const Color(0xFF18181B),
                   TextColor: Colors.white,
                   onPressed: () {
-                    AppNavigator.push(context, const HomePage());
+                    AppNavigator.push(context, const HomeResidentPage());
                     // var url = Uri.http('192.168.1.5:3000',
                     //     'api/auth/login'); // change sesuai IP address
                     // var response = await http.post(url, body: {
