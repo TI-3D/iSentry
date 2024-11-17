@@ -107,8 +107,8 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
 
                 #[rustfmt::skip]
                 let push_face = db_conn.prep("
-                    INSERT INTO faces (bounding_box, embedding)
-                    VALUES (:bounding_box, :embedding)
+                    INSERT INTO faces (bounding_box, embedding, updatedAt)
+                    VALUES (:bounding_box, :embedding, NOW())
                 ").unwrap();
 
                 let mut faces = faces.lock().await;
@@ -173,7 +173,7 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                 let push_pic = db_conn
                     .prep(
                         "
-                        INSERT INTO galleryitems (path, type, capture_method, updatedAt) 
+                        INSERT INTO galleryItems (path, type, capture_method, updatedAt) 
                         VALUES (:path, \"PICTURE\", \"AUTO\", NOW())
                     ",
                     )
