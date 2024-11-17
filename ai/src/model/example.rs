@@ -15,14 +15,14 @@ fn tick<R>(name: &str, f: impl Fn() -> R) -> R {
 
 pub fn example() {
     let first_photo = image::load_from_memory(include_bytes!(
-        "C:/Users/alimulap/abyss/ai/dlib-face-recognition/examples/assets/obama_1.jpg"
+        "../../assets/obama_1.jpg"
     ))
     .unwrap();
     let first_photo = first_photo.resize(512, 512, FilterType::Gaussian).to_rgb8();
     let matrix_photo_1 = ImageMatrix::from_image(&first_photo);
 
     let second_photo = image::load_from_memory(include_bytes!(
-        "C:/Users/alimulap/abyss/ai/dlib-face-recognition/examples/assets/obama_2.jpg"
+        "../../assets/obama_2.jpg"
     ))
     .unwrap();
     let second_photo = second_photo
@@ -104,7 +104,7 @@ fn draw_point(image: &mut RgbImage, point: &Point, colour: Rgb<u8>) {
 
 pub fn example2() {
     let mut image =
-        image::open("C:/Users/alimulap/abyss/ai/dlib-face-recognition/examples/assets/obama_2.jpg")
+        image::open("../../assets/obama_2.jpg")
             .unwrap()
             .to_rgb8();
     let matrix = ImageMatrix::from_image(&image);
@@ -137,7 +137,7 @@ pub fn example2() {
     let mut image = RgbImage::from(image);
 
     let font = FontRef::try_from_slice(include_bytes!(
-        "C:/Users/alimulap/Downloads/Montserrat/static/Montserrat-Medium.ttf"
+        "../../assets/Montserrat-Medium.ttf"
     ))
     .unwrap();
 
@@ -162,7 +162,7 @@ pub fn example2() {
     );
 
     if let Err(e) = image
-        .save("C:/Users/alimulap/abyss/ai/dlib-face-recognition/examples/assets/obama_2_out.jpg")
+        .save("../../assets/obama_2_out.jpg")
     {
         println!("Error saving the image: {e}");
     } else {

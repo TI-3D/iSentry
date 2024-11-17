@@ -145,7 +145,7 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                 let mut image = image.to_rgb8();
 
                 let font = FontRef::try_from_slice(include_bytes!(
-                    "C:/Users/alimulap/Downloads/Montserrat/static/Montserrat-Medium.ttf"
+                    "../../assets/Montserrat-Medium.ttf"
                 ))
                 .unwrap();
 
