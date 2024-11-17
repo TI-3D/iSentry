@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/presentation/auth/pages/login.dart';
-import 'package:isentry/presentation/auth/pages/login_resident.dart';
+import 'package:isentry/presentation/home/pages/bottom_bar.dart';
 import 'package:isentry/presentation/widgets/forms/auth_text_field.dart';
 import 'package:isentry/presentation/widgets/buttons/auth_button.dart';
 import 'package:isentry/presentation/widgets/typography/auth_heading.dart';
@@ -61,7 +61,7 @@ class RegisterPage extends StatelessWidget {
                   Backcolor: const Color(0xFF18181B),
                   TextColor: Colors.white,
                   onPressed: () {
-                    AppNavigator.push(context, const LoginResidentPage());
+                    AppNavigator.push(context, const HomePage());
                   },
                 ),
               ],

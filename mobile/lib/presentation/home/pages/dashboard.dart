@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
+import 'package:isentry/presentation/widgets/components/line_chart.dart';
 import 'package:isentry/presentation/widgets/components/sort.dart';
 import 'package:isentry/presentation/home/pages/profile/account_settings.dart';
 import 'package:isentry/presentation/home/pages/detection_log.dart';
@@ -194,7 +195,7 @@ class DashboardPage extends StatelessWidget {
       child: Container(
         color: AppColors.primary,
         padding:
-            const EdgeInsets.only(left: 35, right: 35, top: 10, bottom: 20),
+            const EdgeInsets.only(left: 35, right: 35, top: 10, bottom: 15),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
@@ -411,19 +412,23 @@ class DashboardPage extends StatelessWidget {
           flex: 11,
           child: faces,
         ),
-        Expanded(
-          flex: 26,
+        const Expanded(
+          flex: 27,
           child: Column(
             children: [
-              const MySort(
+              MySort(
                 texts: ['Today', 'Week', 'Month', 'Year'],
                 selectedIndex: 0,
                 leftPadding: 35,
                 rightPadding: 35,
               ),
               Expanded(
-                child: Container(
-                  color: AppColors.primary,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 20, right: 30),
+                  child: AspectRatio(
+                    aspectRatio: 3,
+                    child: LineChartDashboard(),
+                  ),
                 ),
               )
             ],
