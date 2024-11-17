@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
-import 'package:isentry/presentation/home/pages/log_detection.dart';
-import 'package:isentry/presentation/home/pages/profile/account_settings.dart';
+import 'package:isentry/presentation/widgets/components/line_chart.dart';
 import 'package:isentry/presentation/widgets/components/sort.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -39,13 +37,14 @@ class DashboardResidentPage extends StatelessWidget {
             ],
           ),
           IconButton(
-              onPressed: () {
-                // AppNavigator.push(context, const AccountSettingsPage());
-              },
-              icon: const Icon(
-                (LucideIcons.userCircle2),
-                size: 40,
-              ))
+            onPressed: () {
+              // AppNavigator.push(context, const AccountSettingsPage());
+            },
+            icon: const Icon(
+              (LucideIcons.userCircle2),
+              size: 40,
+            ),
+          ),
         ],
       ),
     );
@@ -66,7 +65,7 @@ class DashboardResidentPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  "  Log Detection",
+                  " Detection Log",
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -75,9 +74,7 @@ class DashboardResidentPage extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {
-                    AppNavigator.push(context, const LogDetectionPage());
-                  },
+                  onPressed: () {},
                   icon: const Icon(
                     LucideIcons.calendarClock,
                     color: Colors.white,
@@ -355,7 +352,15 @@ class DashboardResidentPage extends StatelessWidget {
                   leftPadding: 35,
                   rightPadding: 35),
             )),
-        Expanded(flex: 23, child: Container()),
+        const Expanded(
+            flex: 23,
+            child: Padding(
+              padding: EdgeInsets.only(top: 20, right: 30),
+              child: AspectRatio(
+                aspectRatio: 3,
+                child: LineChartDashboard(),
+              ),
+            )),
         Expanded(
             flex: 35,
             child: Container(

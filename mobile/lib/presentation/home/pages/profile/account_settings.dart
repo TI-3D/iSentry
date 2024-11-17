@@ -70,6 +70,7 @@ class AccountSettingsPage extends StatelessWidget {
 
             // Menu Items
             ListTile(
+              dense: true,
               leading: const Icon(LucideIcons.userCircle2),
               title: const Text(
                 'Edit Account',
@@ -92,6 +93,7 @@ class AccountSettingsPage extends StatelessWidget {
             ),
             const Divider(),
             ListTile(
+              dense: true,
               leading: const Icon(LucideIcons.history),
               title: const Text(
                 'Log Activity',
@@ -113,7 +115,29 @@ class AccountSettingsPage extends StatelessWidget {
               },
             ),
             const Divider(),
+            // // ListTile(
+            // //   leading: const Icon(LucideIcons.settings),
+            // //   title: const Text('Setting',
+            // //     style: TextStyle(
+            // //       fontWeight: FontWeight.w500,
+            // //       fontSize: 15,
+            // //     ),
+            // //   ),
+            // //   subtitle: const Text('Customize your app experience.',
+            // //     style: TextStyle(
+            // //       fontSize: 13,
+            // //       color: Colors.grey,
+            // //       fontWeight: FontWeight.w500,
+            // //       letterSpacing: 1
+            // //     ),
+            // //   ),
+            // //   onTap: () {
+            // //     // Logic for Settings
+            // //   },
+            // // ),
+            // const Divider(),
             ListTile(
+              dense: true,
               leading: const Icon(LucideIcons.settings),
               title: const Text(
                 'Setting',
@@ -160,6 +184,7 @@ class AccountSettingsPage extends StatelessWidget {
 
             // Logout
             ListTile(
+              dense: true,
               leading: const Icon(LucideIcons.logOut, color: Colors.red),
               title: const Text(
                 'Log Out',

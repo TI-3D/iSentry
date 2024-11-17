@@ -23,14 +23,30 @@ class _BottomAppBarState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> widgetOptions = <Widget>[
-      DashboardPage(userName: widget.userName),
+      DashboardPage(
+        userName: widget.userName,
+        toRecognized: () {
+          setState(
+            () {
+              _selectedIndex = 1;
+            },
+          );
+        },
+        toUnrecognized: () {
+          setState(
+            () {
+              _selectedIndex = 3;
+            },
+          );
+        },
+      ),
       const RecognizedPage(),
       const Center(child: Text('Camera')),
       const UnrecognizedPage(),
       const GalleryPage(),
     ];
 
-    void _onItemTapped(int index) {
+    void onItemTapped(int index) {
       setState(() {
         if (index == 2) {
           AppNavigator.push(context, const CameraPage());
@@ -77,7 +93,7 @@ class _BottomAppBarState extends State<HomePage> {
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
+        onTap: onItemTapped,
         elevation: 0,
         selectedIconTheme: const IconThemeData(
           size: 30,

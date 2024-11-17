@@ -5,7 +5,7 @@ use image::RgbImage;
 use tokio::sync::oneshot::Sender;
 use uuid::Uuid;
 
-use crate::error::AppError;
+use crate::{error::AppError, model::bounding_box::BoundingBox};
 
 pub struct Job {
     pub id: Uuid,
@@ -35,7 +35,7 @@ pub enum JobResult {
     BBnLandM((Rectangle, FaceLandmarks)),
     BBnLandMWI((Rectangle, FaceLandmarks, RgbImage)),
     MBBnLandMWI(
-        Option<FaceLocations>,
+        Option<Vec<BoundingBox>>,
         Option<FaceEncodings>,
         Option<Vec<RgbImage>>,
         Option<RgbImage>,

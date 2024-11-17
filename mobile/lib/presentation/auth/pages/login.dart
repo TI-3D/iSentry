@@ -6,6 +6,7 @@ import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
 import 'package:isentry/presentation/auth/bloc/login_event.dart';
 import 'package:isentry/presentation/auth/bloc/login_state.dart';
 import 'package:isentry/presentation/auth/pages/qr_register.dart';
+import 'package:isentry/presentation/auth/pages/login_resident.dart';
 import 'package:isentry/presentation/auth/pages/register.dart';
 import 'package:isentry/presentation/widgets/forms/auth_text_field.dart';
 import 'package:isentry/presentation/widgets/buttons/auth_button.dart';
@@ -146,6 +147,53 @@ class LoginPage extends StatelessWidget {
                       ],
                     ),
                   ),
+                ),
+                const SizedBox(height: 5),
+                CustomElevatedButton(
+                  buttonText: 'Login',
+                  Backcolor: const Color(0xFF18181B),
+                  TextColor: Colors.white,
+                  onPressed: () async {
+                    FocusScope.of(context).unfocus();
+
+                    context.read<LoginBloc>().add(
+                          LoginSubmitted(
+                            username: usernameController.text,
+                            password: passwordController.text,
+                          ),
+                        );
+                  },
+                ),
+                const SizedBox(height: 20),
+                const Row(
+                  children: [
+                    Expanded(
+                      child: Divider(
+                        color: Colors.grey,
+                        thickness: 1.0,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Text('Or'),
+                    ),
+                    Expanded(
+                      child: Divider(
+                        color: Colors.grey,
+                        thickness: 1.0,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                CustomElevatedButton(
+                  buttonText: 'Login as Resident',
+                  Backcolor: const Color(0xFFf1f4f9),
+                  TextColor: Colors.black,
+                  border: const BorderSide(color: Colors.black, width: 2),
+                  onPressed: () {
+                    AppNavigator.push(context, const LoginResidentPage());
+                  },
                 ),
               ],
             ),
