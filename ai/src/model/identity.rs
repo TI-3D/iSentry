@@ -22,7 +22,7 @@ pub fn update(
 ) -> eyre::Result<()> {
     for row in db_conn.query::<(u64, Vec<u8>, Option<u64>, Option<String>), _>(
         "
-        SELECT faces.id as face_id, faces.landmarks, identities.id, identities.name
+        SELECT faces.id as face_id, faces.embedding, identities.id, identities.name
         FROM faces
         LEFT JOIN identities 
         ON faces.identity = identities.id;

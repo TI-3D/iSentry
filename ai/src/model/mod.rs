@@ -107,7 +107,7 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
 
                 #[rustfmt::skip]
                 let push_face = db_conn.prep("
-                    INSERT INTO faces (bounding_box, landmarks)
+                    INSERT INTO faces (bounding_box, embedding)
                     VALUES (:bounding_box, :embedding)
                 ").unwrap();
 
