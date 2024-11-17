@@ -13,8 +13,8 @@ pub struct BoundingBox {
 impl From<&Rectangle> for BoundingBox {
     fn from(value: &Rectangle) -> Self {
         Self {
-            top: value.top,
-            left: value.left,
+            top: value.top as i32,
+            left: value.left as i32,
             width: (value.right - value.left) as u32,
             height: (value.bottom - value.top) as u32
         }

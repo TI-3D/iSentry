@@ -2,7 +2,7 @@ use std::{env::var, path::PathBuf, sync::Arc, time::Duration};
 
 use ab_glyph::{FontRef, PxScale};
 use bounding_box::BoundingBox;
-use chrono::Utc;
+// use chrono::Utc;
 use dlib_face_recognition::{
     FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, FaceLandmarks,
     ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait,
@@ -12,9 +12,10 @@ use image::DynamicImage;
 use mysql::{params, prelude::Queryable};
 use tokio::{
     sync::{mpsc::Receiver, Mutex},
-    time::sleep,
+    time::{sleep, Instant},
 };
 use tracing::info;
+use uuid::Uuid;
 use crate::utils::LabelID;
 
 use crate::job::{Job, JobKind, JobResult};
@@ -63,8 +64,11 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
             JobKind::Detection => (),
             JobKind::Recognition => (),
             JobKind::DetThenRec(opts) => {
+                let start = Instant::now();
                 let image_matrix = ImageMatrix::from_image(&job.image);
                 let bboxes = detector.face_locations(&image_matrix);
+                let start2 = Instant::now();
+                tracing::info!("faces: {}", bboxes.len());
                 let landmarks = bboxes
                     .iter()
                     .map(|face| landmark_predictor.face_landmarks(&image_matrix, face))
@@ -74,6 +78,7 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                     .map(BoundingBox::from)
                     .collect::<Vec<BoundingBox>>();
                 let embeddings = face_encoder.get_face_encodings(&image_matrix, &landmarks, 0);
+                tracing::info!("NNs takes {}ms", start2.elapsed().as_millis());
 
                 let image = DynamicImage::ImageRgb8(job.image);
 
@@ -102,8 +107,8 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
 
                 #[rustfmt::skip]
                 let push_face = db_conn.prep("
-                    INSERT INTO faces (bounding_box, embedding)
-                    VALUES (:bounding_box, :embedding)
+                    INSERT INTO faces (bounding_box, embedding, updatedAt)
+                    VALUES (:bounding_box, :embedding, NOW())
                 ").unwrap();
 
                 let mut faces = faces.lock().await;
@@ -140,7 +145,7 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                 let mut image = image.to_rgb8();
 
                 let font = FontRef::try_from_slice(include_bytes!(
-                    "C:/Users/alimulap/Downloads/Montserrat/static/Montserrat-Medium.ttf"
+                    "../../assets/Montserrat-Medium.ttf"
                 ))
                 .unwrap();
 
@@ -157,28 +162,41 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                     image.label(bbox, name, &font, font_height, scale);
                 }
 
-                let tmp_dir = PathBuf::from(var("TEMP").unwrap());
-                let now = Utc::now().format("%Y-%m-%d-%H:%M");
+                let mut tmp_dir = PathBuf::from(var("TEMP").unwrap());
+                tmp_dir.push("isentry");
+                // let now = Utc::now().format("%Y-%m-%d-%H:%M:%S");
                 let mut full_pic_path = tmp_dir.clone();
-                full_pic_path.push(format!("auto-capture-{}", now));
+                let uuid = Uuid::new_v4().to_string();
+                full_pic_path.push(format!("auto-capture-{}.jpg", uuid));
                 let full_pic_id = db_conn.last_insert_id();
 
                 let push_pic = db_conn
                     .prep(
                         "
-                        INSERT INTO gallery_items (path, type, capture_method) 
-                        VALUES (:path, \"PICTURE\", \"AUTO\")
+                        INSERT INTO galleryItems (path, type, capture_method, updatedAt) 
+                        VALUES (:path, \"PICTURE\", \"AUTO\", NOW())
                     ",
                     )
                     .unwrap();
-                db_conn
-                    .exec_drop(
-                        &push_pic,
-                        params! {
-                            "path" => full_pic_path.to_str()
-                        },
-                    )
-                    .unwrap();
+                if !bboxes.is_empty() {
+                    // let start = Instant::now();
+                    db_conn
+                        .exec_drop(
+                            &push_pic,
+                            params! {
+                                "path" => full_pic_path.to_str()
+                            },
+                        )
+                        .unwrap();
+                    // let start = Instant::now();
+                    if let Err(e) = image.save(&full_pic_path) {
+                        tracing::warn!("Can't save image {}: {}", full_pic_path.display(), e);
+                        // tracing::info!("Trying saving image in {}ms", start.elapsed().as_millis());
+                    } else {
+                        // tracing::info!("Saving image in {}ms", start.elapsed().as_millis());
+                    }
+                    // tracing::info!("Saving full pic takes {}ms", start.elapsed().as_millis());
+                }
 
                 let update_face = db_conn
                     .prep(
@@ -192,7 +210,8 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                 for name in names {
                     if let Label::Id(id, true) = name {
                         let mut single_pic_path = tmp_dir.clone();
-                        single_pic_path.push(format!("cropped-{}", now));
+                        let uuid = Uuid::new_v4().to_string();
+                        single_pic_path.push(format!("cropped-{}.jpg", uuid));
 
                         db_conn
                             .exec_drop(
@@ -214,6 +233,13 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                                 },
                             )
                             .unwrap();
+                        // let start = Instant::now();
+                        if let Err(e) = image.save(&single_pic_path) {
+                            tracing::warn!("Can't save image {}: {}", single_pic_path.display(), e);
+                            // tracing::info!("Trying saving image in {}ms", start.elapsed().as_millis());
+                        } else {
+                            // tracing::info!("Saving image in {}ms", start.elapsed().as_millis());
+                        }
                     }
                 }
 
@@ -229,6 +255,7 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                 {
                     info!("Requester id: {} hung up before receiving data", job.id);
                 }
+                tracing::info!("Scanning take {}ms", start.elapsed().as_millis());
             }
         }
     }
