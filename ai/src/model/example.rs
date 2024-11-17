@@ -154,8 +154,8 @@ pub fn example2() {
     draw_text_mut(
         &mut image,
         red,
-        one_rect.left,
-        one_rect.top - height as i32,
+        one_rect.left as i32,
+        one_rect.top as i32 - height as i32,
         scale,
         &font,
         text,

@@ -81,7 +81,7 @@ pub async fn auto_label(tx: Sender<Job>) {
     let mut frame_counter = 0;
 
     let font = FontRef::try_from_slice(include_bytes!(
-        "../../assets/Montserrat-Medium.ttf"
+        "../assets/Montserrat-Medium.ttf"
     ))
     .unwrap();
 
