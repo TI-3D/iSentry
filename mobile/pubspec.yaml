@@ -27,8 +27,7 @@ dependencies:
   screenshot: ^3.0.0
   share_plus: ^10.1.1
   url_launcher: ^6.3.1
-  dio:
-  dartz:
+  equatable: ^2.0.5
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.1

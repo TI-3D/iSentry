@@ -9,7 +9,8 @@ import 'package:isentry/presentation/home/pages/unrecognized/unrecognized.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String userName;
+  const HomePage({super.key, required this.userName});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -19,28 +20,28 @@ class HomePage extends StatefulWidget {
 class _BottomAppBarState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    DashboardPage(),
-    RecognizedPage(),
-    Center(child: Text('Camera')),
-    UnrecognizedPage(),
-    GalleryPage(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      if (index == 2) {
-        AppNavigator.push(context, const CameraPage());
-      } else {
-        _selectedIndex = index;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final List<Widget> widgetOptions = <Widget>[
+      DashboardPage(userName: widget.userName),
+      const RecognizedPage(),
+      const Center(child: Text('Camera')),
+      const UnrecognizedPage(),
+      const GalleryPage(),
+    ];
+
+    void _onItemTapped(int index) {
+      setState(() {
+        if (index == 2) {
+          AppNavigator.push(context, const CameraPage());
+        } else {
+          _selectedIndex = index;
+        }
+      });
+    }
+
     return Scaffold(
-      body: _widgetOptions[_selectedIndex],
+      body: widgetOptions[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: AppColors.background,
         items: [

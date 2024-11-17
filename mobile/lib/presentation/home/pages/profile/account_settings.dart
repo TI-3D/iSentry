@@ -6,7 +6,8 @@ import 'package:isentry/presentation/widgets/appBar/appbar.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class AccountSettingsPage extends StatelessWidget {
-  const AccountSettingsPage({super.key});
+  final String userName;
+  const AccountSettingsPage({super.key, required this.userName});
 
   @override
   Widget build(BuildContext context) {
@@ -26,18 +27,18 @@ class AccountSettingsPage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Row(
+                Row(
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 30,
                       backgroundColor: Colors.grey,
-                      child: Text('PEH'),
+                      child: Text('I'),
                     ),
                     SizedBox(width: 10),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Hello!',
                           style: TextStyle(
                               fontSize: 14,
@@ -46,8 +47,8 @@ class AccountSettingsPage extends StatelessWidget {
                               color: Colors.grey),
                         ),
                         Text(
-                          'Pak Enggal',
-                          style: TextStyle(
+                          userName,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.2,
@@ -60,7 +61,7 @@ class AccountSettingsPage extends StatelessWidget {
                 IconButton(
                   icon: const Icon(LucideIcons.qrCode, size: 26),
                   onPressed: () {
-                    AppNavigator.push(context, const QrCodePage());
+                    AppNavigator.push(context, QrCodePage(userName: userName));
                   },
                 ),
               ],

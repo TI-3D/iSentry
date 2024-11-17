@@ -40,7 +40,7 @@ class DashboardResidentPage extends StatelessWidget {
           ),
           IconButton(
               onPressed: () {
-                AppNavigator.push(context, const AccountSettingsPage());
+                // AppNavigator.push(context, const AccountSettingsPage());
               },
               icon: const Icon(
                 (LucideIcons.userCircle2),

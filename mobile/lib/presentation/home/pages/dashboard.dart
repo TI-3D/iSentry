@@ -7,7 +7,8 @@ import 'package:isentry/presentation/home/pages/log_detection.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class DashboardPage extends StatelessWidget {
-  const DashboardPage({super.key});
+  final String userName;
+  const DashboardPage({super.key, required this.userName});
 
   @override
   Widget build(BuildContext context) {
@@ -18,18 +19,18 @@ class DashboardPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Hello!",
-                style: TextStyle(
+                "Hello! $userName",
+                style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     letterSpacing: 1.5,
                     color: Color(0xFFc8cad1)),
               ),
-              Text(
+              const Text(
                 "My Dashboard",
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
@@ -40,7 +41,8 @@ class DashboardPage extends StatelessWidget {
           ),
           IconButton(
               onPressed: () {
-                AppNavigator.push(context, const AccountSettingsPage());
+                AppNavigator.push(
+                    context, AccountSettingsPage(userName: userName));
               },
               icon: const Icon(
                 (LucideIcons.userCircle2),
