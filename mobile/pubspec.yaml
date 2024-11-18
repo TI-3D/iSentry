@@ -27,6 +27,8 @@ dependencies:
   share_plus: ^10.1.1
   mobile_scanner: ^6.0.2
   fl_chart: ^0.69.0
+  video_player: ^2.9.2
+  avatar_stack: ^1.2.0
 
 dev_dependencies:
   flutter_lints: ^4.0.0
@@ -48,6 +50,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    # - assets/medias/
     - assets/images/
     - assets/icons/
   
