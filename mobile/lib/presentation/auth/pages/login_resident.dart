@@ -68,7 +68,7 @@ class LoginResidentPage extends StatelessWidget {
                       controller: passwordController,
                       obscureText: true,
                     ),
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 20),
                     CustomElevatedButton(
                       buttonText: 'Login',
                       Backcolor: const Color(0xFF18181B),
