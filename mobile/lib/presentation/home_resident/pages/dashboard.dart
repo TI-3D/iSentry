@@ -40,13 +40,17 @@ class DashboardResidentPage extends StatelessWidget {
           ),
           IconButton(
             onPressed: () {
-              AppNavigator.push(context, const AccountSettingsPage());
+              AppNavigator.push(
+                  context,
+                  const AccountSettingsPage(
+                    userName: '',
+                  ));
             },
             icon: const Icon(
               (LucideIcons.userCircle2),
               size: 40,
-            )
-          )
+            ),
+          ),
         ],
       ),
     );
@@ -76,8 +80,7 @@ class DashboardResidentPage extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {
-                  },
+                  onPressed: () {},
                   icon: const Icon(
                     LucideIcons.calendarClock,
                     color: Colors.white,
@@ -342,38 +345,33 @@ class DashboardResidentPage extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          flex: 12,
-          child: Container(
-            child: dashboard,
-          )
-        ),
+            flex: 12,
+            child: Container(
+              child: dashboard,
+            )),
         const Expanded(
-          flex: 6,
-          child: Center(
-            child: MySort(
+            flex: 6,
+            child: Center(
+              child: MySort(
                 texts: ['Week', 'Month', 'Year'],
-                selectedIndex: 0,
                 leftPadding: 35,
-                rightPadding: 35
+                rightPadding: 35,
               ),
-            )
-          ),
+            )),
         const Expanded(
-          flex: 23, 
-          child: Padding(
-            padding: EdgeInsets.only(top: 20, right: 30),
-            child: AspectRatio(
-              aspectRatio: 3,
-              child: LineChartDashboard(),
-            ),
-          )
-        ),
+            flex: 23,
+            child: Padding(
+              padding: EdgeInsets.only(top: 20, right: 30),
+              child: AspectRatio(
+                aspectRatio: 3,
+                child: LineChartDashboard(),
+              ),
+            )),
         Expanded(
-          flex: 35,
-          child: Container(
-            child: activity,
-          )
-        ),
+            flex: 35,
+            child: Container(
+              child: activity,
+            )),
       ],
     );
   }
