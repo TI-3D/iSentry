@@ -30,6 +30,7 @@ export async function createUser(options: {
     password: string;
     role: Role;
     identityId?: number | null;
+    ownerId?: number | null;
 }) {
     try {
         const username = await prisma.user.findMany({
@@ -50,6 +51,7 @@ export async function createUser(options: {
                 password: options.password,
                 role: options.role,
                 identityId: options.identityId ?? null,
+                ownerId: options.ownerId ?? null,
             },
         });
         return {
@@ -101,12 +103,11 @@ export async function updateUser(
         username?: string;
         name?: string;
         password?: string;
-        role?: Role;
     }
 ) {
     try {
         const userId = parseInt(id);
-        const { username, name, password, role } = options;
+        const { username, name, password } = options;
 
         const users = await prisma.user.update({
             where: { id: userId },
@@ -114,7 +115,6 @@ export async function updateUser(
                 ...(username ? { username } : {}),
                 ...(name ? { name } : {}),
                 ...(password ? { password } : {}),
-                ...(role ? { role } : {}),
             },
         });
 
