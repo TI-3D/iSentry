@@ -11,7 +11,7 @@ use chrono::Utc;
 use image::RgbImage;
 use mysql::{prelude::Queryable, Conn};
 use opencv::{
-    imgproc::COLOR_BGR2RGB, prelude::*, videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_ANY}
+    imgproc::COLOR_BGR2RGB, prelude::*, videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_FFMPEG}
 };
 use tokio::{
     io::AsyncWriteExt,
@@ -67,7 +67,7 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
 pub async fn auto_label(tx: Sender<Job>) {
     let link = dotenvy::var("RTMP_RAW").unwrap();
 
-    let mut input = VideoCapture::from_file(&link, CAP_ANY).unwrap();
+    let mut input = VideoCapture::from_file(&link, CAP_FFMPEG).unwrap();
     if !input.is_opened().unwrap() {
         panic!("Can't open rtsp stream: {link}");
     }
