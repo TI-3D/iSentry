@@ -63,7 +63,7 @@ class _QrCodePageState extends State<QrCodePage> {
 
   Widget _buildTextField(TextEditingController controller, String label) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 16),
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
@@ -119,7 +119,7 @@ class _QrCodePageState extends State<QrCodePage> {
         foregroundColor: AppColors.primary,
       ),
       body: Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -131,7 +131,7 @@ class _QrCodePageState extends State<QrCodePage> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: Column(
                     children: [
                       SegmentedButton<String>(
