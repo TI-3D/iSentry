@@ -4,7 +4,7 @@ use std::{
 };
 
 use dlib_face_recognition::FaceEncoding;
-use eyre::{eyre, Context};
+use eyre::eyre;
 use mysql::prelude::Queryable;
 
 pub type Id = u64;
@@ -22,15 +22,14 @@ pub fn update(
 ) -> eyre::Result<()> {
     for row in db_conn.query::<(u64, Vec<u8>, Option<u64>, Option<String>), _>(
         "
-        SELECT faces.id as face_id, faces.embedding, identity.id, identity.name
+        SELECT faces.id as face_id, faces.embedding, identities.id, identities.name
         FROM faces
-        LEFT JOIN identity 
-        ON faces.identity = identity.id;
+        LEFT JOIN identities 
+        ON faces.identity = identities.id;
     ",
     )? {
         let (face_id, embedding, identity_id, name) = row;
-        let embedding: Vec<f64> = bincode::deserialize(&embedding)
-            .wrap_err_with(|| format!("Failed to deserialize embedding for face_id {}", face_id))?;
+        let embedding: Vec<f64> = bincode::deserialize(&embedding)?;
         if embedding.len() != 128 {
             return Err(eyre!("Embedding is not [f64; 128] for face_id: {}", face_id));
         }

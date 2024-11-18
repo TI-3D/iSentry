@@ -34,7 +34,7 @@ packages:
     source: hosted
     version: "1.2.0"
   bloc:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: bloc
       sha256: "106842ad6569f0b60297619e9e0b1885c2fb9bf84812935490e6c5275777804e"
@@ -170,7 +170,7 @@ packages:
     source: hosted
     version: "0.10.1"
   equatable:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: equatable
       sha256: c2b87cb7756efdf69892005af546c56c0b5037f54d2a88269b4f347a505e3ca2
@@ -313,7 +313,7 @@ packages:
     source: hosted
     version: "0.15.5"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: b9c29a161230ee03d3ccf545097fccd9b87a5264228c5d348202e0f0c28f9010
@@ -656,6 +656,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
+  quickalert:
+    dependency: "direct main"
+    description:
+      name: quickalert
+      sha256: b5d62b1e20b08cc0ff5f40b6da519bdc7a5de6082f13d90572cf4e72eea56c5e
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   reactive_button:
     dependency: "direct main"
     description:

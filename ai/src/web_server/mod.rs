@@ -37,6 +37,7 @@ pub async fn run(db_pool: mysql::Pool, tx: Sender<Job>) {
 
 #[derive(Clone)]
 struct AppState {
+    #[allow(unused)]
     pub db_pool: Pool,
     pub tx: Sender<Job>,
 }
