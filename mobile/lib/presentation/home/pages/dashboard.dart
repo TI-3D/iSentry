@@ -419,7 +419,6 @@ class DashboardPage extends StatelessWidget {
             children: [
               MySort(
                 texts: ['Today', 'Week', 'Month', 'Year'],
-                selectedIndex: 0,
                 leftPadding: 35,
                 rightPadding: 35,
               ),

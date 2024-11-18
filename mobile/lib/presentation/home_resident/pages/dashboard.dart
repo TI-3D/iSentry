@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
+import 'package:isentry/presentation/home/pages/profile/account_settings.dart';
 import 'package:isentry/presentation/widgets/components/line_chart.dart';
 import 'package:isentry/presentation/widgets/components/sort.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -38,7 +40,11 @@ class DashboardResidentPage extends StatelessWidget {
           ),
           IconButton(
             onPressed: () {
-              // AppNavigator.push(context, const AccountSettingsPage());
+              AppNavigator.push(
+                  context,
+                  const AccountSettingsPage(
+                    userName: '',
+                  ));
             },
             icon: const Icon(
               (LucideIcons.userCircle2),
@@ -347,10 +353,10 @@ class DashboardResidentPage extends StatelessWidget {
             flex: 6,
             child: Center(
               child: MySort(
-                  texts: ['Week', 'Month', 'Year'],
-                  selectedIndex: 0,
-                  leftPadding: 35,
-                  rightPadding: 35),
+                texts: ['Week', 'Month', 'Year'],
+                leftPadding: 35,
+                rightPadding: 35,
+              ),
             )),
         const Expanded(
             flex: 23,

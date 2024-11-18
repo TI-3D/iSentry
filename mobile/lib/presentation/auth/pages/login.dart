@@ -2,16 +2,17 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
+import 'package:isentry/data/models/user_model.dart';
 import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
 import 'package:isentry/presentation/auth/bloc/login_event.dart';
 import 'package:isentry/presentation/auth/bloc/login_state.dart';
-import 'package:isentry/presentation/auth/pages/qr_register.dart';
 import 'package:isentry/presentation/auth/pages/login_resident.dart';
 import 'package:isentry/presentation/auth/pages/register.dart';
 import 'package:isentry/presentation/widgets/forms/auth_text_field.dart';
 import 'package:isentry/presentation/widgets/buttons/auth_button.dart';
 import 'package:isentry/presentation/widgets/typography/auth_heading.dart';
 import 'package:isentry/presentation/home/pages/bottom_bar.dart';
+import 'package:quickalert/quickalert.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -26,14 +27,18 @@ class LoginPage extends StatelessWidget {
       body: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomePage(
-                  userName: state.user.username,
-                ),
-              ),
-            );
+            if (state.user.role == Role.RESIDENT) {
+              QuickAlert.show(
+                context: context,
+                type: QuickAlertType.warning,
+                title: 'Warning',
+                text: 'Maaf anda bukan owner',
+              );
+              return;
+            } else if (state.user.role == Role.OWNER) {
+              AppNavigator.pushReplacement(
+                  context, HomePage(userName: state.user.username));
+            }
           } else if (state is LoginFailure) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text(state.error)));
@@ -87,8 +92,9 @@ class LoginPage extends StatelessWidget {
 
                         context.read<LoginBloc>().add(
                               LoginSubmitted(
-                                  username: usernameController.text,
-                                  password: passwordController.text),
+                                username: usernameController.text,
+                                password: passwordController.text,
+                              ),
                             );
                       },
                     ),
@@ -120,7 +126,8 @@ class LoginPage extends StatelessWidget {
                       TextColor: Colors.black,
                       border: const BorderSide(color: Colors.black, width: 1),
                       onPressed: () {
-                        AppNavigator.push(context, const QrRegisterPage());
+                        AppNavigator.pushReplacement(
+                            context, const LoginResidentPage());
                       },
                     ),
                   ],
@@ -138,7 +145,7 @@ class LoginPage extends StatelessWidget {
                           style: const TextStyle(color: Colors.blue),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              AppNavigator.pushAndRemove(
+                              AppNavigator.pushReplacement(
                                 context,
                                 const RegisterPage(),
                               );
@@ -147,53 +154,6 @@ class LoginPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 5),
-                CustomElevatedButton(
-                  buttonText: 'Login',
-                  Backcolor: const Color(0xFF18181B),
-                  TextColor: Colors.white,
-                  onPressed: () async {
-                    FocusScope.of(context).unfocus();
-
-                    context.read<LoginBloc>().add(
-                          LoginSubmitted(
-                            username: usernameController.text,
-                            password: passwordController.text,
-                          ),
-                        );
-                  },
-                ),
-                const SizedBox(height: 20),
-                const Row(
-                  children: [
-                    Expanded(
-                      child: Divider(
-                        color: Colors.grey,
-                        thickness: 1.0,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Text('Or'),
-                    ),
-                    Expanded(
-                      child: Divider(
-                        color: Colors.grey,
-                        thickness: 1.0,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                CustomElevatedButton(
-                  buttonText: 'Login as Resident',
-                  Backcolor: const Color(0xFFf1f4f9),
-                  TextColor: Colors.black,
-                  border: const BorderSide(color: Colors.black, width: 2),
-                  onPressed: () {
-                    AppNavigator.push(context, const LoginResidentPage());
-                  },
                 ),
               ],
             ),

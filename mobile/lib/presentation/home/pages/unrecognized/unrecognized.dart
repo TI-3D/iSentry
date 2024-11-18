@@ -38,10 +38,9 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
         backgroundColor: const Color(0xfff1f4f9),
         automaticallyImplyLeading: false,
         bottom: const PreferredSize(
-            preferredSize: Size.fromHeight(0),
-            child: MySort(
+          preferredSize: Size.fromHeight(0),
+          child: MySort(
             texts: ['Today', 'Week', 'Month', 'Year'],
-            selectedIndex: 0,
             leftPadding: 25,
             rightPadding: 25,
           ),
@@ -62,7 +61,8 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 GestureDetector(
-                  onTap: () => _toggleSelection(index), // Menambahkan onTap untuk seluruh gambar
+                  onTap: () => _toggleSelection(
+                      index), // Menambahkan onTap untuk seluruh gambar
                   child: Card(
                     color: Colors.grey[200],
                     shape: RoundedRectangleBorder(
