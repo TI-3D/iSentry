@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use std::{
     sync::{
         atomic::{AtomicU8, Ordering},
@@ -13,7 +15,7 @@ use mysql::{prelude::Queryable, Conn};
 use opencv::{
     imgproc::COLOR_BGR2RGB,
     prelude::*,
-    videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_FFMPEG},
+    videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_ANY},
 };
 use tokio::{
     io::AsyncWriteExt,
@@ -30,7 +32,7 @@ use crate::{
 
 pub async fn run(_db_opts: mysql::Opts, tx: Sender<Job>) {
     // tokio::spawn(auto_record(db_opts, tx.clone()));
-    tokio::spawn(auto_label(tx));
+    // tokio::spawn(auto_label(tx));
 }
 
 pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
@@ -69,10 +71,23 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
 pub async fn auto_label(tx: Sender<Job>) {
     let link = dotenvy::var("RTMP_RAW").unwrap();
 
-    let mut input = VideoCapture::from_file(&link, CAP_FFMPEG).unwrap();
-    if !input.is_opened().unwrap() {
-        panic!("Can't open rtsp stream: {link}");
-    }
+    let mut input = loop {
+        let input = match VideoCapture::from_file(&link, CAP_ANY) {
+            Ok(cap) => cap,
+            Err(e) => {
+                tracing::error!("Can't open {link}: {e}");
+                continue; 
+            }
+        };
+        match input.is_opened() {
+            Ok(true) => break input,
+            Ok(false) => (),
+            Err(e) => {
+                tracing::error!("RTSP stream {link} hasn't been opened: {e}");
+            }
+        } 
+        sleep(Duration::from_secs(60)).await;
+    };
 
     let target_link = dotenvy::var("RTMP_LABEL").unwrap();
     let mut output = ffmpeg::push_frames_to_rtsp(&link, &target_link)
@@ -138,7 +153,8 @@ pub async fn auto_label(tx: Sender<Job>) {
                 match ons_rx.await {
                     Ok(result) => {
                         if let JobResult::AutoLabel(bbox, names) = result {
-                            *bounding_boxes_clone.lock().await = bbox.into_iter().zip(names.into_iter()).collect::<Vec<_>>();
+                            *bounding_boxes_clone.lock().await =
+                                bbox.into_iter().zip(names.into_iter()).collect::<Vec<_>>();
                         }
                     }
                     Err(e) => {
