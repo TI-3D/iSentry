@@ -11,7 +11,9 @@ use chrono::Utc;
 use image::RgbImage;
 use mysql::{prelude::Queryable, Conn};
 use opencv::{
-    imgproc::COLOR_BGR2RGB, prelude::*, videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_FFMPEG}
+    imgproc::COLOR_BGR2RGB,
+    prelude::*,
+    videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_FFMPEG},
 };
 use tokio::{
     io::AsyncWriteExt,
@@ -22,7 +24,7 @@ use uuid::Uuid;
 
 use crate::{
     ffmpeg,
-    job::{DetThenRecOpts, Job, JobKind, JobResult, JobSender},
+    job::{Job, JobKind, JobResult, JobSender},
     utils::LabelID,
 };
 
@@ -80,10 +82,7 @@ pub async fn auto_label(tx: Sender<Job>) {
 
     let mut frame_counter = 0;
 
-    let font = FontRef::try_from_slice(include_bytes!(
-        "../assets/Montserrat-Medium.ttf"
-    ))
-    .unwrap();
+    let font = FontRef::try_from_slice(include_bytes!("../assets/Montserrat-Medium.ttf")).unwrap();
 
     let font_height = 24.;
     let scale = PxScale {
@@ -130,7 +129,7 @@ pub async fn auto_label(tx: Sender<Job>) {
                         id: job_id,
                         sender: JobSender::VideoProcessing,
                         image: img_clone,
-                        kind: JobKind::DetThenRec(DetThenRecOpts::new(true, false, false, false)),
+                        kind: JobKind::AutoLabel,
                         tx: ons_tx,
                     })
                     .await
@@ -138,14 +137,8 @@ pub async fn auto_label(tx: Sender<Job>) {
 
                 match ons_rx.await {
                     Ok(result) => {
-                        if let JobResult::MBBnLandMWI(
-                            Some(bbox),
-                            _embedding,
-                            _cropped_imgs,
-                            _labelled_img,
-                        ) = result
-                        {
-                            *bounding_boxes_clone.lock().await = bbox;
+                        if let JobResult::AutoLabel(bbox, names) = result {
+                            *bounding_boxes_clone.lock().await = bbox.into_iter().zip(names.into_iter()).collect::<Vec<_>>();
                         }
                     }
                     Err(e) => {
@@ -155,8 +148,8 @@ pub async fn auto_label(tx: Sender<Job>) {
                 num_scanning_jobs_clone.fetch_sub(1, Ordering::SeqCst);
             });
         } else {
-            for bbox in &*bounding_boxes.lock().await {
-                img.label(bbox, "anomali", &font, font_height, scale);
+            for (bbox, name) in &*bounding_boxes.lock().await {
+                img.label(bbox, name, &font, font_height, scale);
             }
         }
 

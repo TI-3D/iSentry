@@ -23,51 +23,18 @@ pub enum JobSender {
 pub enum JobKind {
     Detection,
     Recognition,
-    DetThenRec(DetThenRecOpts),
+    AutoLabel,
 }
 
 pub enum JobResult {
     Image(RgbImage),
-    BBox(Rectangle),
-    BBoxWI((Rectangle, RgbImage)),
-    Landmark(FaceLandmarks),
-    LandmarkWI((FaceLandmarks, RgbImage)),
-    BBnLandM((Rectangle, FaceLandmarks)),
-    BBnLandMWI((Rectangle, FaceLandmarks, RgbImage)),
-    MBBnLandMWI(
-        Option<Vec<BoundingBox>>,
-        Option<FaceEncodings>,
-        Option<Vec<RgbImage>>,
-        Option<RgbImage>,
+    AutoLabel(
+        Vec<BoundingBox>,
+        Vec<String>,
+        //FaceEncodings,
+        //Vec<RgbImage>,
+        //RgbImage,
     ),
     Err(AppError),
 }
 
-pub struct DetThenRecOpts {
-    pub bbox: bool,
-    pub embedding: bool,
-    pub crop_face: bool,
-    pub label_source: bool,
-}
-
-impl Default for DetThenRecOpts {
-    fn default() -> Self {
-        Self {
-            bbox: true,
-            embedding: true,
-            crop_face: true,
-            label_source: true,
-        }
-    }
-}
-
-impl DetThenRecOpts {
-    pub fn new(bbox: bool, embedding: bool, crop_face: bool, label_source: bool) -> Self {
-        Self {
-            bbox,
-            embedding,
-            crop_face,
-            label_source,
-        }
-    }
-}

@@ -806,8 +806,8 @@ dependencies = [
 
 [[package]]
 name = "dlib-face-recognition"
-version = "0.3.2"
-source = "git+https://github.com/alimulap/dlib-face-recognition#2feb07808c3129db2de628510853b0195a379ec3"
+version = "0.3.3"
+source = "git+https://github.com/alimulap/dlib-face-recognition#d9786c380f932f03808358363f1c30280e7f3a79"
 dependencies = [
  "bzip2",
  "cpp",
@@ -821,7 +821,7 @@ dependencies = [
 [[package]]
 name = "dlib-face-recognition-sys"
 version = "19.24.0-rc.1"
-source = "git+https://github.com/alimulap/dlib-face-recognition#2feb07808c3129db2de628510853b0195a379ec3"
+source = "git+https://github.com/alimulap/dlib-face-recognition#d9786c380f932f03808358363f1c30280e7f3a79"
 dependencies = [
  "cmake",
  "fs_extra",
@@ -2635,9 +2635,9 @@ dependencies = [
 
 [[package]]
 name = "rustls"
-version = "0.23.14"
+version = "0.23.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "415d9944693cb90382053259f89fbb077ea730ad7273047ec63b19bc9b160ba8"
+checksum = "7f1a745511c54ba6d4465e8d5dfbd81b45791756de28d4981af70d6dca128f1e"
 dependencies = [
  "once_cell",
  "rustls-pki-types",
@@ -2666,9 +2666,9 @@ dependencies = [
 
 [[package]]
 name = "rustls-pki-types"
-version = "1.9.0"
+version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e696e35370c65c9c541198af4543ccd580cf17fc25d8e05c5a242b202488c55"
+checksum = "16f1201b3c9a7ee8039bcadc17b7e605e2945b27eee7631788c1bd2b0643674b"
 
 [[package]]
 name = "rustls-webpki"

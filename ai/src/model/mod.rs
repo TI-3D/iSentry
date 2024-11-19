@@ -3,6 +3,7 @@ use std::{env::var, path::PathBuf, sync::Arc, time::Duration};
 use ab_glyph::{FontRef, PxScale};
 use bounding_box::BoundingBox;
 // use chrono::Utc;
+use crate::utils::LabelID;
 use dlib_face_recognition::{
     FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, FaceLandmarks,
     ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait,
@@ -16,7 +17,6 @@ use tokio::{
 };
 use tracing::info;
 use uuid::Uuid;
-use crate::utils::LabelID;
 
 use crate::job::{Job, JobKind, JobResult};
 
@@ -49,7 +49,8 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                     let mut faces = faces_clone.lock().await;
                     let mut identities = identities_clone.lock().await;
 
-                    if let Err(e) = identity::update(db_conn.as_mut(), &mut faces, &mut identities) {
+                    if let Err(e) = identity::update(db_conn.as_mut(), &mut faces, &mut identities)
+                    {
                         tracing::error!("Error updating identity: {e}");
                     }
                 }
@@ -63,11 +64,11 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
         match job.kind {
             JobKind::Detection => (),
             JobKind::Recognition => (),
-            JobKind::DetThenRec(opts) => {
+            JobKind::AutoLabel => {
                 let start = Instant::now();
                 let image_matrix = ImageMatrix::from_image(&job.image);
-                let bboxes = detector.face_locations(&image_matrix);
                 let start2 = Instant::now();
+                let bboxes = detector.face_locations(&image_matrix);
                 tracing::info!("faces: {}", bboxes.len());
                 let landmarks = bboxes
                     .iter()
@@ -82,21 +83,18 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
 
                 let image = DynamicImage::ImageRgb8(job.image);
 
-                let mut cropped_images =
-                    Vec::with_capacity(if opts.crop_face { bboxes.len() } else { 0 });
-                if opts.crop_face {
-                    for face in bboxes.iter() {
-                        cropped_images.push(
-                            image
-                                .crop_imm(
-                                    face.left as u32,
-                                    face.top as u32,
-                                    face.width,
-                                    face.height,
-                                )
-                                .into_rgb8(),
-                        );
-                    }
+                let mut cropped_images = Vec::with_capacity(bboxes.len());
+                for face in bboxes.iter() {
+                    cropped_images.push(
+                        image
+                            .crop_imm(
+                                face.left as u32,
+                                face.top as u32,
+                                face.width,
+                                face.height,
+                            )
+                            .into_rgb8(),
+                    );
                 }
 
                 enum Label {
@@ -144,10 +142,9 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
 
                 let mut image = image.to_rgb8();
 
-                let font = FontRef::try_from_slice(include_bytes!(
-                    "../../assets/Montserrat-Medium.ttf"
-                ))
-                .unwrap();
+                let font =
+                    FontRef::try_from_slice(include_bytes!("../../assets/Montserrat-Medium.ttf"))
+                        .unwrap();
 
                 let font_height = 24.;
                 let scale = PxScale {
@@ -207,7 +204,7 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                     ",
                     )
                     .unwrap();
-                for name in names {
+                for name in &names {
                     if let Label::Id(id, true) = name {
                         let mut single_pic_path = tmp_dir.clone();
                         let uuid = Uuid::new_v4().to_string();
@@ -243,13 +240,19 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                     }
                 }
 
+                let names = names.into_iter().map(|name| match name {
+                    Label::Name(name_str) => name_str,
+                    Label::Id(id, _) => id.to_string(),
+                }).collect::<Vec<String>>();
+
                 if job
                     .tx
-                    .send(JobResult::MBBnLandMWI(
-                        opts.bbox.then_some(bboxes),
-                        opts.embedding.then_some(embeddings),
-                        opts.crop_face.then_some(cropped_images),
-                        opts.label_source.then_some(image),
+                    .send(JobResult::AutoLabel(
+                        bboxes,
+                        names,
+                        // embeddings,
+                        // cropped_images,
+                        // image,
                     ))
                     .is_err()
                 {
