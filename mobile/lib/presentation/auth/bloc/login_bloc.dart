@@ -45,7 +45,7 @@ class LoginBloc extends Bloc<AuthEvent, LoginState> {
           'name': event.name,
           'username': event.username,
           'password': event.password,
-          'role': 'OWNER',
+          'role': event.role,
         });
 
         var body = json.decode(response.body);

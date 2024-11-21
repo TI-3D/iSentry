@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isentry/data/recognized_dummy.dart';
 import 'package:intl/intl.dart';
+import 'package:isentry/presentation/home/pages/recognized/bottom_sheets/add_account.dart';
 import 'package:isentry/presentation/home/pages/recognized/bottom_sheets/add_data.dart';
 import 'package:isentry/presentation/home/pages/recognized/bottom_sheets/detail_data.dart';
 import 'package:isentry/presentation/home/pages/recognized/bottom_sheets/edit_data.dart';
@@ -128,6 +129,13 @@ class RecognizedPage extends StatelessWidget {
                       ),
                       onSelected: (value) {
                         switch (value) {
+                          case 'add':
+                            showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (_) => AddAccount(
+                                      name: recognized.nama,
+                                    ));
                           case 'edit':
                             showModalBottomSheet(
                               context: context,
@@ -152,6 +160,17 @@ class RecognizedPage extends StatelessWidget {
                       },
                       itemBuilder: (BuildContext context) {
                         return [
+                          const PopupMenuItem<String>(
+                            value: 'add',
+                            child: Row(
+                              children: [
+                                Icon(LucideIcons.userPlus, size: 18),
+                                SizedBox(width: 10),
+                                Text('Add Account'),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuDivider(height: 1),
                           const PopupMenuItem<String>(
                             value: 'edit',
                             child: Row(

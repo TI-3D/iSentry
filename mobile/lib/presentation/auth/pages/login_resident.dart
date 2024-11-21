@@ -121,7 +121,7 @@ class LoginResidentPage extends StatelessWidget {
                       buttonText: 'Login as Owner',
                       Backcolor: const Color(0xFFf1f4f9),
                       TextColor: Colors.black,
-                      border: const BorderSide(color: Colors.black, width: 1),
+                      border: const BorderSide(color: Colors.black, width: 1.5),
                       onPressed: () {
                         AppNavigator.pushReplacement(
                             context, const LoginPage());

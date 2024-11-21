@@ -118,6 +118,7 @@ class RegisterPage extends StatelessWidget {
                                 name: nameController.text,
                                 username: usernameController.text,
                                 password: passwordController.text,
+                                role: 'OWNER',
                               ),
                             );
                       },
