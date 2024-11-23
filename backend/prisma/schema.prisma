@@ -105,3 +105,18 @@ enum Item_type {
   PICTURE
   VIDEO
 }
+
+model Token {
+  id                Int               @id @default(autoincrement())
+  token             String            @unique
+  state             State             @default(ACTIVE)
+  duration          Int               @default(86400)
+  createdAt         DateTime          @default(now())
+
+  @@map("tokens")
+}
+
+enum State {
+  ACTIVE
+  INACTIVE
+}
