@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { faker } from "@faker-js/faker";
 
 const prisma = new PrismaClient();
 
@@ -2084,102 +2085,25 @@ async function main() {
         },
     });
 
-    // detection_log
-    const detectionLog1 = await prisma.detection_Log.create({
-        data: {
-            face: face1.id,
-        },
-    });
-    const detectionLog2 = await prisma.detection_Log.create({
-        data: {
-            face: face2.id,
-        },
-    });
-    const detectionLog3 = await prisma.detection_Log.create({
-        data: {
-            face: face3.id,
-        },
-    });
-    const detectionLog4 = await prisma.detection_Log.create({
-        data: {
-            face: face4.id,
-        },
-    });
-    const detectionLog5 = await prisma.detection_Log.create({
-        data: {
-            face: face5.id,
-        },
-    });
-    const detectionLog6 = await prisma.detection_Log.create({
-        data: {
-            face: face6.id,
-        },
-    });
-    const detectionLog7 = await prisma.detection_Log.create({
-        data: {
-            face: face7.id,
-        },
-    });
-    const detectionLog8 = await prisma.detection_Log.create({
-        data: {
-            face: face8.id,
-        },
-    });
-    const detectionLog9 = await prisma.detection_Log.create({
-        data: {
-            face: face9.id,
-        },
-    });
-    const detectionLog10 = await prisma.detection_Log.create({
-        data: {
-            face: face10.id,
-        },
-    });
-    const detectionLog11 = await prisma.detection_Log.create({
-        data: {
-            face: face11.id,
-        },
-    });
-    const detectionLog12 = await prisma.detection_Log.create({
-        data: {
-            face: face12.id,
-        },
-    });
-    const detectionLog13 = await prisma.detection_Log.create({
-        data: {
-            face: face13.id,
-        },
-    });
-    const detectionLog14 = await prisma.detection_Log.create({
-        data: {
-            face: face14.id,
-        },
-    });
-    const detectionLog15 = await prisma.detection_Log.create({
-        data: {
-            face: face15.id,
-        },
-    });
-    const detectionLog16 = await prisma.detection_Log.create({
-        data: {
-            face: face16.id,
-        },
-    });
-    const detectionLog17 = await prisma.detection_Log.create({
-        data: {
-            face: face17.id,
-        },
-    });
-    const detectionLog18 = await prisma.detection_Log.create({
-        data: {
-            face: face18.id,
-        },
-    });
-    const detectionLog19 = await prisma.detection_Log.create({
-        data: {
-            face: face19.id,
-        },
-    });
+    // Define timestamp
+    const startDate = new Date("2024-10-01T00:00:00Z"); // Start date
+    const endDate = new Date("2024-11-30T23:59:59Z"); // End date
+
+    // Create array dummy data
+    const dummyData = Array.from({ length: 300 }).map(() => ({
+        face: faker.number.int({ min: 1, max: 19 }), // Generate random faceId
+        timestamp: faker.date.between({ from: startDate, to: endDate }), // Generate random timestamp
+    }));
+
+    // Detection log
+    for (const data of dummyData) {
+        await prisma.detection_Log.create({
+            data: {
+                face: data.face,
+                timestamp: data.timestamp,
+            },
+        });
+    }
 
     console.log("Data seeded successfully!");
 }
