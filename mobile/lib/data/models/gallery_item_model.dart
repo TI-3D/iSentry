@@ -39,11 +39,15 @@ class GalleryItem {
 }
 
 enum ItemType {
+  // ignore: constant_identifier_names
   PICTURE,
+  // ignore: constant_identifier_names
   VIDEO,
 }
 
 enum CaptureMethod {
+  // ignore: constant_identifier_names
   AUTO,
+  // ignore: constant_identifier_names
   MANUAL,
 }

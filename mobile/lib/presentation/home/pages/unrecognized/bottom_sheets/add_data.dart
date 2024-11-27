@@ -11,6 +11,7 @@ class AddDataUnreg extends StatefulWidget {
   const AddDataUnreg({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AddDataUnregState createState() => _AddDataUnregState();
 }
 

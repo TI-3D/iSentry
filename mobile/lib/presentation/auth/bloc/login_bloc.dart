@@ -24,12 +24,12 @@ class LoginBloc extends Bloc<AuthEvent, LoginState> {
           UserModel user = UserModel.fromJson(body['data']);
           emit(LoginSuccess(user));
         } else {
-          emit(const LoginFailure('Username atau Password salah'));
+          emit(const LoginFailure('Incorrect username or password'));
         }
       } catch (e, stackTrace) {
         debugPrint('error during login: $e');
         debugPrint('stackTrace: $stackTrace');
-        emit(const LoginFailure('Terjadi kesalahan saat login'));
+        emit(const LoginFailure('Login failed'));
       }
     });
 
@@ -53,12 +53,12 @@ class LoginBloc extends Bloc<AuthEvent, LoginState> {
         if (body['success']) {
           emit(SingupSuccess());
         } else {
-          emit(const LoginFailure('Username sudah terdaftar'));
+          emit(const LoginFailure('Username is already registered')); 
         }
       } catch (e, stackTrace) {
         debugPrint('error during login: $e');
         debugPrint('stackTrace: $stackTrace');
-        emit(const LoginFailure('Terjadi kesalahan saat sigup'));
+        emit(const LoginFailure('Sign up failed')); 
       }
     });
   }

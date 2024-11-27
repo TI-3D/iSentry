@@ -34,7 +34,7 @@ class AccountSettingsPage extends StatelessWidget {
                       backgroundColor: Colors.grey,
                       child: Text('I'),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

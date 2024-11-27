@@ -30,9 +30,9 @@ class LoginResidentPage extends StatelessWidget {
             if (state.user.role == Role.OWNER) {
               QuickAlert.show(
                 context: context,
-                type: QuickAlertType.warning,
-                title: 'Warning',
-                text: 'Maaf anda bukan resident',
+                type: QuickAlertType.error,
+                title: 'Oops!',
+                text: 'You are not authorized as the Resident',
               );
               return;
             } else if (state.user.role == Role.RESIDENT) {
@@ -80,7 +80,7 @@ class LoginResidentPage extends StatelessWidget {
                             passwordController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("Username atau password kosong"),
+                              content: Text("Username or password is missing. Please try again!"),
                               duration: Duration(seconds: 3),
                             ),
                           );

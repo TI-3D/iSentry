@@ -14,6 +14,7 @@ class UserModel extends Equatable {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    // ignore: avoid_print
     print('Received JSON: $json');
     final user = json['user'];
     return UserModel(
@@ -38,6 +39,8 @@ class UserModel extends Equatable {
 }
 
 enum Role {
+  // ignore: constant_identifier_names
   OWNER,
+  // ignore: constant_identifier_names
   RESIDENT,
 }
