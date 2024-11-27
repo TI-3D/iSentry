@@ -1,12 +1,306 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html>
+<head lang="en">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting...</title>
-    <meta http-equiv="refresh" content="0;url=/isentry/landing-page/index.html">
+
+    <!--Page Title-->
+    <title>iSentry</title>
+
+    <!--Meta Keywords and Description-->
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+
+    <!--Favicon-->
+    <link rel="shortcut icon" href="landing-page/images/isentry.png" title="Favicon"/>
+
+    <!-- Main CSS Files -->
+    <link rel="stylesheet" href="landing-page/css/style.css">
+
+    <!-- Isentry Color CSS -->
+    <link rel="stylesheet" href="landing-page/css/isentry-color.css">
+
+    <!--Icon Fonts - Font Awesome Icons-->
+    <link rel="stylesheet" href="landing-page/css/font-awesome.min.css">
+
+    <!-- Animate CSS-->
+    <link href="landing-page/css/animate.css" rel="stylesheet" type="text/css">
+
+    <!--Google Webfonts-->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
 </head>
 <body>
-    <p>If you are not redirected automatically, follow this <a href="isentry/landing-page/index.html">link</a>.</p>
+
+<!-- Preloader -->
+<div id="preloader">
+    <div id="status" class="la-ball-triangle-path">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+<!--End of Preloader-->
+
+<div class="page-border" data-wow-duration="0.7s" data-wow-delay="0.2s">
+    <div class="top-border wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;"></div>
+    <div class="right-border wow fadeInRight animated" style="visibility: visible; animation-name: fadeInRight;"></div>
+    <div class="bottom-border wow fadeInUp animated" style="visibility: visible; animation-name: fadeInUp;"></div>
+    <div class="left-border wow fadeInLeft animated" style="visibility: visible; animation-name: fadeInLeft;"></div>
+</div>
+
+<div id="wrapper">
+    <header id="beranda" class="scrollto clearfix" data-enllax-ratio=".5">
+        <div id="header" class="nav-collapse">
+            <div class="row clearfix">
+                <div class="col-1">
+                    <!--Logo-->
+                    <div id="logo">
+                        <img src="landing-page/images/isentry.png" id="beranda-logo" alt="Landing Page"/>
+                        <img src="landing-page/images/isentry.png" id="navigation-logo" alt="Landing Page"/>
+                    </div>
+                    <aside>
+                        <!--Social Icons in Header-->
+                        <ul class="social-icons"></ul>
+                    </aside>
+                    <!--Main Navigation-->
+                    <nav id="nav-main">
+                        <ul>
+                            <li>
+                                <a href="#beranda">Beranda</a>
+                            </li>
+                            <li>
+                                <a href="#fitur">Fitur</a>
+                            </li>
+                            <li>
+                                <a href="#demo">Demo</a>
+                            </li>
+                            <li>
+                                <a href="#profile">Profile</a>
+                            </li>
+                            <li>
+                                <a href="#unduh">Unduh</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div id="nav-trigger"><span></span></div>
+                    <nav id="nav-mobile"></nav>
+                </div>
+            </div>
+        </div>
+
+        <!--beranda Content-->
+        <div id="beranda-content" class="row clearfix">
+            <div class="col-38">
+                <div class="section-heading">
+                    <h1>iSentry</h1>
+                    <h2>
+                        Aplikasi pengawasan mobile dengan teknologi pengenalan wajah otomatis yang memungkinkan pemantauan real-time dan notifikasi aktivitas mencurigakan. Dirancang untuk meningkatkan keamanan, iSentry memberikan kemudahan dalam mengelola identitas dan log deteksi di berbagai lingkungan.</h2>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!--Main Content Area-->
+    <main id="content">
+        <!--Introduction-->
+        <section id="fitur" class="introduction scrollto">
+            <div class="row clearfix">
+                <div class="col-3">
+                    <div class="section-heading">
+                        <h3>FITUR UTAMA</h3>
+                        <h2 class="section-title">Bagaimana Kami Membantu Meningkatkan Keamanan?</h2>
+                        <p class="section-subtitle">Aplikasi pengawasan ini dirancang untuk memberikan rasa aman dengan teknologi modern yang mudah digunakan. Kami hadir untuk memenuhi kebutuhan pengawasan Anda di rumah.</p>
+                    </div>
+                </div>
+                <div class="col-2-3">
+                    <!--Icon Block-->
+                    <div class="col-2 icon-block icon-top wow fadeInUp" data-wow-delay="0.1s">
+                        <!--Icon-->
+                        <div class="icon">
+                            <i class="fa fa-video-camera fa-2x"></i>
+                        </div>
+                        <!--Icon Block Description-->
+                        <div class="icon-block-description">
+                            <h4>Integrasi Kamera Eksternal</h4>
+                            <p>Mendukung integrasi dengan kamera pengawas di area pintu masuk, memungkinkan pengawasan yang efektif.</p>
+                        </div>
+                    </div>
+                    <!--End of Icon Block-->
+
+                    <!--Icon Block-->
+                    <div class="col-2 icon-block icon-top wow fadeInUp" data-wow-delay="0.3s">
+                        <!--Icon-->
+                        <div class="icon">
+                            <i class="fa fa-user-circle fa-2x"></i>
+                        </div>
+                        <!--Icon Block Description-->
+                        <div class="icon-block-description">
+                            <h4>Pengenalan Wajah Otomatis</h4>
+                            <p>Mendeteksi dan merekam wajah secara otomatis, memberikan identifikasi yang akurat pada individu yang tertangkap oleh kamera.</p>
+                        </div>
+                    </div>
+                    <!--End of Icon Block-->
+
+                    <!--Icon Block-->
+                    <div class="col-2 icon-block icon-top wow fadeInUp" data-wow-delay="0.5s">
+                        <!--Icon-->
+                        <div class="icon">
+                            <i class="fa fa-eye fa-2x"></i>
+                        </div>
+                        <!--Icon Block Description-->
+                        <div class="icon-block-description">
+                            <h4>Pemantauan Real-Time</h4>
+                            <p>Memungkinkan pengguna memantau aktivitas langsung melalui tayangan kamera pengawas di perangkat mobile kapan saja dan di mana saja.</p>
+                        </div>
+                    </div>
+                    <!--End of Icon Block-->
+
+                    <!--Icon Block-->
+                    <div class="col-2 icon-block icon-top wow fadeInUp" data-wow-delay="0.5s">
+                        <!--Icon-->
+                        <div class="icon">
+                            <i class="fa fa-lock fa-2x"></i>
+                        </div>
+                        <!--Icon Block Description-->
+                        <div class="icon-block-description">
+                            <h4>Sistem Kunci Pintu Berbasis IoT</h4>
+                            <p>Menggunakan teknologi otomatis berbasis IoT, sistem ini memungkinkan pintu terbuka secara otomatis dengan mendeteksi wajah pengguna.</p>
+                        </div>
+                    </div>
+                    <!--End of Icon Block-->
+                </div>
+            </div>
+        </section>
+        <!--End of Introduction-->
+
+        <!--Content Section-->
+        <div id="demo" class="scrollto clearfix">
+            <div class="row no-padding-bottom clearfix">
+                <!--Content Left Side-->
+                <div class="col-3">
+                    <!--User demo-->
+                    <blockquote class="demo text-right bigtest">
+                        <q>Keamanan di ujung jari Anda, ketenangan untuk setiap momen.</q>
+                        <footer>— Tim iSentry</footer>
+                    </blockquote>
+                    <!-- End of demo-->
+                </div>
+                <!--End Content Left Side-->
+
+                <!--Content of the Right Side-->
+                <div class="col-3">
+                    <div class="section-heading">
+                        <h3>DEMO</h3>
+                        <h2 class="section-title">Percayakan Keamanan Anda pada Teknologi Cerdas</h2>
+                        <p>Dengan iSentry, Anda dapat melihat bagaimana teknologi pengawasan modern bekerja untuk melindungi rumah. Kami berfokus pada fitur yang paling penting bagi Anda—pemantauan real-time, pengenalan wajah otomatis, dan transparansi data.</p>
+                    </div>
+                    <p class="section-subtitle">
+                        Dapatkan gambaran lengkap tentang cara aplikasi kami membantu Anda memantau dan mengelola keamanan dengan mudah. Tonton video demo untuk melihat bagaimana iSentry dapat membuat lingkungan Anda lebih aman.
+                    </p>
+                    <!-- Just replace the Video ID "UYJ5IjBRlW8" with the ID of your video on YouTube (Found within the URL) -->
+                    <a href="#" data-videoid="RQ40gfDuiWQ" data-videosite="youtube" class="button video custom-b">
+                        SIMAK DEMO <i class="fa fa-play" aria-hidden="true"></i>
+                    </a>
+                </div>
+                <!--End Content Right Side-->
+                <div class="col-3">
+                    <img src="landing-page/images/isentry-2.jpg" alt="Dancer"/>
+                </div>
+            </div>
+        </div>
+        <!--End of Content Section-->
+
+        <!-- profile -->
+        <aside id="profile" class="scrollto text-center" data-enllax-ratio=".2">
+            <div class="row clearfix">
+                <div class="section-heading">
+                    <h3>PROFILE</h3>
+                    <h2 class="section-title">Kelompok OP</h2>
+                </div>
+                <!-- Single card for Project Manager (on top) -->
+                <div class="profile-container">
+                    <div class="profile">
+                        <blockquote class="profile-card">
+                            <img src="landing-page/images/member-images/member-1.png" alt="Team Member"/>
+                            <h4>Muhammad Alimul A. P</h4>
+                            <footer>Backend Developer</footer>
+                        </blockquote>
+                    </div>
+                </div>
+                <!-- Three cards for other members (in a row) -->
+                <div class="profile-container row">
+                    <div class="profile">
+                        <blockquote class="profile-card">
+                            <img src="landing-page/images/member-images/member-2.png" alt="Team Member"/>
+                            <h4>Byan Nur Cahyo</h4>
+                            <footer>Backend Developer</footer>
+                        </blockquote>
+                    </div>
+                    <div class="profile">
+                        <blockquote class="profile-card">
+                            <img src="landing-page/images/member-images/member-3.png" alt="Team Member"/>
+                            <h4>Febrianti Mayori</h4>
+                            <footer>Mobile Developer</footer>
+                        </blockquote>
+                    </div>
+                    <div class="profile">
+                        <blockquote class="profile-card">
+                            <img src="landing-page/images/member-images/member-4.png" alt="Team Member"/>
+                            <h4>M. Yoanvari A.</h4>
+                            <footer>Mobile Developer</footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- End of profile -->
+
+        <!--Unduh-->
+        <section id="unduh" class="scrollto clearfix">
+            <div class="row clearfix">
+                <div class="col-2-3">
+                    <div class="section-heading">
+                        <h3>UNDUH</h3>
+                        <h2 class="section-title">Unduh Aplikasi Kami Sekarang</h2>
+                        <p class="section-subtitle">Dapatkan aplikasi kami untuk pengalaman yang lebih baik. Pindai QR Code di samping ini untuk mengunduh aplikasi di perangkat Anda!</p>
+                        <a href="path_to_your_file.apk" download class="button custom-b">
+                            UNDUH <i class="fa fa-download" aria-hidden="true"></i>
+                        </a>                        
+                    </div>
+                </div>
+                <div class="col-3">
+                    <!-- QR Code Section -->
+                    <div class="download-qrcode">
+                        <img src="landing-page/images/qr_code.png" alt="Download QR Code" class="qrcode-img"/>
+                    </div>
+                </div>
+            </div>
+        </section>     
+    </main>
+    <!--End Main Content Area-->
+
+    <!--Footer-->
+    <footer id="landing-footer" class="clearfix" style="background-color: #000;">
+        <div class="row clearfix">
+            <p id="copyright" class="col-2">Made with love <a href="https://www.shapingrain.com">Tim iSentry</a></p>
+        </div>
+    </footer>
+    <!--End of Footer-->
+</div>
+
+<!-- Include JavaScript resources -->
+<script src="landing-page/js/jquery.1.8.3.min.js"></script>
+<script src="landing-page/js/wow.min.js"></script>
+<script src="landing-page/js/featherlight.min.js"></script>
+<script src="landing-page/js/jquery.enllax.min.js"></script>
+<script src="landing-page/js/jquery.scrollUp.min.js"></script>
+<script src="landing-page/js/jquery.easing.min.js"></script>
+<script src="landing-page/js/jquery.stickyNavbar.min.js"></script>
+<script src="landing-page/js/jquery.waypoints.min.js"></script>
+<script src="landing-page/js/images-loaded.min.js"></script>
+<script src="landing-page/js/lightbox.min.js"></script>
+<script src="landing-page/js/site.js"></script>
+
+
 </body>
 </html>
