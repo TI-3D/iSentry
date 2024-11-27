@@ -99,6 +99,7 @@ model Media {
 enum Capture_method {
   AUTO
   MANUAL
+  REGISTRATION
 }
 
 enum Item_type {
