@@ -21,20 +21,19 @@ pub enum JobSender {
 }
 
 pub enum JobKind {
-    Detection,
-    Recognition,
     AutoLabel,
-    ProcessImage
+    ProcessImage,
+    RegisterFace,
 }
 
 pub enum JobResult {
-    Image(RgbImage),
     AutoLabel(
         Vec<BoundingBox>,
         Vec<String>,
     ),
     #[allow(clippy::type_complexity)]
     ProcessImage(String, Vec<(String, (i64, i64, u64, u64), Vec<f64>)>),
+    RegisterFace(Option<u64>, usize),
     Err(AppError),
 }
 

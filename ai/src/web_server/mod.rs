@@ -2,7 +2,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use handlers::process_image;
+use handlers::{process_image, register_face};
 use mysql::Pool;
 use tokio::{net::TcpListener, signal, sync::mpsc::Sender};
 use tracing::{error, info, warn};
@@ -19,6 +19,7 @@ pub async fn run(db_pool: mysql::Pool, tx: Sender<Job>) {
     let app = Router::new()
         .route("/", get(root))
         .route("/process-image", post(process_image))
+        .route("/register-face", post(register_face))
         .with_state(AppState { db_pool, tx });
 
     let ai_server_address = dotenvy::var("WEB_ADDRESS").unwrap();

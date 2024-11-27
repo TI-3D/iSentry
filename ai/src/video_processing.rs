@@ -32,7 +32,7 @@ use crate::{
 
 pub async fn run(_db_opts: mysql::Opts, tx: Sender<Job>) {
     // tokio::spawn(auto_record(db_opts, tx.clone()));
-    // tokio::spawn(auto_label(tx));
+    tokio::spawn(auto_label(tx));
 }
 
 pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
@@ -129,6 +129,7 @@ pub async fn auto_label(tx: Sender<Job>) {
         };
 
         if frame_counter % 120 == 0 && num_scanning_jobs.load(Ordering::SeqCst) <= 1 {
+            tracing::info!("Something");
             num_scanning_jobs.fetch_add(1, Ordering::SeqCst);
             let tx_clone = tx.clone();
             let bounding_boxes_clone = bounding_boxes.clone();
