@@ -5,12 +5,12 @@ version = "0.1.0"
 edition = "2021"
 default-run = "ai"
 
-[workspace]
-resolver = "2"
-members = [
-  "face-detection", 
-  "face-recognition"
-]
+# [workspace]
+# resolver = "2"
+# members = [
+#   "face-detection", 
+#   "face-recognition"
+# ]
 
 [dependencies]
 ab_glyph = "0.2.29"
@@ -21,12 +21,13 @@ chrono = "0.4.38"
 dlib-face-recognition = { git = "https://github.com/alimulap/dlib-face-recognition", version = "0.3.2", features = ["embed-all", "build-native"] }
 dotenvy = "0.15.7"
 eyre = "0.6.12"
-face-detection = { path = "./face-detection/" }
+# face-detection = { path = "./face-detection/" }
 image = "0.25"
 imageproc = "0.25.0"
 mysql = "25.0.1"
 opencv = { version = "0.93.4", features = ["clang-runtime", "videoio"] }
 serde = { version = "1.0.214", features = ["derive"] }
+serde_json = "1.0.133"
 tokio = { version = "1.40.0", features = ["rt-multi-thread", "signal", "tracing", "process"] }
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"

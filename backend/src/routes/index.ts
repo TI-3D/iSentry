@@ -6,7 +6,7 @@ import UserRoutes from "./UserRoutes";
 import IdentityRoutes from "./IdentityRoutes";
 import SystemLogRoutes from "./SystemLogRoutes";
 import DetectionLogRoutes from "./DetectionLogRoutes";
-import GalleryItemRoutes from "./GalleryItemRoutes";
+import MediaRoutes from "./MediaRoutes";
 import FaceRoutes from "./FaceRoutes";
 import AuthRoutes from "./AuthRoutes";
 
@@ -15,7 +15,7 @@ const Routes = new Elysia()
     .use(IdentityRoutes)
     .use(SystemLogRoutes)
     .use(DetectionLogRoutes)
-    .use(GalleryItemRoutes)
+    .use(MediaRoutes)
     .use(FaceRoutes)
     .use(AuthRoutes);
 
