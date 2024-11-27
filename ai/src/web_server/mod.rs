@@ -2,35 +2,34 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use handlers::process_image;
 use mysql::Pool;
-use routes::process_frame;
 use tokio::{net::TcpListener, signal, sync::mpsc::Sender};
 use tracing::{error, info, warn};
 
 use crate::job::Job;
 
 mod error;
+mod handlers;
 mod response;
-mod routes;
+
+pub use response::{IPItem, IPResponse};
 
 pub async fn run(db_pool: mysql::Pool, tx: Sender<Job>) {
     let app = Router::new()
         .route("/", get(root))
-        .route("/process-frame", post(process_frame))
-        .with_state(AppState {
-            db_pool,
-            tx
-        });
+        .route("/process-image", post(process_image))
+        .with_state(AppState { db_pool, tx });
 
-    let ai_server_address = dotenvy::var("AI_SERVER_ADDRESS").unwrap();
-    let ai_server_port = dotenvy::var("AI_SERVER_PORT").unwrap();
+    let ai_server_address = dotenvy::var("WEB_ADDRESS").unwrap();
+    let ai_server_port = dotenvy::var("WEB_PORT").unwrap();
 
     let listener = TcpListener::bind(ai_server_address + ":" + &ai_server_port)
         .await
         .unwrap();
 
     axum::serve(listener, app)
-        .with_graceful_shutdown(shutdown_signal())
+        // .with_graceful_shutdown(shutdown_signal())
         .await
         .unwrap();
 }
@@ -49,7 +48,7 @@ async fn root() -> &'static str {
     "Hello, World!"
 }
 
-async fn shutdown_signal() {
+async fn _shutdown_signal() {
     let ctrl_c = async {
         signal::ctrl_c()
             .await

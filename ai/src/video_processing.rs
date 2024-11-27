@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use std::{
     sync::{
         atomic::{AtomicU8, Ordering},
@@ -11,7 +13,9 @@ use chrono::Utc;
 use image::RgbImage;
 use mysql::{prelude::Queryable, Conn};
 use opencv::{
-    imgproc::COLOR_BGR2RGB, prelude::*, videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_ANY}
+    imgproc::COLOR_BGR2RGB,
+    prelude::*,
+    videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_ANY},
 };
 use tokio::{
     io::AsyncWriteExt,
@@ -22,13 +26,13 @@ use uuid::Uuid;
 
 use crate::{
     ffmpeg,
-    job::{DetThenRecOpts, Job, JobKind, JobResult, JobSender},
+    job::{Job, JobKind, JobResult, JobSender},
     utils::LabelID,
 };
 
 pub async fn run(_db_opts: mysql::Opts, tx: Sender<Job>) {
     // tokio::spawn(auto_record(db_opts, tx.clone()));
-    tokio::spawn(auto_label(tx));
+    // tokio::spawn(auto_label(tx));
 }
 
 pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
@@ -67,10 +71,23 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
 pub async fn auto_label(tx: Sender<Job>) {
     let link = dotenvy::var("RTMP_RAW").unwrap();
 
-    let mut input = VideoCapture::from_file(&link, CAP_ANY).unwrap();
-    if !input.is_opened().unwrap() {
-        panic!("Can't open rtsp stream: {link}");
-    }
+    let mut input = loop {
+        let input = match VideoCapture::from_file(&link, CAP_ANY) {
+            Ok(cap) => cap,
+            Err(e) => {
+                tracing::error!("Can't open {link}: {e}");
+                continue; 
+            }
+        };
+        match input.is_opened() {
+            Ok(true) => break input,
+            Ok(false) => (),
+            Err(e) => {
+                tracing::error!("RTSP stream {link} hasn't been opened: {e}");
+            }
+        } 
+        sleep(Duration::from_secs(60)).await;
+    };
 
     let target_link = dotenvy::var("RTMP_LABEL").unwrap();
     let mut output = ffmpeg::push_frames_to_rtsp(&link, &target_link)
@@ -80,10 +97,7 @@ pub async fn auto_label(tx: Sender<Job>) {
 
     let mut frame_counter = 0;
 
-    let font = FontRef::try_from_slice(include_bytes!(
-        "../assets/Montserrat-Medium.ttf"
-    ))
-    .unwrap();
+    let font = FontRef::try_from_slice(include_bytes!("../assets/Montserrat-Medium.ttf")).unwrap();
 
     let font_height = 24.;
     let scale = PxScale {
@@ -130,7 +144,7 @@ pub async fn auto_label(tx: Sender<Job>) {
                         id: job_id,
                         sender: JobSender::VideoProcessing,
                         image: img_clone,
-                        kind: JobKind::DetThenRec(DetThenRecOpts::new(true, false, false, false)),
+                        kind: JobKind::AutoLabel,
                         tx: ons_tx,
                     })
                     .await
@@ -138,14 +152,9 @@ pub async fn auto_label(tx: Sender<Job>) {
 
                 match ons_rx.await {
                     Ok(result) => {
-                        if let JobResult::MBBnLandMWI(
-                            Some(bbox),
-                            _embedding,
-                            _cropped_imgs,
-                            _labelled_img,
-                        ) = result
-                        {
-                            *bounding_boxes_clone.lock().await = bbox;
+                        if let JobResult::AutoLabel(bbox, names) = result {
+                            *bounding_boxes_clone.lock().await =
+                                bbox.into_iter().zip(names.into_iter()).collect::<Vec<_>>();
                         }
                     }
                     Err(e) => {
@@ -155,8 +164,8 @@ pub async fn auto_label(tx: Sender<Job>) {
                 num_scanning_jobs_clone.fetch_sub(1, Ordering::SeqCst);
             });
         } else {
-            for bbox in &*bounding_boxes.lock().await {
-                img.label(bbox, "anomali", &font, font_height, scale);
+            for (bbox, name) in &*bounding_boxes.lock().await {
+                img.label(bbox, name, &font, font_height, scale);
             }
         }
 

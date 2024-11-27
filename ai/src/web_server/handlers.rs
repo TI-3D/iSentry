@@ -1,16 +1,21 @@
+use std::time::Duration;
+
 use axum::extract::{Multipart, State};
-use tokio::sync::oneshot::{self, error::TryRecvError};
+use tokio::{sync::oneshot::{self, error::TryRecvError}, time::sleep};
 use tracing::{error, info};
 use uuid::Uuid;
 
-use crate::job::{DetThenRecOpts, Job, JobKind, JobResult, JobSender};
+use crate::{
+    job::{Job, JobKind, JobResult, JobSender},
+    web_server::{IPItem, IPResponse},
+};
 
-use super::{error::WebError, response::Image, AppState};
+use super::{error::WebError, AppState};
 
-pub async fn process_frame(
+pub async fn process_image(
     State(state): State<AppState>,
     mut multipart: Multipart,
-) -> Result<Image, WebError> {
+) -> Result<IPResponse, WebError> {
     let mut filename = String::new();
     let mut image = None;
     while let Some(field) = multipart.next_field().await.unwrap() {
@@ -33,7 +38,7 @@ pub async fn process_frame(
                 id,
                 sender: JobSender::WebServer,
                 image,
-                kind: JobKind::DetThenRec(DetThenRecOpts::default()),
+                kind: JobKind::ProcessImage,
                 tx,
             })
             .await
@@ -42,17 +47,29 @@ pub async fn process_frame(
         loop {
             match rx.try_recv() {
                 Ok(result) => {
-                    if let JobResult::Image(image) = result {
+                    if let JobResult::ProcessImage(full_id, result) = result {
+                        let result = IPResponse {
+                            full_id,
+                            cropped_imgs: result
+                                .into_iter()
+                                .map(|item| IPItem {
+                                    id: item.0,
+                                    bounding_box: item.1,
+                                    embedding: item.2,
+                                })
+                                .collect::<Vec<IPItem>>(),
+                        };
                         info!("Channel id: {} success with filename: {}", id, filename);
-                        break Ok(Image {
-                            filename,
-                            data: image,
-                        });
+                        break Ok(result);
                     } else {
                         error!("Channel id: {} got unexpected result from model", id);
+                        break Err(WebError::UnexpectedResult);
                     }
                 }
-                Err(TryRecvError::Empty) => (),
+                Err(TryRecvError::Empty) => {
+                    tracing::info!("channel empty");
+                    sleep(Duration::from_secs(1)).await;
+                },
                 Err(TryRecvError::Closed) => {
                     error!("Channel id: {} closed unexpectedly", id);
                     break Err(WebError::ChannelClosed);
