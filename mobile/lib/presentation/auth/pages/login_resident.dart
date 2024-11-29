@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
-import 'package:isentry/data/models/user_model.dart';
+import 'package:isentry/domain/entities/user.dart';
 import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
 import 'package:isentry/presentation/auth/bloc/login_event.dart';
 import 'package:isentry/presentation/auth/bloc/login_state.dart';
@@ -40,7 +40,7 @@ class LoginResidentPage extends StatelessWidget {
             }
           } else if (state is LoginFailure) {
             ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(state.error)));
+                .showSnackBar(SnackBar(content: Text(state.errorMessage)));
           }
         },
         builder: (context, state) {

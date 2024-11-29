@@ -25,7 +25,7 @@ class RegisterPage extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       body: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
-          if (state is SingupSuccess) {
+          if (state is SignupSuccess) {
             context.read<LoginBloc>().add(
                   LoginSubmitted(
                       username: usernameController.text,
@@ -33,7 +33,7 @@ class RegisterPage extends StatelessWidget {
                 );
           } else if (state is LoginFailure) {
             ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(state.error)));
+                .showSnackBar(SnackBar(content: Text(state.errorMessage)));
           }
 
           if (state is LoginSuccess) {
@@ -41,7 +41,7 @@ class RegisterPage extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => HomePage(
-                  userName: state.user.username,
+                  userId: state.user.id,
                 ),
               ),
             );

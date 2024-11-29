@@ -1,16 +1,12 @@
-import 'package:equatable/equatable.dart';
+import 'package:isentry/domain/entities/user.dart';
 
-class UserModel extends Equatable {
-  final int id;
-  final String name;
-  final String username;
-  final Role role;
-
+class UserModel extends User {
   const UserModel({
-    required this.id,
-    required this.name,
-    required this.username,
-    required this.role,
+    required super.id,
+    required super.name,
+    required super.username,
+    required super.role,
+    required super.ownerId,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -21,6 +17,7 @@ class UserModel extends Equatable {
       name: user['name'] as String,
       username: user['username'] as String,
       role: Role.values.byName(user['role'] as String),
+      ownerId: user['ownerId'] != null ? user['ownerId'] as int : null,
     );
   }
 
@@ -29,15 +26,7 @@ class UserModel extends Equatable {
       'id': id,
       'name': name,
       'username': username,
-      'role': role,
+      'role': role.name,
     };
   }
-
-  @override
-  List<Object?> get props => [id, username, name, role];
-}
-
-enum Role {
-  OWNER,
-  RESIDENT,
 }

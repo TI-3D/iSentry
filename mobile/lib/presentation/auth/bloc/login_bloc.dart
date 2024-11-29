@@ -51,7 +51,7 @@ class LoginBloc extends Bloc<AuthEvent, LoginState> {
         var body = json.decode(response.body);
 
         if (body['success']) {
-          emit(SingupSuccess());
+          emit(SignupSuccess());
         } else {
           emit(const LoginFailure('Username sudah terdaftar'));
         }

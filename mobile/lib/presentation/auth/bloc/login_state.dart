@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:isentry/data/models/user_model.dart';
+import 'package:isentry/domain/entities/user.dart';
 
+/// Abstract state class for Login feature
 abstract class LoginState extends Equatable {
   const LoginState();
 
@@ -12,10 +13,8 @@ class LoginInitial extends LoginState {}
 
 class LoginLoading extends LoginState {}
 
-class SingupSuccess extends LoginState {}
-
 class LoginSuccess extends LoginState {
-  final UserModel user;
+  final User user;
 
   const LoginSuccess(this.user);
 
@@ -24,10 +23,12 @@ class LoginSuccess extends LoginState {
 }
 
 class LoginFailure extends LoginState {
-  final String error;
+  final String errorMessage;
 
-  const LoginFailure(this.error);
+  const LoginFailure(this.errorMessage);
 
   @override
-  List<Object?> get props => [error];
+  List<Object?> get props => [errorMessage];
 }
+
+class SignupSuccess extends LoginState {}
