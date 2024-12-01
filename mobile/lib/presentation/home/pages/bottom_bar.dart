@@ -9,7 +9,8 @@ import 'package:isentry/presentation/home/pages/unrecognized/unrecognized.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String userName;
+  const HomePage({super.key, required this.userName});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -19,35 +20,42 @@ class HomePage extends StatefulWidget {
 class _BottomAppBarState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  void _onItemTapped(int index) {
-    setState(() {
-      if (index == 2) {
-        AppNavigator.push(context, const CameraPage());
-      } else {
-        _selectedIndex = index;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    List<Widget> widgetOptions = <Widget>[
-    DashboardPage(toRecognized: () {
+    final List<Widget> widgetOptions = <Widget>[
+      DashboardPage(
+        userName: widget.userName,
+        toRecognized: () {
+          setState(
+            () {
+              _selectedIndex = 1;
+            },
+          );
+        },
+        toUnrecognized: () {
+          setState(
+            () {
+              _selectedIndex = 3;
+            },
+          );
+        },
+      ),
+      const RecognizedPage(),
+      const Center(child: Text('Camera')),
+      const UnrecognizedPage(),
+      const GalleryPage(),
+    ];
+
+    void onItemTapped(int index) {
       setState(() {
-        _selectedIndex = 1;
-      });
-    },
-    toUnrecognized: () {
-      setState(() {
-        _selectedIndex = 3;
+        if (index == 2) {
+          AppNavigator.push(context, const CameraPage());
+        } else {
+          _selectedIndex = index;
+        }
       });
     }
-    ),
-    const RecognizedPage(),
-    const Center(child: Text('Camera')),
-    const UnrecognizedPage(),
-    const GalleryPage(),
-  ];
+
     return Scaffold(
       body: widgetOptions[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -85,7 +93,7 @@ class _BottomAppBarState extends State<HomePage> {
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
+        onTap: onItemTapped,
         elevation: 0,
         selectedIconTheme: const IconThemeData(
           size: 30,

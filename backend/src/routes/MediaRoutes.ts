@@ -3,27 +3,27 @@ import { Elysia, t } from "elysia";
 
 // import controller
 import {
-    getGalleryItem,
-    getGalleryItemById,
-    createGalleryItem,
-    updateGalleryItem,
-    deleteGalleryItem,
-} from "../controllers/GalleryItemController";
+    getMedia,
+    createMedia,
+    getMediaById,
+    updateMedia,
+    deleteMedia,
+} from "../controllers/MediaController";
 import { Capture_method } from "@prisma/client";
 import { Item_type } from "@prisma/client";
 
-const GalleryItemRoutes = new Elysia({ prefix: "/gallery-items" })
+const MediaRoutes = new Elysia({ prefix: "/medias" })
 
-    // route to get all gallery item
+    // route to get all media
     .get("/", async () => {
-        return await getGalleryItem();
+        return await getMedia();
     })
 
-    // route to create a gallery item
+    // route to create a media
     .post(
         "/",
         async ({ body }) => {
-            return await createGalleryItem(
+            return await createMedia(
                 body as {
                     capture_method: Capture_method;
                     type: Item_type;
@@ -40,16 +40,16 @@ const GalleryItemRoutes = new Elysia({ prefix: "/gallery-items" })
         }
     )
 
-    // route to get gallery item by id
+    // route to get media by id
     .get("/:id", async ({ params: { id } }) => {
-        return await getGalleryItemById(id);
+        return await getMediaById(id);
     })
 
-    // route to update a gallery item
+    // route to update a media
     .patch(
         "/:id",
         async ({ params: { id }, body }) => {
-            return await updateGalleryItem(
+            return await updateMedia(
                 id,
                 body as {
                     capture_method?: Capture_method;
@@ -67,9 +67,9 @@ const GalleryItemRoutes = new Elysia({ prefix: "/gallery-items" })
         }
     )
 
-    // route to delete a gallery item
+    // route to delete a media
     .delete("/:id", async ({ params: { id } }) => {
-        return await deleteGalleryItem(id);
+        return await deleteMedia(id);
     });
 
-export default GalleryItemRoutes;
+export default MediaRoutes;

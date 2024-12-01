@@ -8,7 +8,9 @@
         "migrate": "bunx prisma migrate dev"
     },
     "dependencies": {
+        "@elysiajs/jwt": "^1.1.1",
         "@elysiajs/swagger": "^1.1.5",
+        "@faker-js/faker": "^9.2.0",
         "@paralleldrive/cuid2": "^2.2.2",
         "@prisma/client": "5.13.0",
         "drizzle-orm": "^0.35.2",

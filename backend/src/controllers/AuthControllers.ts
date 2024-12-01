@@ -1,7 +1,12 @@
 import { error } from "elysia";
 import prisma from "../../prisma/client";
+import { JwtParameter } from "./JWTControllers";
 
-export const login = async (body: { username: string; password: string }) => {
+export const login = async (
+    body: { username: string; password: string },
+    jwt: JwtParameter,
+    jwt_refresh: JwtParameter
+) => {
     try {
         // Memeriksa apakah pengguna ada di database
         const user = (
@@ -14,8 +19,17 @@ export const login = async (body: { username: string; password: string }) => {
             return error(404, { success: false, message: "User not found" });
         }
 
+        const token = await jwt.sign({ id: user.id, username: user.username });
+        const token_refresh = await jwt_refresh.sign({
+            id: user.id,
+            username: user.username,
+        });
+
         // Memverifikasi password
-        const isPasswordValid = body.password == user.password;
+        const isPasswordValid = await Bun.password.verify(
+            body.password,
+            user.password
+        );
         if (!isPasswordValid) {
             return error(404, { success: false, message: "User not found" });
         }
@@ -31,6 +45,8 @@ export const login = async (body: { username: string; password: string }) => {
                     name: user.name,
                     role: user.role,
                 },
+                token,
+                token_refresh,
             },
         };
     } catch (err) {

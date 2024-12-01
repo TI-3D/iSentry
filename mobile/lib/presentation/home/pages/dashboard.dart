@@ -8,9 +8,14 @@ import 'package:isentry/presentation/home/pages/detection_log.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class DashboardPage extends StatelessWidget {
+  final String userName;
   final Function toRecognized;
   final Function toUnrecognized;
-  const DashboardPage({super.key, required this.toRecognized, required this.toUnrecognized});
+  const DashboardPage(
+      {super.key,
+      required this.toRecognized,
+      required this.toUnrecognized,
+      required this.userName});
 
   @override
   Widget build(BuildContext context) {
@@ -21,37 +26,36 @@ class DashboardPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Hello!",
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.5,
-                  color: Color(0xFFc8cad1)
-                ),
+                "Hello! $userName",
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.5,
+                    color: Color(0xFFc8cad1)),
               ),
-              Text(
+              const Text(
                 "My Dashboard",
                 style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.5,
-                  fontSize: 16
-                ),
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.5,
+                    fontSize: 16),
               )
             ],
           ),
           IconButton(
             onPressed: () {
-              AppNavigator.push(context, const AccountSettingsPage());
+              AppNavigator.push(
+                  context, AccountSettingsPage(userName: userName));
             },
             icon: const Icon(
               (LucideIcons.userCircle2),
               size: 40,
-            )
-          )
+            ),
+          ),
         ],
       ),
     );
@@ -74,7 +78,8 @@ class DashboardPage extends StatelessWidget {
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(15),
                 ),
-                padding: const EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
+                padding: const EdgeInsets.only(
+                    left: 14, right: 14, top: 10, bottom: 10),
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -102,19 +107,17 @@ class DashboardPage extends StatelessWidget {
                         Text(
                           "50",
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 45,
-                            fontWeight: FontWeight.w700,
-                            height: 0.9
-                          ),
+                              color: Colors.white,
+                              fontSize: 45,
+                              fontWeight: FontWeight.w700,
+                              height: 0.9),
                         ),
                         Text(
                           " Faces",
                           style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1
-                          ),
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1),
                         ),
                       ],
                     ),
@@ -135,7 +138,8 @@ class DashboardPage extends StatelessWidget {
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(15),
                 ),
-                padding: const EdgeInsets.only(left: 13, right: 13, top: 10, bottom: 10),
+                padding: const EdgeInsets.only(
+                    left: 13, right: 13, top: 10, bottom: 10),
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -163,19 +167,17 @@ class DashboardPage extends StatelessWidget {
                         Text(
                           "22",
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 45,
-                            fontWeight: FontWeight.w700,
-                            height: 0.9
-                          ),
+                              color: Colors.white,
+                              fontSize: 45,
+                              fontWeight: FontWeight.w700,
+                              height: 0.9),
                         ),
                         Text(
                           " Faces",
                           style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1
-                          ),
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1),
                         ),
                       ],
                     ),
@@ -189,218 +191,217 @@ class DashboardPage extends StatelessWidget {
     );
 
     Widget activity = InkWell(
-      onTap: () {
-        AppNavigator.push(context, const DetectionLogPage());
-      },
-      child: Container(
-        color: AppColors.primary,
-        padding:
-            const EdgeInsets.only(left: 35, right: 35, top: 10, bottom: 15),
+        onTap: () {
+          AppNavigator.push(context, const DetectionLogPage());
+        },
         child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.black,
-          ),
+          color: AppColors.primary,
           padding:
-              const EdgeInsets.only(left: 15, right: 15, top: 0, bottom: 15),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    " Detection Log",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      letterSpacing: 1,
+              const EdgeInsets.only(left: 35, right: 35, top: 10, bottom: 15),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.black,
+            ),
+            padding:
+                const EdgeInsets.only(left: 15, right: 15, top: 0, bottom: 15),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      " Detection Log",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        letterSpacing: 1,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      AppNavigator.push(context, const DetectionLogPage());
-                    },
-                    icon: const Icon(
-                      LucideIcons.calendarClock,
-                      color: Colors.white,
-                      size: 25,
+                    IconButton(
+                      onPressed: () {
+                        AppNavigator.push(context, const DetectionLogPage());
+                      },
+                      icon: const Icon(
+                        LucideIcons.calendarClock,
+                        color: Colors.white,
+                        size: 25,
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
                     ),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                ],
-              ),
-              const Row(
-                children: [
-                  Icon(
-                    (LucideIcons.userCircle2),
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  Padding(padding: EdgeInsets.only(left: 10)),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Olivia Martin",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            LucideIcons.calendarDays,
+                  ],
+                ),
+                const Row(
+                  children: [
+                    Icon(
+                      (LucideIcons.userCircle2),
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                    Padding(padding: EdgeInsets.only(left: 10)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Olivia Martin",
+                          style: TextStyle(
                             color: Colors.white,
-                            size: 14,
+                            fontWeight: FontWeight.w500,
                           ),
-                          SizedBox(width: 5),
-                          Text(
-                            "25 June 2024, 08:00",
-                            style: TextStyle(
-                              color: Colors.white54,
-                              letterSpacing: 1.0,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              const Row(
-                children: [
-                  Icon(
-                    (LucideIcons.userCircle2),
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  Padding(padding: EdgeInsets.only(left: 10)),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Olivia Martin",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
                         ),
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            LucideIcons.calendarDays,
-                            color: Colors.white,
-                            size: 14,
-                          ),
-                          SizedBox(width: 5),
-                          Text(
-                            "25 June 2024, 08:00",
-                            style: TextStyle(
-                              color: Colors.white54,
-                              letterSpacing: 1.0,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
+                        Row(
+                          children: [
+                            Icon(
+                              LucideIcons.calendarDays,
+                              color: Colors.white,
+                              size: 14,
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              const Row(
-                children: [
-                  Icon(
-                    (LucideIcons.userCircle2),
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  Padding(padding: EdgeInsets.only(left: 10)),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Olivia Martin",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
+                            SizedBox(width: 5),
+                            Text(
+                              "25 June 2024, 08:00",
+                              style: TextStyle(
+                                color: Colors.white54,
+                                letterSpacing: 1.0,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            LucideIcons.calendarDays,
+                      ],
+                    )
+                  ],
+                ),
+                const Row(
+                  children: [
+                    Icon(
+                      (LucideIcons.userCircle2),
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                    Padding(padding: EdgeInsets.only(left: 10)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Olivia Martin",
+                          style: TextStyle(
                             color: Colors.white,
-                            size: 14,
+                            fontWeight: FontWeight.w500,
                           ),
-                          SizedBox(width: 5),
-                          Text(
-                            "25 June 2024, 08:00",
-                            style: TextStyle(
-                              color: Colors.white54,
-                              letterSpacing: 1.0,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              const Row(
-                children: [
-                  Icon(
-                    (LucideIcons.userCircle2),
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  Padding(padding: EdgeInsets.only(left: 10)),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Olivia Martin",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
                         ),
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            LucideIcons.calendarDays,
-                            color: Colors.white,
-                            size: 14,
-                          ),
-                          SizedBox(width: 5),
-                          Text(
-                            "25 June 2024, 08:00",
-                            style: TextStyle(
-                              color: Colors.white54,
-                              letterSpacing: 1.0,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
+                        Row(
+                          children: [
+                            Icon(
+                              LucideIcons.calendarDays,
+                              color: Colors.white,
+                              size: 14,
                             ),
+                            SizedBox(width: 5),
+                            Text(
+                              "25 June 2024, 08:00",
+                              style: TextStyle(
+                                color: Colors.white54,
+                                letterSpacing: 1.0,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                const Row(
+                  children: [
+                    Icon(
+                      (LucideIcons.userCircle2),
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                    Padding(padding: EdgeInsets.only(left: 10)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Olivia Martin",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
                           ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              LucideIcons.calendarDays,
+                              color: Colors.white,
+                              size: 14,
+                            ),
+                            SizedBox(width: 5),
+                            Text(
+                              "25 June 2024, 08:00",
+                              style: TextStyle(
+                                color: Colors.white54,
+                                letterSpacing: 1.0,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                const Row(
+                  children: [
+                    Icon(
+                      (LucideIcons.userCircle2),
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                    Padding(padding: EdgeInsets.only(left: 10)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Olivia Martin",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              LucideIcons.calendarDays,
+                              color: Colors.white,
+                              size: 14,
+                            ),
+                            SizedBox(width: 5),
+                            Text(
+                              "25 June 2024, 08:00",
+                              style: TextStyle(
+                                color: Colors.white54,
+                                letterSpacing: 1.0,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      )
-    );
+        ));
 
     return Column(
       children: [
@@ -418,7 +419,6 @@ class DashboardPage extends StatelessWidget {
             children: [
               MySort(
                 texts: ['Today', 'Week', 'Month', 'Year'],
-                selectedIndex: 0,
                 leftPadding: 35,
                 rightPadding: 35,
               ),
