@@ -10,8 +10,8 @@ export type JwtParameter = {
     ) => Promise<false | (Record<string, string | number> & JWTPayloadSpec)>;
 };
 
-export const verify = async (body: { token: string }, jwt: JwtParameter) => {
-    const profile = await jwt.verify(body.token);
+export const verify = async (token: string , jwt: JwtParameter) => {
+    const profile = await jwt.verify(token);
     if (!profile) {
         return {
             success: false,
@@ -28,19 +28,19 @@ export const verify = async (body: { token: string }, jwt: JwtParameter) => {
     
     }
 
-    const token = await prisma.token.findUnique({
-        where: { token: body.token },
+    const token_from_db = await prisma.token.findUnique({
+        where: { token: token },
     });
 
-    if (!token) {
+    if (!token_from_db) {
         return {
             success: false,
             message: "Token not found in database",
         };
     }
+};
 
-    return {
-        success: true,
-        message: "Token valid",
-    };
+type VerifyResponse = {
+    success: boolean;
+    message: string;
 };

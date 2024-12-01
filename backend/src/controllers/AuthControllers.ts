@@ -25,6 +25,14 @@ export const login = async (
             username: user.username,
         });
 
+        await prisma.token.createMany({
+            data: [{
+                token: token,
+            }, {
+                token: token_refresh,
+            }]
+        });
+
         // Memverifikasi password
         const isPasswordValid = await Bun.password.verify(
             body.password,

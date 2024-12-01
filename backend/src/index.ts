@@ -6,7 +6,10 @@ const app = new Elysia();
 
 app.use(swagger());
 app.get("/", () => "Hello Elysia!");
-app.group("/api", (app) => app.use(Routes));
+app.group("/api", (app) =>
+    app
+        .use(Routes)
+);
 app.listen({
     hostname: "0.0.0.0", // change sesuai IP address
     port: 3000,
