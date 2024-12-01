@@ -40,3 +40,18 @@ impl IntoResponse for IPResponse {
         (header, serde_json::to_string(&self).unwrap()).into_response()
     }
 }
+
+#[derive(Serialize)]
+pub struct RFResponse {
+    pub success: bool,
+    pub face_id: Option<u64>,
+    pub msg: String,
+}
+
+impl IntoResponse for RFResponse {
+    fn into_response(self) -> Response {
+        let mut header = HeaderMap::new();
+        header.append(CONTENT_TYPE, "application/json".parse().unwrap());
+        (header, serde_json::to_string(&self).unwrap()).into_response()
+    }
+}
