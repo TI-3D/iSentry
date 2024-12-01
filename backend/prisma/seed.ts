@@ -8,8 +8,8 @@ async function main() {
 
     // truncate table
     await prisma.$executeRawUnsafe(`TRUNCATE TABLE medias;`);
-    await prisma.$executeRawUnsafe(`TRUNCATE TABLE detectionlogs;`);
-    await prisma.$executeRawUnsafe(`TRUNCATE TABLE systemlogs;`);
+    await prisma.$executeRawUnsafe(`TRUNCATE TABLE detectionLogs;`);
+    await prisma.$executeRawUnsafe(`TRUNCATE TABLE systemLogs;`);
     await prisma.$executeRawUnsafe(`TRUNCATE TABLE identities;`);
     await prisma.$executeRawUnsafe(`TRUNCATE TABLE faces;`);
     await prisma.$executeRawUnsafe(`TRUNCATE TABLE users;`);

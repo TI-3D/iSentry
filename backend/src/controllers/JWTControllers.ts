@@ -19,6 +19,15 @@ export const verify = async (body: { token: string }, jwt: JwtParameter) => {
         };
     }
 
+    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+    if (profile.exp && profile.exp < currentTime) {
+        return {
+            success: false,
+            message: "Token has expired",
+        };
+    
+    }
+
     const token = await prisma.token.findUnique({
         where: { token: body.token },
     });
@@ -26,14 +35,7 @@ export const verify = async (body: { token: string }, jwt: JwtParameter) => {
     if (!token) {
         return {
             success: false,
-            message: "Token not found",
-        };
-    }
-
-    if (token.createdAt.getSeconds() + token.duration < Date.now()) {
-        return {
-            success: false,
-            message: "Token Expired",
+            message: "Token not found in database",
         };
     }
 
