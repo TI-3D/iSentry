@@ -40,7 +40,46 @@ export const verify = async (token: string , jwt: JwtParameter) => {
     }
 };
 
-type VerifyResponse = {
-    success: boolean;
-    message: string;
-};
+export const renew = async (refresh_token: string , jwt: JwtParameter) => {
+    const profile = await jwt.verify(refresh_token);
+    if (!profile) {
+        return {
+            success: false,
+            message: "Token not valid",
+        };
+    }
+
+    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+    if (profile.exp && profile.exp < currentTime) {
+        return {
+            success: false,
+            message: "Token has expired",
+        };
+    }
+
+    const token_from_db = await prisma.token.findUnique({
+        where: { token: refresh_token },
+    });
+
+    if (!token_from_db) {
+        return {
+            success: false,
+            message: "Token not found in database",
+        };
+    }
+    
+    const token = await jwt.sign({ id: profile.id, username: profile.username });
+    const token_refresh = await jwt.sign({
+        id: profile.id,
+        username: profile.username,
+    });
+
+    return {
+        success: true,
+        message: "Token renewed",
+        data: {
+            token,
+            token_refresh,
+        },
+    };
+}
