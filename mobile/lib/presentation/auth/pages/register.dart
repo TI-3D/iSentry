@@ -41,7 +41,7 @@ class RegisterPage extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => HomePage(
-                  userId: state.user.id,
+                  userId: state.auth.id,
                 ),
               ),
             );

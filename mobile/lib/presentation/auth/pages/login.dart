@@ -2,7 +2,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
-import 'package:isentry/domain/entities/user.dart';
 import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
 import 'package:isentry/presentation/auth/bloc/login_event.dart';
 import 'package:isentry/presentation/auth/bloc/login_state.dart';
@@ -13,6 +12,7 @@ import 'package:isentry/presentation/widgets/buttons/auth_button.dart';
 import 'package:isentry/presentation/widgets/typography/auth_heading.dart';
 import 'package:isentry/presentation/home/pages/bottom_bar.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:isentry/domain/entities/auth.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -27,7 +27,7 @@ class LoginPage extends StatelessWidget {
       body: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
-            if (state.user.role == Role.RESIDENT) {
+            if (state.auth.role == Role.RESIDENT) {
               QuickAlert.show(
                 context: context,
                 type: QuickAlertType.warning,
@@ -35,9 +35,9 @@ class LoginPage extends StatelessWidget {
                 text: 'Maaf anda bukan owner',
               );
               return;
-            } else if (state.user.role == Role.OWNER) {
+            } else if (state.auth.role == Role.OWNER) {
               AppNavigator.pushReplacement(
-                  context, HomePage(userId: state.user.id));
+                  context, HomePage(userId: state.auth.id));
             }
           } else if (state is LoginFailure) {
             ScaffoldMessenger.of(context)

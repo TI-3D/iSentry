@@ -7,17 +7,28 @@ class UserModel extends User {
     required super.username,
     required super.role,
     required super.ownerId,
+    required super.createAt,
+    required super.updateAt,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    print('Received JSON: $json');
-    final user = json['user'];
+    final createdAtString = json['createdAt'] as String;
+    final updatedAtString = json['updatedAt'] as String;
+
+    // Konversi ke DateTime hanya dengan tahun, bulan, dan tanggal
+    final createdAtDate = DateTime.parse(createdAtString);
+    final updatedAtDate = DateTime.parse(updatedAtString);
+
     return UserModel(
-      id: user['id'] as int,
-      name: user['name'] as String,
-      username: user['username'] as String,
-      role: Role.values.byName(user['role'] as String),
-      ownerId: user['ownerId'] != null ? user['ownerId'] as int : null,
+      id: json['id'] as int,
+      name: json['name'] as String,
+      username: json['username'] as String,
+      role: Role.values.byName(json['role'] as String),
+      ownerId: json['ownerId'] != null ? json['ownerId'] as int : null,
+      createAt: DateTime(createdAtDate.year, createdAtDate.month,
+          createdAtDate.day, createdAtDate.hour, createdAtDate.minute),
+      updateAt: DateTime(updatedAtDate.year, updatedAtDate.month,
+          updatedAtDate.day, updatedAtDate.hour, updatedAtDate.minute),
     );
   }
 
@@ -26,7 +37,10 @@ class UserModel extends User {
       'id': id,
       'name': name,
       'username': username,
-      'role': role.name,
+      'role': role,
+      'ownerId': ownerId,
+      'createAt': createAt.toIso8601String(),
+      'updateAt': updateAt.toIso8601String(),
     };
   }
 }
