@@ -19,7 +19,7 @@ pub async fn run(db_pool: mysql::Pool, tx: Sender<Job>) {
     let app = Router::new()
         .route("/", get(root))
         .route("/process-image", post(process_image))
-        .route("/register-face", post(register_face))
+        .route("/validate-face", post(register_face))
         .with_state(AppState { db_pool, tx });
 
     let ai_server_address = dotenvy::var("WEB_ADDRESS").unwrap();
