@@ -97,7 +97,7 @@ class RegisterPage extends StatelessWidget {
                             passwordController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("data ada yang kosong"),
+                              content: Text("Please fill in all fields"),
                               duration: Duration(seconds: 3),
                             ),
                           );
@@ -106,7 +106,7 @@ class RegisterPage extends StatelessWidget {
                             confirmPasswordController.text) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("Confirm password salah"),
+                              content: Text("Confirm password is incorrect"),
                               duration: Duration(seconds: 3),
                             ),
                           );

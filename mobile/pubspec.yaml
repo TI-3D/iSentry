@@ -29,6 +29,8 @@ dependencies:
   url_launcher: ^6.3.1
   equatable: ^2.0.5
   fl_chart: ^0.69.0
+  video_player: ^2.9.2
+  avatar_stack: ^1.2.0
   quickalert: ^1.1.0
   flutter_vlc_player: ^7.4.2
   flutter_secure_storage: ^9.2.2
@@ -54,6 +56,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    # - assets/medias/
     - assets/images/
     - assets/icons/
 

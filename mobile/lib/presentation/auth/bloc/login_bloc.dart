@@ -35,12 +35,12 @@ class LoginBloc extends Bloc<AuthEvent, LoginState> {
           NetworkService.setToken(token);
           emit(LoginSuccess(auth));
         } else {
-          emit(const LoginFailure('Username atau Password salah'));
+          emit(const LoginFailure('Incorrect username or password'));
         }
       } catch (e, stackTrace) {
         debugPrint('error during login: $e');
         debugPrint('stackTrace: $stackTrace');
-        emit(const LoginFailure('Terjadi kesalahan saat login'));
+        emit(const LoginFailure('Login failed'));
       }
     });
 
@@ -64,12 +64,12 @@ class LoginBloc extends Bloc<AuthEvent, LoginState> {
         if (body['success']) {
           emit(SignupSuccess());
         } else {
-          emit(const LoginFailure('Username sudah terdaftar'));
+          emit(const LoginFailure('Username is already registered')); 
         }
       } catch (e, stackTrace) {
         debugPrint('error during login: $e');
         debugPrint('stackTrace: $stackTrace');
-        emit(const LoginFailure('Terjadi kesalahan saat sigup'));
+        emit(const LoginFailure('Sign up failed')); 
       }
     });
   }
