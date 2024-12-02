@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:isentry/presentation/home/bloc/user_bloc.dart';
-import 'package:isentry/presentation/home/bloc/user_event.dart';
-import 'package:isentry/presentation/home/bloc/user_state.dart';
+import 'package:isentry/presentation/home/bloc/user/user_bloc.dart';
+import 'package:isentry/presentation/home/bloc/user/user_event.dart';
+import 'package:isentry/presentation/home/bloc/user/user_state.dart';
 import 'package:isentry/presentation/home/pages/recognized/bottom_sheets/add_account.dart';
 import 'package:isentry/presentation/home/pages/recognized/bottom_sheets/add_data.dart';
 import 'package:isentry/presentation/home/pages/recognized/bottom_sheets/detail_data.dart';
