@@ -10,7 +10,6 @@ import MediaRoutes from "./MediaRoutes";
 import FaceRoutes from "./FaceRoutes";
 import AuthRoutes from "./AuthRoutes";
 import { verify } from "../controllers/JWTControllers";
-import jwt from "@elysiajs/jwt";
 
 const Routes = new Elysia()
     .use(AuthRoutes)
