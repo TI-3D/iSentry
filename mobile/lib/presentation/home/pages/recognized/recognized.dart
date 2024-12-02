@@ -280,7 +280,6 @@ class _RecognizedPageState extends State<RecognizedPage> {
             } else if (state is UserFailure) {
               return Center(child: Text('Error: ${state.errorMessage}'));
             }
-            debugPrint('Unhandled state: $state');
             return Container();
           },
         );
