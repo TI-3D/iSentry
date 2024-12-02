@@ -6,9 +6,12 @@ const app = new Elysia();
 
 app.use(swagger());
 app.get("/", () => "Hello Elysia!");
-app.group("/api", (app) => app.use(Routes));
+app.group("/api", (app) =>
+    app
+        .use(Routes)
+);
 app.listen({
-    hostname: "192.168.1.83",
+    hostname: "localhost",
     port: 3000,
 });
 

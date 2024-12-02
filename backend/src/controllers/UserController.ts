@@ -45,6 +45,7 @@ export async function createUser(options: {
         }
         const hashedPassword = await Bun.password.hash(options.password);
 
+        const hashedPassword = await Bun.password.hash(options.password);
         const users = await prisma.user.create({
             data: {
                 username: options.username,
