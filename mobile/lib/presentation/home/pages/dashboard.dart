@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
+import 'package:isentry/presentation/home/bloc/user_bloc.dart';
+import 'package:isentry/presentation/home/bloc/user_event.dart';
+import 'package:isentry/presentation/home/bloc/user_state.dart';
 import 'package:isentry/presentation/widgets/components/line_chart.dart';
 import 'package:isentry/presentation/widgets/components/sort.dart';
 import 'package:isentry/presentation/home/pages/profile/account_settings.dart';
@@ -8,57 +12,19 @@ import 'package:isentry/presentation/home/pages/detection_log.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class DashboardPage extends StatelessWidget {
-  final String userName;
+  final int userId;
   final Function toRecognized;
   final Function toUnrecognized;
-  const DashboardPage(
-      {super.key,
-      required this.toRecognized,
-      required this.toUnrecognized,
-      required this.userName});
+  const DashboardPage({
+    super.key,
+    required this.toRecognized,
+    required this.toUnrecognized,
+    required this.userId,
+  });
 
   @override
   Widget build(BuildContext context) {
-    Widget dashboard = Container(
-      color: AppColors.primary,
-      padding: const EdgeInsets.only(left: 35, right: 35, top: 40),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Hello! $userName",
-                style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1.5,
-                    color: Color(0xFFc8cad1)),
-              ),
-              const Text(
-                "My Dashboard",
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1.5,
-                    fontSize: 16),
-              )
-            ],
-          ),
-          IconButton(
-            onPressed: () {
-              AppNavigator.push(
-                  context, AccountSettingsPage(userName: userName));
-            },
-            icon: const Icon(
-              (LucideIcons.userCircle2),
-              size: 40,
-            ),
-          ),
-        ],
-      ),
-    );
+    context.read<UserBloc>().add(GetUserById(id: '$userId'));
 
     Widget faces = Container(
       color: AppColors.primary,
@@ -403,42 +369,92 @@ class DashboardPage extends StatelessWidget {
           ),
         ));
 
-    return Column(
-      children: [
-        Expanded(
-          flex: 12,
-          child: dashboard,
-        ),
-        Expanded(
-          flex: 11,
-          child: faces,
-        ),
-        const Expanded(
-          flex: 27,
-          child: Column(
+    return BlocBuilder<UserBloc, UserState>(
+      builder: (context, state) {
+        if (state is UserInitial || state is UserLoading) {
+          return Center(child: CircularProgressIndicator());
+        } else if (state is UserLoaded) {
+          return Column(
             children: [
-              MySort(
-                texts: ['Today', 'Week', 'Month', 'Year'],
-                leftPadding: 35,
-                rightPadding: 35,
-              ),
               Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 20, right: 30),
-                  child: AspectRatio(
-                    aspectRatio: 3,
-                    child: LineChartDashboard(),
+                flex: 12,
+                child: Container(
+                  color: AppColors.primary,
+                  padding: const EdgeInsets.only(left: 35, right: 35, top: 40),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Hallo ${state.user.name}',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.5,
+                                color: Color(0xFFc8cad1)),
+                          ),
+                          const Text(
+                            "My Dashboard",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.5,
+                                fontSize: 16),
+                          )
+                        ],
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          AppNavigator.push(
+                              context, AccountSettingsPage(userId: userId));
+                        },
+                        icon: const Icon(
+                          (LucideIcons.userCircle2),
+                          size: 40,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              )
+              ),
+              Expanded(
+                flex: 11,
+                child: faces,
+              ),
+              const Expanded(
+                flex: 27,
+                child: Column(
+                  children: [
+                    MySort(
+                      texts: ['Today', 'Week', 'Month', 'Year'],
+                      leftPadding: 35,
+                      rightPadding: 35,
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 20, right: 30),
+                        child: AspectRatio(
+                          aspectRatio: 3,
+                          child: LineChartDashboard(),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 27,
+                child: activity,
+              ),
             ],
-          ),
-        ),
-        Expanded(
-          flex: 27,
-          child: activity,
-        ),
-      ],
+          );
+        }
+        return const Center(
+          child: Text("Unexpected state!"),
+        );
+      },
     );
   }
 }
