@@ -15,6 +15,7 @@ datasource db {
 
 model User {
   id                Int               @id @default(autoincrement())
+  tokens             Token[]
   username          String
   name              String
   password          String
@@ -109,14 +110,15 @@ enum Item_type {
 model Token {
   id                Int               @id @default(autoincrement())
   token             String            @unique
-  state             State             @default(ACTIVE)
-  duration          Int               @default(86400)
+  userId            Int
+  user              User              @relation(fields: [userId], references: [id])
+  type              Type_token        @default(ACCESS)
   createdAt         DateTime          @default(now())
 
   @@map("tokens")
 }
 
-enum State {
-  ACTIVE
-  INACTIVE
+enum Type_token {
+  ACCESS
+  REFRESH
 }
