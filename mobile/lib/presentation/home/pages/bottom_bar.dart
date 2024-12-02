@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
+import 'package:isentry/core/configs/theme/app_colors.dart';
 import 'package:isentry/presentation/home/pages/camera/camera.dart';
 import 'package:isentry/presentation/home/pages/dashboard.dart';
 import 'package:isentry/presentation/home/pages/gallery/gallery.dart';
@@ -8,7 +9,8 @@ import 'package:isentry/presentation/home/pages/unrecognized/unrecognized.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final int userId;
+  const HomePage({super.key, required this.userId});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -18,30 +20,46 @@ class HomePage extends StatefulWidget {
 class _BottomAppBarState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    DashboardPage(),
-    RecognizedPage(),
-    Center(child: Text('Camera')),
-    UnrecognizedPage(),
-    GalleryPage(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      if (index == 2) {
-        AppNavigator.push(context, const CameraPage());
-      } else {
-        _selectedIndex = index;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final List<Widget> widgetOptions = <Widget>[
+      DashboardPage(
+        userId: widget.userId,
+        toRecognized: () {
+          setState(
+            () {
+              _selectedIndex = 1;
+            },
+          );
+        },
+        toUnrecognized: () {
+          setState(
+            () {
+              _selectedIndex = 3;
+            },
+          );
+        },
+      ),
+      RecognizedPage(userId: widget.userId),
+      const Center(child: Text('Camera')),
+      const UnrecognizedPage(),
+      const GalleryPage(),
+    ];
+
+    void onItemTapped(int index) {
+      setState(() {
+        if (index == 2) {
+          AppNavigator.push(context, const CameraPage());
+        } else {
+          _selectedIndex = index;
+        }
+      });
+    }
+
     return Scaffold(
-      body: _widgetOptions[_selectedIndex],
+      body: widgetOptions[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xfff1f4f9),
+        backgroundColor: AppColors.background,
         items: [
           BottomNavigationBarItem(
             icon: const Icon(LucideIcons.layoutDashboard),
@@ -75,7 +93,7 @@ class _BottomAppBarState extends State<HomePage> {
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
+        onTap: onItemTapped,
         elevation: 0,
         selectedIconTheme: const IconThemeData(
           size: 30,

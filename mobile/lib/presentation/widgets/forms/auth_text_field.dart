@@ -57,7 +57,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           borderRadius: BorderRadius.circular(8.0),
           borderSide: const BorderSide(
             color: Colors.black,
-            width: 1.0,
+            width: 2.0,
           ),
         ),
         suffixIcon: widget.obscureText 

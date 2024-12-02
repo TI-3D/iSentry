@@ -20,7 +20,7 @@ class SplashPage extends StatelessWidget {
           }
 
           if (state is Authenticated) {
-            AppNavigator.pushReplacement(context, const HomePage());
+            AppNavigator.pushReplacement(context, const HomePage(userId: 1));
           }
         },
         child: Container(
@@ -29,22 +29,6 @@ class SplashPage extends StatelessWidget {
               image: AssetImage(AppImages.splashBackground),
             ),
           ),
-          // child: const Center( 
-          //   child: Column(
-          //     mainAxisSize: MainAxisSize.min,
-          //     children: [
-          //       SizedBox(height: 220),
-          //       Text(
-          //         'Your Safety, Our Priority',
-          //         style: TextStyle(
-          //           fontSize: 14,
-          //           fontWeight: FontWeight.w500,
-          //           color: Colors.black,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
         ),
       ),
     );
