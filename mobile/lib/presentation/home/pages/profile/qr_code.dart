@@ -8,8 +8,8 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
 class QrCodePage extends StatelessWidget {
-  final String userName;
-  QrCodePage({super.key, required this.userName});
+  final int userId;
+  QrCodePage({super.key, required this.userId});
 
   final ScreenshotController _screenshotController = ScreenshotController();
 
@@ -59,7 +59,7 @@ class QrCodePage extends StatelessWidget {
                       color: Colors.white,
                       padding: const EdgeInsets.all(12),
                       child: QrImageView(
-                        data: userName,
+                        data: 'userId',
                         version: QrVersions.auto,
                         size: 260,
                         errorCorrectionLevel: QrErrorCorrectLevel.H,
