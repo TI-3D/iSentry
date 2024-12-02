@@ -146,3 +146,25 @@ export async function deleteFace(id: string) {
         console.error(`Error deleting face item: ${e}`);
     }
 }
+
+export async function validateFace(face: File) {
+    try {
+        const respons = await fetch("http://localhost:3001/validate-face");
+        const responseBody = await respons.json();
+        if (responseBody.success === false) {
+            return {
+                success: false,
+                message: "Face validation failed",
+                error: responseBody.error,
+            };
+        } else {
+            return {
+                success: true,
+                message: "Face validation success",
+                face_id: responseBody.face_id,
+            };
+        }
+    } catch (e: unknown) {
+        console.error(`Error validating face : ${e}`);
+    }
+}
