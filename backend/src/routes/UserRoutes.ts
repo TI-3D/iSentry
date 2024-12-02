@@ -29,6 +29,7 @@ const UserRoutes = new Elysia({ prefix: "/users" })
                     password: string;
                     role: Role;
                     identityId?: number | null;
+                    ownerId?: number | null;
                 }
             );
         },
@@ -39,6 +40,7 @@ const UserRoutes = new Elysia({ prefix: "/users" })
                 password: t.String({ minLength: 7, maxLength: 15 }),
                 role: t.Enum(Role),
                 identityId: t.Optional(t.Number()),
+                ownerId: t.Optional(t.Number()),
             }),
         }
     )
@@ -60,6 +62,7 @@ const UserRoutes = new Elysia({ prefix: "/users" })
                     password?: string;
                     role?: Role;
                     identityId?: number | null;
+                    ownerId?: number | null;
                 }
             );
         },
@@ -72,6 +75,7 @@ const UserRoutes = new Elysia({ prefix: "/users" })
                 password: t.Optional(t.String({ minLength: 7, maxLength: 15 })),
                 role: t.Optional(t.Enum(Role)),
                 identityId: t.Number({ optional: true }),
+                ownerId: t.Number({ optional: true }),
             }),
         }
     )

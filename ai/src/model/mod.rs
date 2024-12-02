@@ -3,6 +3,7 @@ use std::{env::var, path::PathBuf, sync::Arc, time::Duration};
 use ab_glyph::{FontRef, PxScale};
 use bounding_box::BoundingBox;
 // use chrono::Utc;
+use crate::utils::LabelID;
 use dlib_face_recognition::{
     FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, FaceLandmarks,
     ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait,
@@ -12,11 +13,9 @@ use image::DynamicImage;
 use mysql::{params, prelude::Queryable};
 use tokio::{
     sync::{mpsc::Receiver, Mutex},
-    time::{sleep, Instant},
+    time::sleep,
 };
-use tracing::info;
 use uuid::Uuid;
-use crate::utils::LabelID;
 
 use crate::job::{Job, JobKind, JobResult};
 
@@ -49,7 +48,8 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                     let mut faces = faces_clone.lock().await;
                     let mut identities = identities_clone.lock().await;
 
-                    if let Err(e) = identity::update(db_conn.as_mut(), &mut faces, &mut identities) {
+                    if let Err(e) = identity::update(db_conn.as_mut(), &mut faces, &mut identities)
+                    {
                         tracing::error!("Error updating identity: {e}");
                     }
                 }
@@ -61,42 +61,104 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
 
     while let Some(job) = rx.recv().await {
         match job.kind {
-            JobKind::Detection => (),
-            JobKind::Recognition => (),
-            JobKind::DetThenRec(opts) => {
-                let start = Instant::now();
+            JobKind::ProcessImage => {
                 let image_matrix = ImageMatrix::from_image(&job.image);
                 let bboxes = detector.face_locations(&image_matrix);
-                let start2 = Instant::now();
-                tracing::info!("faces: {}", bboxes.len());
                 let landmarks = bboxes
                     .iter()
-                    .map(|face| landmark_predictor.face_landmarks(&image_matrix, face))
+                    .map(|bbox| landmark_predictor.face_landmarks(&image_matrix, bbox))
+                    .collect::<Vec<FaceLandmarks>>();
+                let embeddings = face_encoder.get_face_encodings(&image_matrix, &landmarks, 0);
+
+                let image = DynamicImage::ImageRgb8(job.image);
+                let full_id = Uuid::new_v4().to_string();
+                let result = bboxes
+                    .iter()
+                    .zip(embeddings.iter())
+                    .map(|(bbox, embedding)| {
+                        let id = Uuid::new_v4().to_string();
+                        image
+                            .crop_imm(
+                                bbox.left as u32,
+                                bbox.top as u32,
+                                bbox.width() as u32,
+                                bbox.height() as u32,
+                            )
+                            .save(format!("/home/alimulap/tmp/isentry/{id}.jpg"))
+                            .unwrap();
+                        (
+                            id,
+                            (
+                                bbox.left,
+                                bbox.top,
+                                bbox.width() as u64,
+                                bbox.height() as u64,
+                            ),
+                            embedding.to_vec(),
+                        )
+                    })
+                    .collect::<Vec<(String, (i64, i64, u64, u64), Vec<f64>)>>();
+                let mut image = image.to_rgb8();
+                let font =
+                    FontRef::try_from_slice(include_bytes!("../../assets/Montserrat-Medium.ttf"))
+                        .unwrap();
+
+                let font_height = 24.;
+                let scale = PxScale {
+                    x: font_height,
+                    y: font_height,
+                };
+                for (_, bbox, _) in result.iter() {
+                    image.label(
+                        &BoundingBox {
+                            top: bbox.1 as i32,
+                            left: bbox.0 as i32,
+                            width: bbox.2 as u32,
+                            height: bbox.3 as u32,
+                        },
+                        "",
+                        &font,
+                        font_height,
+                        scale,
+                    );
+                }
+                image
+                    .save(format!("/home/alimulap/tmp/isentry/{full_id}.jpg"))
+                    .unwrap();
+                if job
+                    .tx
+                    .send(JobResult::ProcessImage(full_id, result))
+                    .is_err()
+                {
+                    tracing::error!("Requester id: {} hung up before receiving data", job.id);
+                }
+            }
+            JobKind::AutoLabel => {
+                // let start = Instant::now();
+                let image_matrix = ImageMatrix::from_image(&job.image);
+                // let start2 = Instant::now();
+                let bboxes = detector.face_locations(&image_matrix);
+                // tracing::info!("faces: {}", bboxes.len());
+                let landmarks = bboxes
+                    .iter()
+                    .map(|bbox| landmark_predictor.face_landmarks(&image_matrix, bbox))
                     .collect::<Vec<FaceLandmarks>>();
                 let bboxes = bboxes
                     .iter()
                     .map(BoundingBox::from)
                     .collect::<Vec<BoundingBox>>();
                 let embeddings = face_encoder.get_face_encodings(&image_matrix, &landmarks, 0);
-                tracing::info!("NNs takes {}ms", start2.elapsed().as_millis());
+                // tracing::info!("NNs takes {}ms", start2.elapsed().as_millis());
 
                 let image = DynamicImage::ImageRgb8(job.image);
 
-                let mut cropped_images =
-                    Vec::with_capacity(if opts.crop_face { bboxes.len() } else { 0 });
-                if opts.crop_face {
-                    for face in bboxes.iter() {
-                        cropped_images.push(
-                            image
-                                .crop_imm(
-                                    face.left as u32,
-                                    face.top as u32,
-                                    face.width,
-                                    face.height,
-                                )
-                                .into_rgb8(),
-                        );
-                    }
+                let mut cropped_images = Vec::with_capacity(bboxes.len());
+                for face in bboxes.iter() {
+                    cropped_images.push(
+                        image
+                            .crop_imm(face.left as u32, face.top as u32, face.width, face.height)
+                            .into_rgb8(),
+                    );
                 }
 
                 enum Label {
@@ -144,10 +206,9 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
 
                 let mut image = image.to_rgb8();
 
-                let font = FontRef::try_from_slice(include_bytes!(
-                    "../../assets/Montserrat-Medium.ttf"
-                ))
-                .unwrap();
+                let font =
+                    FontRef::try_from_slice(include_bytes!("../../assets/Montserrat-Medium.ttf"))
+                        .unwrap();
 
                 let font_height = 24.;
                 let scale = PxScale {
@@ -173,7 +234,7 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                 let push_pic = db_conn
                     .prep(
                         "
-                        INSERT INTO galleryItems (path, type, capture_method, updatedAt) 
+                        INSERT INTO medias (path, type, capture_method, updatedAt) 
                         VALUES (:path, \"PICTURE\", \"AUTO\", NOW())
                     ",
                     )
@@ -207,7 +268,7 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                     ",
                     )
                     .unwrap();
-                for name in names {
+                for name in &names {
                     if let Label::Id(id, true) = name {
                         let mut single_pic_path = tmp_dir.clone();
                         let uuid = Uuid::new_v4().to_string();
@@ -243,19 +304,128 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
                     }
                 }
 
+                let names = names
+                    .into_iter()
+                    .map(|name| match name {
+                        Label::Name(name_str) => name_str,
+                        Label::Id(id, _) => id.to_string(),
+                    })
+                    .collect::<Vec<String>>();
+
                 if job
                     .tx
-                    .send(JobResult::MBBnLandMWI(
-                        opts.bbox.then_some(bboxes),
-                        opts.embedding.then_some(embeddings),
-                        opts.crop_face.then_some(cropped_images),
-                        opts.label_source.then_some(image),
+                    .send(JobResult::AutoLabel(
+                        bboxes,
+                        names,
+                        // embeddings,
+                        // cropped_images,
+                        // image,
                     ))
                     .is_err()
                 {
-                    info!("Requester id: {} hung up before receiving data", job.id);
+                    tracing::error!("Requester id: {} hung up before receiving data", job.id);
                 }
-                tracing::info!("Scanning take {}ms", start.elapsed().as_millis());
+                // tracing::info!("Scanning take {}ms", start.elapsed().as_millis());
+            }
+            JobKind::RegisterFace => {
+                let image_matrix = ImageMatrix::from_image(&job.image);
+                let bboxes = detector.face_locations(&image_matrix);
+                if bboxes.len() != 1 {
+                    if job
+                        .tx
+                        .send(JobResult::RegisterFace(None, bboxes.len()))
+                        .is_err()
+                    {
+                        tracing::error!("Requester id: {} hung up before receiving data", job.id);
+                    }
+                    continue;
+                }
+                let bbox = bboxes[0];
+                let landmark = landmark_predictor.face_landmarks(&image_matrix, &bbox);
+                let embeddings = face_encoder.get_face_encodings(&image_matrix, &[landmark], 0);
+                let embedding = &embeddings[0];
+
+                let home = dotenvy::var("HOME").unwrap();
+
+                let image = DynamicImage::ImageRgb8(job.image);
+                let full_id = Uuid::new_v4().to_string();
+                let full_path = format!("{home}/isentry/medias/{full_id}.jpg");
+                let cropped_id = Uuid::new_v4().to_string();
+                let cropped_path = format!("{home}/isentry/medias/{cropped_id}.jpg");
+                image
+                    .crop_imm(
+                        bbox.left as u32,
+                        bbox.top as u32,
+                        bbox.width() as u32,
+                        bbox.height() as u32,
+                    )
+                    .save(cropped_path)
+                    .unwrap();
+
+                let bbox = BoundingBox::from(&bbox);
+
+                let bbox_bin = bincode::serialize(&bbox).unwrap();
+                let embedding_bin = bincode::serialize(&embedding.to_vec()).unwrap();
+
+                db_conn
+                    .exec_drop(
+                        "INSERT INTO faces (bounding_box, embedding, updatedAt)
+                    VALUES (:bounding_box, :embedding, NOW())",
+                        params! {
+                            "bounding_box" => bbox_bin,
+                            "embedding" => embedding_bin
+                        },
+                    )
+                    .unwrap();
+
+                let face_id = db_conn.last_insert_id();
+
+                let mut image = image.to_rgb8();
+                let font =
+                    FontRef::try_from_slice(include_bytes!("../../assets/Montserrat-Medium.ttf"))
+                        .unwrap();
+
+                let font_height = 24.;
+                let scale = PxScale {
+                    x: font_height,
+                    y: font_height,
+                };
+
+                image.label(&bbox, &face_id.to_string(), &font, font_height, scale);
+                image.save(full_path.clone()).unwrap();
+
+                db_conn
+                    .exec_drop(
+                        "INSERT INTO medias (path, type, capture_method, updatedAt) 
+                        VALUES (:path, \"PICTURE\", \"AUTO\", NOW())",
+                        params! {
+                            "path" => full_path
+                        },
+                    )
+                    .unwrap();
+                let full_img_id = db_conn.last_insert_id();
+                let cropped_img_id = db_conn.last_insert_id();
+
+                db_conn
+                    .exec_drop(
+                        "UPDATE faces 
+                        SET picture_single = :single_pic, picture_full = :full_pic 
+                        WHERE id = :id",
+                        params! {
+                            "id" => face_id,
+                            "single_pic" => cropped_img_id,
+                            "full_pic" => full_img_id,
+                        },
+                    )
+                    .unwrap();
+
+                if job
+                    .tx
+                    .send(JobResult::RegisterFace(Some(face_id), bboxes.len()))
+                    .is_err()
+                {
+                    tracing::error!("Requester id: {} hung up before receiving data", job.id);
+                }
             }
         }
     }

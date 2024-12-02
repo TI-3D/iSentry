@@ -1,0 +1,22 @@
+name: live_camera
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  audio_session: ^0.1.21
+  flutter:
+    sdk: flutter
+  haishin_kit: ^0.13.0
+  permission_handler: ^11.3.1
+
+dev_dependencies:
+  flutter_lints: ^4.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

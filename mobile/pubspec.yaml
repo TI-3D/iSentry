@@ -32,6 +32,9 @@ dependencies:
   video_player: ^2.9.2
   avatar_stack: ^1.2.0
   quickalert: ^1.1.0
+  flutter_vlc_player: ^7.4.2
+  flutter_secure_storage: ^9.2.2
+  jwt_decoder: ^2.0.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.1

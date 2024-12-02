@@ -15,12 +15,16 @@ datasource db {
 
 model User {
   id                Int               @id @default(autoincrement())
+  tokens             Token[]
   username          String
   name              String
   password          String
   identity          Identity?         @relation(fields: [identityId], references: [id])
   identityId        Int?              @unique
   role              Role              @default(OWNER)
+  ownerId           Int?
+  owner             User?             @relation("Owner Resident",fields: [ownerId], references: [id])
+  residents         User[]            @relation("Owner Resident")
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 
@@ -67,9 +71,9 @@ model Face {
   identity          Int?
   embedding         Bytes
   bounding_box      Bytes
-  singlePictures    Gallery_Item?     @relation ("SinglePicture", fields : [picture_single], references: [id])
+  singlePictures    Media?            @relation ("SinglePicture", fields : [picture_single], references: [id])
   picture_single    Int?
-  fullPictures      Gallery_Item?     @relation ("FullPicture", fields : [picture_full], references: [id])
+  fullPictures      Media?            @relation ("FullPicture", fields : [picture_full], references: [id])
   picture_full      Int?
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt()
@@ -80,7 +84,7 @@ model Face {
 }
 
 
-model Gallery_Item {
+model Media {
   id                Int               @id @default(autoincrement())
   path              String
   type              Item_type         @default(VIDEO) 
@@ -90,7 +94,7 @@ model Gallery_Item {
   facesFull         Face[]            @relation("FullPicture")
   facesSingle       Face[]            @relation("SinglePicture")
 
-  @@map("galleryItems")
+  @@map("medias")
 }
 
 enum Capture_method {
@@ -101,4 +105,20 @@ enum Capture_method {
 enum Item_type {
   PICTURE
   VIDEO
+}
+
+model Token {
+  id                Int               @id @default(autoincrement())
+  token             String            @unique
+  userId            Int
+  user              User              @relation(fields: [userId], references: [id])
+  type              Type_token        @default(ACCESS)
+  createdAt         DateTime          @default(now())
+
+  @@map("tokens")
+}
+
+enum Type_token {
+  ACCESS
+  REFRESH
 }

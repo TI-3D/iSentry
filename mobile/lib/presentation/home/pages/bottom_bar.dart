@@ -9,8 +9,8 @@ import 'package:isentry/presentation/home/pages/unrecognized/unrecognized.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class HomePage extends StatefulWidget {
-  final String userName;
-  const HomePage({super.key, required this.userName});
+  final int userId;
+  const HomePage({super.key, required this.userId});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -24,7 +24,7 @@ class _BottomAppBarState extends State<HomePage> {
   Widget build(BuildContext context) {
     final List<Widget> widgetOptions = <Widget>[
       DashboardPage(
-        userName: widget.userName,
+        userId: widget.userId,
         toRecognized: () {
           setState(
             () {
@@ -40,7 +40,7 @@ class _BottomAppBarState extends State<HomePage> {
           );
         },
       ),
-      const RecognizedPage(),
+      RecognizedPage(userId: widget.userId),
       const Center(child: Text('Camera')),
       const UnrecognizedPage(),
       const GalleryPage(),

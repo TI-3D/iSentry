@@ -30,6 +30,7 @@ export async function createUser(options: {
     password: string;
     role: Role;
     identityId?: number | null;
+    ownerId?: number | null;
 }) {
     try {
         const username = await prisma.user.findMany({
@@ -42,14 +43,17 @@ export async function createUser(options: {
                 message: "Username already exists!",
             };
         }
+        const hashedPassword = await Bun.password.hash(options.password);
 
+        const hashedPassword = await Bun.password.hash(options.password);
         const users = await prisma.user.create({
             data: {
                 username: options.username,
                 name: options.name,
-                password: options.password,
+                password: hashedPassword,
                 role: options.role,
                 identityId: options.identityId ?? null,
+                ownerId: options.ownerId ?? null,
             },
         });
         return {
@@ -101,12 +105,11 @@ export async function updateUser(
         username?: string;
         name?: string;
         password?: string;
-        role?: Role;
     }
 ) {
     try {
         const userId = parseInt(id);
-        const { username, name, password, role } = options;
+        const { username, name, password } = options;
 
         const users = await prisma.user.update({
             where: { id: userId },
@@ -114,7 +117,6 @@ export async function updateUser(
                 ...(username ? { username } : {}),
                 ...(name ? { name } : {}),
                 ...(password ? { password } : {}),
-                ...(role ? { role } : {}),
             },
         });
 
