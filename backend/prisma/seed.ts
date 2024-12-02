@@ -42,7 +42,7 @@ async function main() {
     });
     const identity5 = await prisma.identity.create({
         data: {
-            name: "Joko Widodo",
+            name: "Anomali",
         },
     });
     const identity6 = await prisma.identity.create({
@@ -156,16 +156,16 @@ async function main() {
             ownerId: identity1.id,
         },
     });
-    const user5 = await prisma.user.create({
-        data: {
-            username: "jokowi",
-            name: "Joko Widodo",
-            password: await Bun.password.hash("12345678"),
-            identityId: identity5.id,
-            role: "RESIDENT",
-            ownerId: identity1.id,
-        },
-    });
+    // const user5 = await prisma.user.create({
+    //     data: {
+    //         username: "jokowi",
+    //         name: "Joko Widodo",
+    //         password: await Bun.password.hash("12345678"),
+    //         identityId: identity5.id,
+    //         role: "RESIDENT",
+    //         ownerId: identity1.id,
+    //     },
+    // });
     const user6 = await prisma.user.create({
         data: {
             username: "bidenjoe",
