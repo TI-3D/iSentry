@@ -2,8 +2,7 @@ use std::{path::PathBuf, sync::Arc};
 
 use ab_glyph::{FontRef, PxScale};
 use dlib_face_recognition::{
-    FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, FaceLandmarks,
-    ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait,
+    FaceDetector, FaceDetectorCnn, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, FaceLandmarks, ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait
 };
 use image::DynamicImage;
 use mysql::{params, prelude::Queryable, PooledConn};
@@ -20,7 +19,8 @@ use crate::{
 };
 
 pub async fn auto_label(
-    detector: Arc<Mutex<FaceDetector>>,
+    //detector: Arc<Mutex<FaceDetector>>,
+    detector: Arc<Mutex<FaceDetectorCnn>>,
     landmark_predictor: &LandmarkPredictor,
     face_encoder: Arc<Mutex<FaceEncoderNetwork>>,
     db_conn: &mut PooledConn,
