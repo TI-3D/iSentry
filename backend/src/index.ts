@@ -11,7 +11,7 @@ app.group("/api", (app) =>
         .use(Routes)
 );
 app.listen({
-    hostname: "localhost",
+    hostname: "0.0.0.0", // change sesuai IP address
     port: 3000,
 });
 
