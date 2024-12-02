@@ -33,7 +33,7 @@ pub async fn auto_label(
     // let start2 = Instant::now();
     let detector = detector.lock().await;
     let bboxes = detector.face_locations(&image_matrix);
-    // tracing::info!("faces: {}", bboxes.len());
+    tracing::info!("faces: {}", bboxes.len());
     let landmarks = bboxes
         .iter()
         .map(|bbox| landmark_predictor.face_landmarks(&image_matrix, bbox))
@@ -116,10 +116,9 @@ pub async fn auto_label(
         image.label(bbox, name, &font, font_height, scale);
     }
 
-    let mut tmp_dir = PathBuf::from(dotenvy::var("TEMP").unwrap());
-    tmp_dir.push("isentry");
+    let media_dir = PathBuf::from(dotenvy::var("ISENTRY_MEDIA_DIR").unwrap());
     // let now = Utc::now().format("%Y-%m-%d-%H:%M:%S");
-    let mut full_pic_path = tmp_dir.clone();
+    let mut full_pic_path = media_dir.clone();
     let uuid = Uuid::new_v4().to_string();
     full_pic_path.push(format!("auto-capture-{}.jpg", uuid));
     let full_pic_id = db_conn.last_insert_id();
@@ -163,7 +162,7 @@ pub async fn auto_label(
         .unwrap();
     for name in &names {
         if let Label::Id(id, true) = name {
-            let mut single_pic_path = tmp_dir.clone();
+            let mut single_pic_path = media_dir.clone();
             let uuid = Uuid::new_v4().to_string();
             single_pic_path.push(format!("cropped-{}.jpg", uuid));
 
