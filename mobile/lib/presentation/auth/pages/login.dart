@@ -2,7 +2,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
-import 'package:isentry/data/models/user_model.dart';
 import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
 import 'package:isentry/presentation/auth/bloc/login_event.dart';
 import 'package:isentry/presentation/auth/bloc/login_state.dart';
@@ -13,6 +12,7 @@ import 'package:isentry/presentation/widgets/buttons/auth_button.dart';
 import 'package:isentry/presentation/widgets/typography/auth_heading.dart';
 import 'package:isentry/presentation/home/pages/bottom_bar.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:isentry/domain/entities/auth.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -27,21 +27,21 @@ class LoginPage extends StatelessWidget {
       body: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
-            if (state.user.role == Role.RESIDENT) {
+            if (state.auth.role == Role.RESIDENT) {
               QuickAlert.show(
                 context: context,
-                type: QuickAlertType.warning,
-                title: 'Warning',
-                text: 'Maaf anda bukan owner',
+                type: QuickAlertType.error,
+                title: 'Oops!', 
+                text: 'You are not authorized as the Owner', 
               );
               return;
-            } else if (state.user.role == Role.OWNER) {
+            } else if (state.auth.role == Role.OWNER) {
               AppNavigator.pushReplacement(
-                  context, HomePage(userName: state.user.username));
+                  context, HomePage(userId: state.auth.id));
             }
           } else if (state is LoginFailure) {
             ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(state.error)));
+                .showSnackBar(SnackBar(content: Text(state.errorMessage)));
           }
         },
         builder: (context, state) {
@@ -83,7 +83,7 @@ class LoginPage extends StatelessWidget {
                             passwordController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("Username atau password kosong"),
+                              content: Text("Username or password is missing. Please try again!"),
                               duration: Duration(seconds: 3),
                             ),
                           );
@@ -124,10 +124,23 @@ class LoginPage extends StatelessWidget {
                       buttonText: 'Login as Resident',
                       Backcolor: const Color(0xFFf1f4f9),
                       TextColor: Colors.black,
-                      border: const BorderSide(color: Colors.black, width: 1),
+                      border: const BorderSide(color: Colors.black, width: 1.5),
                       onPressed: () {
                         AppNavigator.pushReplacement(
                             context, const LoginResidentPage());
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    CustomElevatedButton(
+                      buttonText: 'Guest Mode',
+                      Backcolor: const Color(0xFFf1f4f9),
+                      TextColor: Colors.black,
+                      border: const BorderSide(color: Colors.black, width: 1),
+                      onPressed: () {
+                        AppNavigator.pushReplacement(
+                          context,
+                          const HomePage(userName: "Guest"),
+                        );
                       },
                     ),
                   ],

@@ -25,7 +25,7 @@ class RegisterPage extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       body: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
-          if (state is SingupSuccess) {
+          if (state is SignupSuccess) {
             context.read<LoginBloc>().add(
                   LoginSubmitted(
                       username: usernameController.text,
@@ -33,7 +33,7 @@ class RegisterPage extends StatelessWidget {
                 );
           } else if (state is LoginFailure) {
             ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(state.error)));
+                .showSnackBar(SnackBar(content: Text(state.errorMessage)));
           }
 
           if (state is LoginSuccess) {
@@ -41,7 +41,7 @@ class RegisterPage extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => HomePage(
-                  userName: state.user.username,
+                  userId: state.auth.id,
                 ),
               ),
             );
@@ -97,7 +97,7 @@ class RegisterPage extends StatelessWidget {
                             passwordController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("data ada yang kosong"),
+                              content: Text("Please fill in all fields"),
                               duration: Duration(seconds: 3),
                             ),
                           );
@@ -106,7 +106,7 @@ class RegisterPage extends StatelessWidget {
                             confirmPasswordController.text) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("Confirm password salah"),
+                              content: Text("Confirm password is incorrect"),
                               duration: Duration(seconds: 3),
                             ),
                           );
@@ -118,6 +118,7 @@ class RegisterPage extends StatelessWidget {
                                 name: nameController.text,
                                 username: usernameController.text,
                                 password: passwordController.text,
+                                role: 'OWNER',
                               ),
                             );
                       },

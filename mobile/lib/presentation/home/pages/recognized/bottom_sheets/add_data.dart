@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:isentry/presentation/widgets/components/bottom_sheet.dart';
 import 'package:isentry/services/image_picker_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -14,6 +16,13 @@ class AddData extends StatefulWidget {
 class _AddDataState extends State<AddData> {
   final FocusNode _focusNode = FocusNode();
   final TextEditingController _nameController = TextEditingController();
+  final List<XFile> _selectedImages = [];
+
+  void _updateImages(XFile image) {
+    setState(() {
+      _selectedImages.add(image);  // Add selected image to the list
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,18 +32,36 @@ class _AddDataState extends State<AddData> {
         children: [
           Center(
             child: InkWell(
-              onTap: () => ImagePickerService.pickImage(context),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(
-                  color: Colors.black,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  LucideIcons.camera,
-                  size: 35,
-                  color: Colors.white,
-                ),
+              onTap: () => ImagePickerService.pickImage(context, _updateImages as void Function(List<XFile> images)),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (_selectedImages.isNotEmpty)
+                    ..._selectedImages.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      XFile image = entry.value;
+                      return Positioned(
+                        left: index * 25.0, // Adjust position for stacking
+                        child: CircleAvatar(
+                          radius: 40,
+                          backgroundImage: FileImage(File(image.path)),
+                        ),
+                      );
+                    }),
+                  if (_selectedImages.isEmpty)
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: const BoxDecoration(
+                        color: Colors.black,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        LucideIcons.camera,
+                        size: 35,
+                        color: Colors.white,
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
@@ -44,7 +71,7 @@ class _AddDataState extends State<AddData> {
             focusNode: _focusNode,
             cursorColor: Colors.black,
             decoration: InputDecoration(
-              hintText: 'Nama',
+              hintText: 'Name',
               hintStyle: const TextStyle(color: Colors.grey),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
@@ -79,7 +106,7 @@ class _AddDataState extends State<AddData> {
         alignment: Alignment.centerRight,
         child: Padding(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom, // Menambahkan padding agar tidak tertimpa keyboard
+            bottom: MediaQuery.of(context).viewInsets.bottom, // Adjust padding for keyboard
           ),
           child: ElevatedButton(
             onPressed: () {

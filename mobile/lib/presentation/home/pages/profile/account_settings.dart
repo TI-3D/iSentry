@@ -6,8 +6,8 @@ import 'package:isentry/presentation/widgets/appBar/appbar.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class AccountSettingsPage extends StatelessWidget {
-  final String userName;
-  const AccountSettingsPage({super.key, required this.userName});
+  final int userId;
+  const AccountSettingsPage({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class AccountSettingsPage extends StatelessWidget {
                       backgroundColor: Colors.grey,
                       child: Text('I'),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -47,7 +47,7 @@ class AccountSettingsPage extends StatelessWidget {
                               color: Colors.grey),
                         ),
                         Text(
-                          userName,
+                          'userId',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -61,7 +61,7 @@ class AccountSettingsPage extends StatelessWidget {
                 IconButton(
                   icon: const Icon(LucideIcons.qrCode, size: 26),
                   onPressed: () {
-                    AppNavigator.push(context, QrCodePage(userName: userName));
+                    AppNavigator.push(context, QrCodePage(userId: userId));
                   },
                 ),
               ],
