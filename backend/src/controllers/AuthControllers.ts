@@ -19,18 +19,26 @@ export const login = async (
             return error(404, { success: false, message: "User not found" });
         }
 
-        const token = await jwt.sign({ id: user.id, username: user.username });
+        const token = await jwt.sign({
+            id: user.id,
+            username: user.username,
+            type: "access",
+        });
         const token_refresh = await jwt_refresh.sign({
             id: user.id,
             username: user.username,
+            type: "refresh",
+        });
+
+        await prisma.token.deleteMany({
+            where: { userId: user.id },
         });
 
         await prisma.token.createMany({
-            data: [{
-                token: token,
-            }, {
-                token: token_refresh,
-            }]
+            data: [
+                { token, userId: user.id, type: "ACCESS" },
+                { token: token_refresh, userId: user.id, type: "REFRESH" },
+            ],
         });
 
         // Memverifikasi password

@@ -13,6 +13,7 @@ async function main() {
     await prisma.$executeRawUnsafe(`TRUNCATE TABLE identities;`);
     await prisma.$executeRawUnsafe(`TRUNCATE TABLE faces;`);
     await prisma.$executeRawUnsafe(`TRUNCATE TABLE users;`);
+    await prisma.$executeRawUnsafe(`TRUNCATE TABLE tokens;`);
 
     // turn on foreign key checks
     await prisma.$executeRawUnsafe(`SET FOREIGN_KEY_CHECKS = 1;`);
