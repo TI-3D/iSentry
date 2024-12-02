@@ -43,12 +43,13 @@ export async function createUser(options: {
                 message: "Username already exists!",
             };
         }
+        const hashedPassword = await Bun.password.hash(options.password);
 
         const users = await prisma.user.create({
             data: {
                 username: options.username,
                 name: options.name,
-                password: options.password,
+                password: hashedPassword,
                 role: options.role,
                 identityId: options.identityId ?? null,
                 ownerId: options.ownerId ?? null,

@@ -20,7 +20,7 @@ class SplashPage extends StatelessWidget {
           }
 
           if (state is Authenticated) {
-            AppNavigator.pushReplacement(context, const HomePage(userName: ''));
+            AppNavigator.pushReplacement(context, const HomePage(userId: 1));
           }
         },
         child: Container(

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isentry/core/configs/theme/app_theme.dart';
 import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
+import 'package:isentry/presentation/home/bloc/user_bloc.dart';
 import 'package:isentry/presentation/splash/bloc/splash_cubit.dart';
 import 'package:isentry/presentation/splash/pages/splash.dart';
 
@@ -11,6 +12,7 @@ void main() {
     providers: [
       BlocProvider(create: (context) => SplashCubit()..appStarted()),
       BlocProvider(create: (context) => LoginBloc()),
+      BlocProvider(create: (context) => UserBloc()),
     ],
     child: const MyApp(),
   ));

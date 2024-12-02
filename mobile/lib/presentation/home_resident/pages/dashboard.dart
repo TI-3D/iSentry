@@ -43,7 +43,7 @@ class DashboardResidentPage extends StatelessWidget {
               AppNavigator.push(
                   context,
                   const AccountSettingsPage(
-                    userName: '',
+                    userId: 1,
                   ));
             },
             icon: const Icon(

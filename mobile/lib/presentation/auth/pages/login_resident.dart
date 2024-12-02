@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
-import 'package:isentry/data/models/user_model.dart';
+import 'package:isentry/domain/entities/auth.dart';
 import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
 import 'package:isentry/presentation/auth/bloc/login_event.dart';
 import 'package:isentry/presentation/auth/bloc/login_state.dart';
@@ -27,7 +27,7 @@ class LoginResidentPage extends StatelessWidget {
       body: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
-            if (state.user.role == Role.OWNER) {
+            if (state.auth.role == Role.OWNER) {
               QuickAlert.show(
                 context: context,
                 type: QuickAlertType.warning,
@@ -35,12 +35,12 @@ class LoginResidentPage extends StatelessWidget {
                 text: 'Maaf anda bukan resident',
               );
               return;
-            } else if (state.user.role == Role.RESIDENT) {
+            } else if (state.auth.role == Role.RESIDENT) {
               AppNavigator.pushReplacement(context, const HomeResidentPage());
             }
           } else if (state is LoginFailure) {
             ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(state.error)));
+                .showSnackBar(SnackBar(content: Text(state.errorMessage)));
           }
         },
         builder: (context, state) {
