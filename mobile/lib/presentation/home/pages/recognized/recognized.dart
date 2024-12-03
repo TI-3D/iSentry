@@ -42,7 +42,7 @@ class _RecognizedPageState extends State<RecognizedPage> {
       listener: (context, state) {
         if (state is UserDeleted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('User deleted successfully')),
+            const SnackBar(content: Text('User deleted successfully')),
           );
         } else if (state is UserFailure) {
           ScaffoldMessenger.of(context).showSnackBar(

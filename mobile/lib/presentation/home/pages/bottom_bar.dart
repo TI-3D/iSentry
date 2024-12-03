@@ -3,7 +3,7 @@ import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
 import 'package:isentry/presentation/home/pages/camera/camera.dart';
 import 'package:isentry/presentation/home/pages/dashboard.dart';
-import 'package:isentry/presentation/home/pages/gallery/gallery.dart';
+import 'package:isentry/presentation/home/pages/media/media.dart';
 import 'package:isentry/presentation/home/pages/recognized/recognized.dart';
 import 'package:isentry/presentation/home/pages/unrecognized/unrecognized.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -43,7 +43,7 @@ class _BottomAppBarState extends State<HomePage> {
       RecognizedPage(userId: widget.userId),
       const Center(child: Text('Camera')),
       const UnrecognizedPage(),
-      const GalleryPage(),
+      const MediaPage(),
     ];
 
     void onItemTapped(int index) {
@@ -87,7 +87,7 @@ class _BottomAppBarState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             icon: const Icon(LucideIcons.film),
-            label: _selectedIndex == 4 ? 'Gallery' : '',
+            label: _selectedIndex == 4 ? 'Media' : '',
           ),
         ],
         currentIndex: _selectedIndex,

@@ -139,7 +139,7 @@ class LoginPage extends StatelessWidget {
                       onPressed: () {
                         AppNavigator.pushReplacement(
                           context,
-                          const HomePage(userName: "Guest"),
+                          const HomePage(userId: 1),
                         );
                       },
                     ),

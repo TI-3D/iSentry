@@ -6,8 +6,15 @@ import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
 import 'package:isentry/presentation/home/bloc/user/user_bloc.dart';
 import 'package:isentry/presentation/splash/bloc/splash_cubit.dart';
 import 'package:isentry/presentation/splash/pages/splash.dart';
+import 'package:isentry/services/notification_service.dart';
+// import 'package:isentry/services/websocket_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Inisialisasi notifikasi
+  await NotificationService.init();
+  
   runApp(MultiBlocProvider(
     providers: [
       BlocProvider(create: (context) => SplashCubit()..appStarted()),
@@ -26,6 +33,10 @@ class MyApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
     );
+
+    // Inisialisasi WebSocketService
+    // WebSocketService().connect(context);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.appTheme,

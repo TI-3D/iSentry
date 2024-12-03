@@ -372,7 +372,7 @@ class DashboardPage extends StatelessWidget {
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
         if (state is UserInitial || state is UserLoading) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (state is UserLoaded) {
           return Column(
             children: [
@@ -446,7 +446,36 @@ class DashboardPage extends StatelessWidget {
               ),
               Expanded(
                 flex: 27,
-                child: activity,
+                child: Column(
+                  children: [
+                    activity,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Callback untuk memanggil notifikasi
+                          showNotification(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 25),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        child: const Text(
+                          "Send Notification",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           );
@@ -457,4 +486,15 @@ class DashboardPage extends StatelessWidget {
       },
     );
   }
+
+  // Fungsi untuk memanggil notifikasi
+  void showNotification(BuildContext context) {
+    print("Notification button pressed!"); // Tambahkan log untuk memverifikasi
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Notifikasi berhasil dikirim!"),
+      ),
+    );
+  }
+
 }
