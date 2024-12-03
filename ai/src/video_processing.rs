@@ -11,7 +11,7 @@ use std::{
 use ab_glyph::{FontRef, PxScale};
 use chrono::Utc;
 use image::RgbImage;
-use mysql::{prelude::Queryable, Conn};
+use mysql::{params, prelude::Queryable, Conn};
 use opencv::{
     imgproc::COLOR_BGR2RGB,
     prelude::*,
@@ -30,9 +30,9 @@ use crate::{
     utils::LabelID,
 };
 
-pub async fn run(_db_opts: mysql::Opts, tx: Sender<Job>) {
+pub async fn run(db_opts: mysql::Opts, tx: Sender<Job>) {
     // tokio::spawn(auto_record(db_opts, tx.clone()));
-    tokio::spawn(auto_label(tx));
+    tokio::spawn(auto_label(db_opts, tx));
 }
 
 pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
@@ -68,7 +68,7 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
     }
 }
 
-pub async fn auto_label(tx: Sender<Job>) {
+pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
     let link = dotenvy::var("RTMP_RAW").unwrap();
 
     let mut input = loop {
@@ -76,7 +76,7 @@ pub async fn auto_label(tx: Sender<Job>) {
             Ok(cap) => cap,
             Err(e) => {
                 tracing::error!("Can't open {link}: {e}");
-                continue; 
+                continue;
             }
         };
         match input.is_opened() {
@@ -85,7 +85,7 @@ pub async fn auto_label(tx: Sender<Job>) {
             Err(e) => {
                 tracing::error!("RTSP stream {link} hasn't been opened: {e}");
             }
-        } 
+        }
         sleep(Duration::from_secs(60)).await;
     };
 
@@ -132,10 +132,12 @@ pub async fn auto_label(tx: Sender<Job>) {
             //tracing::info!("Something");
             num_scanning_jobs.fetch_add(1, Ordering::SeqCst);
             let tx_clone = tx.clone();
+            let db_opts = db_opts.clone();
             let bounding_boxes_clone = bounding_boxes.clone();
+            let bounding_boxes_clone2 = bounding_boxes.clone();
             let img_clone = img.clone();
             let num_scanning_jobs_clone = num_scanning_jobs.clone();
-            tokio::spawn(async move {
+            let handler = tokio::spawn(async move {
                 let (ons_tx, ons_rx) = oneshot::channel::<JobResult>();
 
                 let job_id = Uuid::new_v4();
@@ -164,8 +166,25 @@ pub async fn auto_label(tx: Sender<Job>) {
                 }
                 num_scanning_jobs_clone.fetch_sub(1, Ordering::SeqCst);
             });
+            tokio::spawn(async move {
+                handler.await;
+                let mut db_conn = Conn::new(db_opts).unwrap();
+                let push_log = db_conn
+                    .prep("INSERT INTO detectionLogs (face) VALUES (:face_id)")
+                    .unwrap();
+                for (_, (id, _)) in &*bounding_boxes_clone2.lock().await {
+                    db_conn
+                        .exec_drop(
+                            push_log.clone(),
+                            params! {
+                                "face_id" => id
+                            },
+                        )
+                        .unwrap();
+                }
+            });
         } else {
-            for (bbox, name) in &*bounding_boxes.lock().await {
+            for (bbox, (id, name)) in &*bounding_boxes.lock().await {
                 img.label(bbox, name, &font, font_height, scale);
             }
         }

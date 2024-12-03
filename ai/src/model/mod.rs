@@ -16,7 +16,7 @@ mod handler;
 mod identity;
 
 pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
-    let manifest_dir = dotenvy::var("CARGO_MANIFEST_DIR").unwrap();
+    //let manifest_dir = dotenvy::var("CARGO_MANIFEST_DIR").unwrap();
     let detector = Arc::new(Mutex::new(FaceDetector::default()));
     //let detector = if let Ok(cnn_fd) = FaceDetectorCnn::open(format!(
     //    "{manifest_dir}/models/[face_detector] resnet-10.dat"
