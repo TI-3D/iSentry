@@ -2,6 +2,8 @@
 import { Capture_method } from "@prisma/client";
 import { Item_type } from "@prisma/client";
 import prisma from "../../prisma/client";
+const fs = require("fs");
+const path = require("path");
 
 /**
  * Getting all media
@@ -12,6 +14,11 @@ export async function getMedia() {
         const media = await prisma.media.findMany({
             orderBy: { id: "asc" },
         });
+        for (const item of media) {
+            const filePath = path.resolve(item.path);
+            const binaryData = fs.readFileSync(filePath, "binary");
+            (item as any).data = binaryData;
+        }
 
         //return response json
         return {
