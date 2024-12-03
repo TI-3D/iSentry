@@ -7,6 +7,7 @@ class UnrecognizedPage extends StatefulWidget {
   const UnrecognizedPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _UnrecognizedPageState createState() => _UnrecognizedPageState();
 }
 
@@ -145,7 +146,7 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(LucideIcons.plus, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );

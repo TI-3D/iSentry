@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:avatar_stack/avatar_stack.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:isentry/presentation/widgets/components/bottom_sheet.dart';
-import 'package:isentry/services/image_picker_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:isentry/services/image_picker_service.dart';
 
 class AddDataUnreg extends StatefulWidget {
   const AddDataUnreg({super.key});
@@ -13,6 +17,22 @@ class AddDataUnreg extends StatefulWidget {
 
 class _AddDataUnregState extends State<AddDataUnreg> {
   final FocusNode _focusNode = FocusNode();
+  final List<XFile> _selectedImages = [];
+
+  void _updateImages(List<XFile> images) {
+    setState(() {
+      _selectedImages.addAll(images);  // Add multiple images to the list
+    });
+  }
+
+  void _pickImages() {
+    ImagePickerService.pickImage(
+      context,
+      (images) {
+        _updateImages(images);  // Update images after they are picked
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,18 +42,54 @@ class _AddDataUnregState extends State<AddDataUnreg> {
         children: [
           Center(
             child: InkWell(
-              onTap: () => ImagePickerService.pickImage(context),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(
-                  color: Colors.black,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  LucideIcons.camera,
-                  size: 35,
-                  color: Colors.white,
-                ),
+              onTap: _pickImages,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (_selectedImages.isNotEmpty)
+                    // Gunakan AvatarStack dengan centering
+                    AvatarStack(
+                      height: 70,
+                      // Force images to be centered
+                      avatars: _selectedImages
+                          .map((e) => FileImage(File(e.path)))
+                          .toList(),
+                    ),
+                  if (_selectedImages.isEmpty)
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: const BoxDecoration(
+                        color: Colors.black,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        LucideIcons.camera,
+                        size: 35,
+                        color: Colors.white,
+                      ),
+                    ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: _pickImages,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(6),
+                          child: Icon(
+                            LucideIcons.camera,
+                            size: 18,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -42,7 +98,7 @@ class _AddDataUnregState extends State<AddDataUnreg> {
             focusNode: _focusNode,
             cursorColor: Colors.black,
             decoration: InputDecoration(
-              hintText: 'Nama',
+              hintText: 'Name',
               hintStyle: const TextStyle(color: Colors.grey),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
@@ -77,12 +133,11 @@ class _AddDataUnregState extends State<AddDataUnreg> {
         alignment: Alignment.centerRight,
         child: Padding(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom, // Tambahkan padding agar tidak tertutup keyboard
+            bottom: MediaQuery.of(context).viewInsets.bottom, // Avoid being covered by the keyboard
           ),
           child: ElevatedButton(
             onPressed: () {
-              // Logika penyimpanan data
-              Navigator.of(context).pop(); // Tutup bottom sheet setelah data disimpan
+              Navigator.of(context).pop(); // Close bottom sheet after saving data
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,

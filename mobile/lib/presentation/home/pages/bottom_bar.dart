@@ -86,7 +86,7 @@ class _BottomAppBarState extends State<HomePage> {
             label: _selectedIndex == 3 ? 'Unrecognized' : '',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(LucideIcons.image),
+            icon: const Icon(LucideIcons.film),
             label: _selectedIndex == 4 ? 'Gallery' : '',
           ),
         ],
