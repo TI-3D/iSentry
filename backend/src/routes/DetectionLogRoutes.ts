@@ -8,12 +8,15 @@ import {
     createDetectionLog,
     updateDetectionLog,
     deleteDetectionLog,
+    getDetailDetectionLogs,
 } from "../controllers/DetectionLogController";
 
 const DetectionLogRoutes = new Elysia({ prefix: "/detection-logs" })
 
     //route get all detection log
     .get("/", () => getDetectionLogs())
+
+    .get("/detail", () => getDetailDetectionLogs())
 
     // route to create a detection log
     .post(
