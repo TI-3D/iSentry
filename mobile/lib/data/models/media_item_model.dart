@@ -1,4 +1,4 @@
-class GalleryItem {
+class MediaItem {
   final int id;
   final String path;
   final ItemType type;
@@ -6,7 +6,7 @@ class GalleryItem {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  GalleryItem({
+  MediaItem({
     required this.id,
     required this.path,
     required this.type,
@@ -15,8 +15,8 @@ class GalleryItem {
     required this.updatedAt,
   });
 
-  factory GalleryItem.fromJson(Map<String, dynamic> json) {
-    return GalleryItem(
+  factory MediaItem.fromJson(Map<String, dynamic> json) {
+    return MediaItem(
       id: json['id'],
       path: json['path'],
       type: ItemType.values.byName(json['type']),

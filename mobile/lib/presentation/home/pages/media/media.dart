@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:isentry/presentation/widgets/components/sort.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class GalleryPage extends StatefulWidget {
-  const GalleryPage({super.key});
+class MediaPage extends StatefulWidget {
+  const MediaPage({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
-  _GalleryPageState createState() => _GalleryPageState();
+  _MediaPageState createState() => _MediaPageState();
 }
 
-class _GalleryPageState extends State<GalleryPage> {
+class _MediaPageState extends State<MediaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
