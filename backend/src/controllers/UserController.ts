@@ -135,6 +135,7 @@ export async function updateUser(
 export async function deleteUser(id: string) {
     try {
         const userId = parseInt(id);
+        await prisma.token.deleteMany({ where: { userId: userId } });
         await prisma.user.delete({ where: { id: userId } });
 
         return {
