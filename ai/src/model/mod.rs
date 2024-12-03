@@ -25,14 +25,10 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
     //} else {
     //    panic!("Error loading CNN Face Detector");
     //};
-    let Ok(landmark_predictor) = LandmarkPredictor::open(format!(
-        "{manifest_dir}/models/[landmark_predictor] regression_tree_ensemble.dat"
-    )) else {
+    let Ok(landmark_predictor) = LandmarkPredictor::default() else {
         panic!("Error loading Landmark Predictor.");
     };
-    let face_encoder = if let Ok(lp) = FaceEncoderNetwork::open(format!(
-        "{manifest_dir}/models/[face_encoder] resnet-34.dat"
-    )) {
+    let face_encoder = if let Ok(lp) = FaceEncoderNetwork::default() {
         Arc::new(Mutex::new(lp))
     } else {
         panic!("Error loading Face Encoder.");
