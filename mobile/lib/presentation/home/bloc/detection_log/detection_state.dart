@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:isentry/data/models/detection_detail_model.dart';
 import 'package:isentry/data/models/detection_model.dart';
 import 'package:isentry/domain/entities/detection.dart';
 
@@ -41,3 +42,13 @@ class AllDetectionLoaded extends DetectionState {
 class DetectionDeleted extends DetectionState {}
 
 class DetectionSuccess extends DetectionState {}
+
+class DetailDetectionLoaded extends DetectionState {
+  final List<DetectionDetailModel> recognizedDetails;
+  final List<DetectionDetailModel> unrecognizedDetails;
+
+  DetailDetectionLoaded(this.recognizedDetails, this.unrecognizedDetails);
+
+  @override
+  List<Object?> get props => [recognizedDetails, unrecognizedDetails];
+}

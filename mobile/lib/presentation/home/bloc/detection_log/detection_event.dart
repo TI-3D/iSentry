@@ -37,3 +37,5 @@ class DetectionSubmitted extends DetectionEvent {
   @override
   List<Object?> get props => [face];
 }
+
+class DetectionDetail extends DetectionEvent {}

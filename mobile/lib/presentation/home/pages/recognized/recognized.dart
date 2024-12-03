@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:isentry/presentation/home/bloc/user/user_bloc.dart';
-import 'package:isentry/presentation/home/bloc/user/user_event.dart';
-import 'package:isentry/presentation/home/bloc/user/user_state.dart';
+import 'package:isentry/presentation/home/bloc/detection_log/detection_bloc.dart';
+import 'package:isentry/presentation/home/bloc/detection_log/detection_event.dart';
+import 'package:isentry/presentation/home/bloc/detection_log/detection_state.dart';
 import 'package:isentry/presentation/home/pages/recognized/bottom_sheets/add_account.dart';
 import 'package:isentry/presentation/home/pages/recognized/bottom_sheets/add_data.dart';
 import 'package:isentry/presentation/home/pages/recognized/bottom_sheets/detail_data.dart';
@@ -22,7 +22,7 @@ class _RecognizedPageState extends State<RecognizedPage> {
   @override
   void initState() {
     super.initState();
-    context.read<UserBloc>().add(GetAllUser());
+    context.read<DetectionBloc>().add(DetectionDetail());
   }
 
   void _showAddDataBottomSheet(BuildContext context) {
@@ -38,24 +38,26 @@ class _RecognizedPageState extends State<RecognizedPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<UserBloc, UserState>(
+    return BlocConsumer<DetectionBloc, DetectionState>(
       listener: (context, state) {
-        if (state is UserDeleted) {
+        if (state is DetectionDeleted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('User deleted successfully')),
           );
-        } else if (state is UserFailure) {
+        } else if (state is DetectionFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error: ${state.errorMessage}')),
           );
         }
       },
       builder: (context, state) {
-        return BlocBuilder<UserBloc, UserState>(
+        return BlocBuilder<DetectionBloc, DetectionState>(
           builder: (context, state) {
-            if (state is UserLoading) {
+            if (state is DetectionLoading) {
               return const CircularProgressIndicator();
-            } else if (state is AllUserLoaded) {
+            } else if (state is DetectionFailure) {
+              return Center(child: Text('Error: ${state.errorMessage}'));
+            } else if (state is DetailDetectionLoaded) {
               return Scaffold(
                 appBar: AppBar(
                   backgroundColor: const Color(0xfff1f4f9),
@@ -106,12 +108,11 @@ class _RecognizedPageState extends State<RecognizedPage> {
                   ),
                 ),
                 body: ListView.builder(
-                  itemCount: state.users.length,
+                  itemCount: state.recognizedDetails.length,
                   itemBuilder: (context, index) {
-                    final user = state.users[index];
-                    // final recognized = recoqnize[index];
+                    final details = state.recognizedDetails[index];
                     final formattedDate =
-                        DateFormat("d MMMM yyyy").format(user.updateAt);
+                        DateFormat("d MMMM yyyy").format(details.timestamp);
                     return Container(
                       padding:
                           const EdgeInsets.only(left: 30, right: 30, top: 7),
@@ -138,7 +139,7 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        user.name,
+                                        '${details.identityName}',
                                         style: const TextStyle(
                                             color: Colors.black,
                                             fontWeight: FontWeight.w500),
@@ -174,14 +175,14 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                           context: context,
                                           isScrollControlled: true,
                                           builder: (_) => AddAccount(
-                                                name: user.name,
+                                                name: '${details.identityName}',
                                               ));
                                     case 'edit':
                                       showModalBottomSheet(
                                         context: context,
                                         isScrollControlled: true,
-                                        builder: (_) =>
-                                            EditData(name: user.name),
+                                        builder: (_) => EditData(
+                                            name: '${details.identityName}'),
                                       );
                                       break;
                                     case 'detail':
@@ -189,15 +190,14 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                         context: context,
                                         isScrollControlled: true,
                                         builder: (_) => Details(
-                                          name: user.name,
+                                          name: '${details.identityName}',
                                           lastActivity: '-',
                                         ),
                                       );
                                       break;
                                     case 'delete':
-                                      context
-                                          .read<UserBloc>()
-                                          .add(DeleteUser(id: user.id));
+                                      context.read<DetectionBloc>().add(
+                                          DeleteDetection(id: '${details.id}'));
                                       break;
                                   }
                                 },
@@ -277,10 +277,8 @@ class _RecognizedPageState extends State<RecognizedPage> {
                   child: const Icon(LucideIcons.plus, color: Colors.white),
                 ),
               );
-            } else if (state is UserFailure) {
-              return Center(child: Text('Error: ${state.errorMessage}'));
             }
-            return Container();
+            return const Center(child: Text("No data found"));
           },
         );
       },

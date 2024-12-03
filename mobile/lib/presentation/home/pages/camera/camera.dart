@@ -32,7 +32,7 @@ class _CameraPageState extends State<CameraPage> {
 
   Future<void> _initVlcPlayer() async {
     _vlcViewController = VlcPlayerController.network(
-      "rtsp://192.168.25.215:8554/test",
+      "rtsp://192.168.69.190:8554/test",
       autoPlay: true,
     );
   }
