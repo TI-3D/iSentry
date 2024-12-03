@@ -40,11 +40,11 @@ async function main() {
             name: "Gjorge Ivanov",
         },
     });
-    const identity5 = await prisma.identity.create({
-        data: {
-            name: "Anomali",
-        },
-    });
+    // const identity5 = await prisma.identity.create({
+    //     data: {
+    //         name: "Anomali",
+    //     },
+    // });
     const identity6 = await prisma.identity.create({
         data: {
             name: "Joe Biden",
@@ -930,7 +930,7 @@ async function main() {
     });
     const face5 = await prisma.face.create({
         data: {
-            identity: identity5.id,
+            identity: null,
             embedding: Buffer.from(
                 new Float64Array([
                     -0.03760019317269325, 0.09740620851516724,

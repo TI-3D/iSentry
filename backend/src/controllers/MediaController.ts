@@ -14,11 +14,7 @@ export async function getMedia() {
         const media = await prisma.media.findMany({
             orderBy: { id: "asc" },
         });
-        // for (const item of media) {
-        //     const filePath = path.resolve(item.path);
-        //     const binaryData = fs.readFileSync(filePath, "binary");
-        //     (item as any).data = binaryData;
-        // }
+
         for (const item of media) {
             const fileName = path.basename(item.path);
             item.path = `/public/${fileName}`;
