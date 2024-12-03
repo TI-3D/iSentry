@@ -22,6 +22,43 @@ export async function getDetectionLogs() {
     }
 }
 
+export async function getDetailDetectionLogs() {
+    try {
+        const detectionLogs = await prisma.detection_Log.findMany({
+            select: {
+                id: true,
+                face: true,
+                faceRelation: {
+                    select: {
+                        identity: true,
+                        identities: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                    },
+                },
+                timestamp: true,
+            },
+        });
+        const recognized = detectionLogs.filter(
+            (log) => log.faceRelation.identity !== null
+        );
+        const unrecognized = detectionLogs.filter(
+            (log) => log.faceRelation.identity === null
+        );
+
+        return {
+            success: true,
+            message: "List Data Detail Detection Log!",
+            recognized,
+            unrecognized,
+        };
+    } catch (e: unknown) {
+        console.error(`Error getting detection log: ${e}`);
+    }
+}
+
 /**
  * Creating a detection log
  */
