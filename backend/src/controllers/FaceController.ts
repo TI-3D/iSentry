@@ -25,6 +25,7 @@ export async function getFace() {
                         path: true,
                     },
                 },
+                createdAt: true,
             },
         });
         for (const item of faces) {
