@@ -129,7 +129,7 @@ pub async fn auto_label(tx: Sender<Job>) {
         };
 
         if frame_counter % 120 == 0 && num_scanning_jobs.load(Ordering::SeqCst) <= 1 {
-            tracing::info!("Something");
+            //tracing::info!("Something");
             num_scanning_jobs.fetch_add(1, Ordering::SeqCst);
             let tx_clone = tx.clone();
             let bounding_boxes_clone = bounding_boxes.clone();
