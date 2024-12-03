@@ -215,6 +215,7 @@ export async function unrecognizedFace() {
                         path: true,
                     },
                 },
+                createdAt: true,
             },
         });
         for (const item of unrecognized) {
