@@ -1,6 +1,6 @@
-use std::{path::PathBuf, str::FromStr, sync::Arc, time::Duration};
+use std::{sync::Arc, time::Duration};
 
-use dlib_face_recognition::{FaceDetector, FaceDetectorCnn, FaceEncoderNetwork, LandmarkPredictor};
+use dlib_face_recognition::{FaceDetector, FaceEncoderNetwork, LandmarkPredictor};
 use identity::{Faces, Identities};
 use tokio::{
     sync::{mpsc::Receiver, Mutex},
@@ -17,14 +17,14 @@ mod identity;
 
 pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
     let manifest_dir = dotenvy::var("CARGO_MANIFEST_DIR").unwrap();
-    //let detector = Arc::new(Mutex::new(FaceDetector::default()));
-    let detector = if let Ok(cnn_fd) = FaceDetectorCnn::open(format!(
-        "{manifest_dir}/models/[face_detector] resnet-10.dat"
-    )) {
-        Arc::new(Mutex::new(cnn_fd))
-    } else {
-        panic!("Error loading CNN Face Detector");
-    };
+    let detector = Arc::new(Mutex::new(FaceDetector::default()));
+    //let detector = if let Ok(cnn_fd) = FaceDetectorCnn::open(format!(
+    //    "{manifest_dir}/models/[face_detector] resnet-10.dat"
+    //)) {
+    //    Arc::new(Mutex::new(cnn_fd))
+    //} else {
+    //    panic!("Error loading CNN Face Detector");
+    //};
     let Ok(landmark_predictor) = LandmarkPredictor::open(format!(
         "{manifest_dir}/models/[landmark_predictor] regression_tree_ensemble.dat"
     )) else {

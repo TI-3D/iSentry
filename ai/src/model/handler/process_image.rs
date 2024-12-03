@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use ab_glyph::{FontRef, PxScale};
 use dlib_face_recognition::{
-    FaceDetector, FaceDetectorCnn, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, FaceLandmarks, ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait
+    FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, FaceLandmarks, ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait
 };
 use image::DynamicImage;
 use tokio::sync::Mutex;
@@ -15,8 +15,8 @@ use crate::{
 };
 
 pub async fn process_image(
-    //detector: Arc<Mutex<FaceDetector>>,
-    detector: Arc<Mutex<FaceDetectorCnn>>,
+    detector: Arc<Mutex<FaceDetector>>,
+    //detector: Arc<Mutex<FaceDetectorCnn>>,
     landmark_predictor: &LandmarkPredictor,
     face_encoder: Arc<Mutex<FaceEncoderNetwork>>,
     job: Job,
