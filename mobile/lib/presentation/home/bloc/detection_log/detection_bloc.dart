@@ -13,7 +13,7 @@ class DetectionBloc extends Bloc<DetectionEvent, DetectionState> {
       emit(DetectionLoading());
 
       try {
-        final url = Uri.http(ipAddress, 'api/users/${event.id}');
+        final url = Uri.http(ipAddress, 'api/detection-logs/${event.id}');
         final response = await NetworkService.get(url.toString());
 
         if (response['success']) {
@@ -31,7 +31,7 @@ class DetectionBloc extends Bloc<DetectionEvent, DetectionState> {
       emit(DetectionLoading());
 
       try {
-        final url = Uri.http(ipAddress, 'api/users');
+        final url = Uri.http(ipAddress, 'api/detection-logs');
         final response = await NetworkService.get(url.toString());
 
         if (response['success']) {
@@ -51,12 +51,12 @@ class DetectionBloc extends Bloc<DetectionEvent, DetectionState> {
       emit(DetectionLoading());
 
       try {
-        final url = Uri.http(ipAddress, 'api/users/${event.id}');
+        final url = Uri.http(ipAddress, 'api/detection-logs/${event.id}');
         final response = await NetworkService.delete(url.toString());
 
         if (response['success']) {
           emit(DetectionDeleted());
-          // add(GetAllUser());
+          add(GetAllDetection());
         } else {
           emit(DetectionFailure(response['message']));
         }
@@ -68,7 +68,7 @@ class DetectionBloc extends Bloc<DetectionEvent, DetectionState> {
     on<DetectionSubmitted>((event, emit) async {
       emit(DetectionLoading());
       try {
-        var url = Uri.http(ipAddress, 'api/users');
+        var url = Uri.http(ipAddress, 'api/detection-logs');
         var response = await NetworkService.post(url.toString(), body: {
           'face': event.face,
         });

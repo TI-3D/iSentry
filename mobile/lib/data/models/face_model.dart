@@ -1,34 +1,35 @@
-class Face {
-  final int id;
-  final int identityId;
-  final List<int> landmarks;
-  final List<int> boundingBox;
-  final int pictureSingleId;
-  final int pictureFullId;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+import 'package:isentry/domain/entities/face.dart';
 
-  Face({
-    required this.id,
-    required this.identityId,
-    required this.landmarks,
-    required this.boundingBox,
-    required this.pictureSingleId,
-    required this.pictureFullId,
-    required this.createdAt,
-    required this.updatedAt,
+class FaceModel extends Face {
+  const FaceModel({
+    required super.id,
+    required super.identityId,
+    required super.landmarks,
+    required super.boundingBox,
+    required super.pictureSingleId,
+    required super.pictureFullId,
+    required super.createdAt,
+    required super.updatedAt,
   });
 
-  factory Face.fromJson(Map<String, dynamic> json) {
-    return Face(
+  factory FaceModel.fromJson(Map<String, dynamic> json) {
+    final createdAtString = json['createdAt'] as String;
+    final updatedAtString = json['updatedAt'] as String;
+
+    final createdAtDate = DateTime.parse(createdAtString);
+    final updatedAtDate = DateTime.parse(updatedAtString);
+
+    return FaceModel(
       id: json['id'],
       identityId: json['identity'],
       landmarks: List<int>.from(json['landmarks']),
       boundingBox: List<int>.from(json['bounding_box']),
       pictureSingleId: json['picture_single'],
       pictureFullId: json['picture_full'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      createdAt: DateTime(createdAtDate.year, createdAtDate.month,
+          createdAtDate.day, createdAtDate.hour, createdAtDate.minute),
+      updatedAt: DateTime(updatedAtDate.year, updatedAtDate.month,
+          updatedAtDate.day, updatedAtDate.hour, updatedAtDate.minute),
     );
   }
 

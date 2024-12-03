@@ -56,7 +56,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
         if (response['success']) {
           emit(UserDeleted());
-          // add(GetAllUser());
+          add(GetAllUser());
         } else {
           emit(UserFailure(response['message']));
         }
