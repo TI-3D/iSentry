@@ -1,5 +1,6 @@
 //import prisma client
 import prisma from "../../prisma/client";
+const path = require("path");
 
 /**
  * Getting all face
@@ -166,5 +167,54 @@ export async function validateFace(face: File) {
         }
     } catch (e: unknown) {
         console.error(`Error validating face : ${e}`);
+    }
+}
+
+export async function unrecognizedFace() {
+    try {
+        const unrecognized = await prisma.face.findMany({
+            where: { identity: null },
+            select: {
+                id: true,
+                picture_full: true,
+                picture_single: true,
+                singlePictures: {
+                    select: {
+                        path: true,
+                    },
+                },
+                fullPictures: {
+                    select: {
+                        path: true,
+                    },
+                },
+            },
+        });
+        for (const item of unrecognized) {
+            if (item.singlePictures) {
+                const fileName = path.basename(item.singlePictures.path);
+                item.singlePictures.path = `/public/${fileName}`;
+            }
+            if (item.fullPictures) {
+                const fileName = path.basename(item.fullPictures.path);
+                item.fullPictures.path = `/public/${fileName}`;
+            }
+        }
+
+        if (!unrecognized) {
+            return {
+                success: false,
+                message: "Unrecognized Face Not Found!",
+                data: null,
+            };
+        }
+
+        return {
+            success: true,
+            message: "List Data Unrecognized Face!",
+            data: unrecognized,
+        };
+    } catch (e: unknown) {
+        console.error(`Error getting unrecognized face : ${e}`);
     }
 }
