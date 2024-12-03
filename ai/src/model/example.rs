@@ -103,8 +103,9 @@ fn draw_point(image: &mut RgbImage, point: &Point, colour: Rgb<u8>) {
 }
 
 pub fn example2() {
+    let manifest_dir = dotenvy::var("CARGO_MANIFEST_DIR").unwrap();
     let mut image =
-        image::open("../../assets/obama_2.jpg")
+        image::open(format!("{manifest_dir}/assets/obama_2.jpg"))
             .unwrap()
             .to_rgb8();
     let matrix = ImageMatrix::from_image(&image);
@@ -122,15 +123,15 @@ pub fn example2() {
     let face_locations = tick("FaceDetector", || detector.face_locations(&matrix));
 
     for r in face_locations.iter() {
-        println!("Abc");
+        //println!("Abc");
         draw_rectangle(&mut image, r, red);
 
         one_rect = Some(*r);
 
         let landmarks = landmarks.face_landmarks(&matrix, r);
-        for point in landmarks.iter() {
-            draw_point(&mut image, point, red);
-        }
+        //for point in landmarks.iter() {
+        //    draw_point(&mut image, point, red);
+        //}
     }
 
     // let mut image = ril::Image::<ril::Rgb>::from_bytes(ril::ImageFormat::Jpeg, image.as_raw()).unwrap();
@@ -141,7 +142,7 @@ pub fn example2() {
     ))
     .unwrap();
 
-    let text = "anomali#123";
+    let text = "";
 
     let height = 24.;
     let scale = PxScale {
@@ -162,7 +163,7 @@ pub fn example2() {
     );
 
     if let Err(e) = image
-        .save("../../assets/obama_2_out.jpg")
+        .save(format!("{manifest_dir}/assets/obama_2_out.jpg"))
     {
         println!("Error saving the image: {e}");
     } else {

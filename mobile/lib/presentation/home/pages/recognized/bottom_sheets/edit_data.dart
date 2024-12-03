@@ -23,7 +23,7 @@ class _EditDataState extends State<EditData> {
         children: [
           Center(
             child: InkWell(
-              onTap: () => ImagePickerService.pickImage(context),
+              onTap: () => ImagePickerService.pickImage(context, (image) {}),
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: const BoxDecoration(
