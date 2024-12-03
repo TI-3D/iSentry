@@ -2,6 +2,8 @@
 import { Capture_method } from "@prisma/client";
 import { Item_type } from "@prisma/client";
 import prisma from "../../prisma/client";
+const fs = require("fs");
+const path = require("path");
 
 /**
  * Getting all media
@@ -13,6 +15,10 @@ export async function getMedia() {
             orderBy: { id: "asc" },
         });
 
+        for (const item of media) {
+            const fileName = path.basename(item.path);
+            item.path = `/public/${fileName}`;
+        }
         //return response json
         return {
             success: true,

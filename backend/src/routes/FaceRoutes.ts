@@ -8,6 +8,7 @@ import {
     createFace,
     updateFace,
     deleteFace,
+    unrecognizedFace,
 } from "../controllers/FaceController";
 
 const FaceRoutes = new Elysia({ prefix: "/faces" })
@@ -96,6 +97,10 @@ const FaceRoutes = new Elysia({ prefix: "/faces" })
     // route to delete a face
     .delete("/:id", async ({ params: { id } }) => {
         return await deleteFace(id);
+    })
+
+    .get("/unrecognized", async () => {
+        return await unrecognizedFace();
     });
 
 export default FaceRoutes;
