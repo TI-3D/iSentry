@@ -23,6 +23,38 @@ export async function getIdentities() {
     }
 }
 
+export async function getIdentitiesWithoutUserRelation() {
+    try {
+        // Get identities without a relation in the User table
+        const identities = await prisma.identity.findMany({
+            where: {
+                id: {
+                    notIn: (
+                        await prisma.user.findMany({
+                            select: {
+                                identityId: true,
+                            },
+                        })
+                    )
+                        .map((user) => user.identityId)
+                        .filter((id): id is number => id !== null), // Extract identityIds from users and filter out null values
+                },
+            },
+            orderBy: { id: "asc" },
+        });
+
+        // Return response JSON
+        return {
+            success: true,
+            message: "List Data Identity Without User Relation!",
+            data: identities,
+        };
+    } catch (e: unknown) {
+        console.error(`Error getting identities without relation: ${e}`);
+        throw new Error("Failed to get identities without user relation.");
+    }
+}
+
 /**
  * Creating a identity
  */

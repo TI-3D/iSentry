@@ -84,6 +84,26 @@ export async function createDetectionLog(options: { face: number }) {
     }
 }
 
+export async function createManyDetectionLog(options: { face: number[] }) {
+    try {
+        const detectionLogs = await prisma.detection_Log.createMany({
+            data: options.face.map((face) => ({ face })),
+        });
+        return {
+            success: true,
+            message: "Detection Logs Created Successfully!",
+            data: detectionLogs,
+        };
+    } catch (e: unknown) {
+        console.error(`Error creating detection log: ${e}`);
+        return {
+            success: false,
+            message: "Failed to create detection log",
+            error: e instanceof Error ? e.message : String(e),
+        };
+    }
+}
+
 /**
  * Getting a detection log by ID
  */
