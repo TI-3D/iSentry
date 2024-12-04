@@ -8,6 +8,7 @@ import {
     getMediaById,
     updateMedia,
     deleteMedia,
+    getGallery,
 } from "../controllers/MediaController";
 import { Capture_method } from "@prisma/client";
 import { Item_type } from "@prisma/client";
@@ -17,6 +18,10 @@ const MediaRoutes = new Elysia({ prefix: "/medias" })
     // route to get all media
     .get("/", async () => {
         return await getMedia();
+    })
+
+    .get("/gallery", async () => {
+        return await getGallery();
     })
 
     // route to create a media

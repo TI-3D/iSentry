@@ -30,6 +30,38 @@ export async function getMedia() {
     }
 }
 
+export async function getGallery() {
+    try {
+        const gallery = await prisma.media.findMany({
+            where: {
+                OR: [
+                    {
+                        type: Item_type.PICTURE,
+                        capture_method: Capture_method.AUTO,
+                    },
+                    {
+                        type: Item_type.VIDEO,
+                        capture_method: {
+                            in: [Capture_method.MANUAL, Capture_method.AUTO],
+                        },
+                    },
+                ],
+            },
+        });
+        for (const item of gallery) {
+            const fileName = path.basename(item.path);
+            item.path = `/public/${fileName}`;
+        }
+        return {
+            success: true,
+            message: "List Data Gallery!",
+            data: gallery,
+        };
+    } catch (e: unknown) {
+        console.error(`Error getting gallery: ${e}`);
+    }
+}
+
 /**
  * Creating a media
  */

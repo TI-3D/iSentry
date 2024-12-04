@@ -1,5 +1,6 @@
 //import prisma client
 import prisma from "../../prisma/client";
+import { deleteUser } from "./UserController";
 
 /**
  * Getting all identity
@@ -107,6 +108,12 @@ export async function updateIdentity(
 export async function deleteIdentity(id: string) {
     try {
         const identityId = parseInt(id);
+        const user = await prisma.user.findFirst({
+            where: { identityId: identityId },
+        });
+        if (user) {
+            await deleteUser(user.id.toString());
+        }
         await prisma.identity.delete({ where: { id: identityId } });
 
         return {
