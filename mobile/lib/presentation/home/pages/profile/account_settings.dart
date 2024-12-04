@@ -27,18 +27,18 @@ class AccountSettingsPage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
+                const Row(
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 30,
                       backgroundColor: Colors.grey,
                       child: Text('I'),
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Hello!',
                           style: TextStyle(
                               fontSize: 14,
@@ -48,7 +48,7 @@ class AccountSettingsPage extends StatelessWidget {
                         ),
                         Text(
                           'userId',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.2,
