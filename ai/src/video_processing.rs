@@ -112,20 +112,29 @@ pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
     loop {
         let mut buffer = Mat::default();
         input.read(&mut buffer).unwrap();
-        if let Ok((false, width, height)) = buffer.size().map(|size| {
+        let (width, height) = match buffer.size().map(|size| {
             (
-                size.width == 1920 && size.height == 1080,
+                // size.width == 1920 && size.height == 1080,
                 size.width,
                 size.height,
             )
         }) {
-            panic!("Input stream is not 1920x1080; got size {width}x{height}");
-        }
+            // (false, w, h) => panic!("Input stream is not 1920x1080; got size {w}x{h}"),
+            Ok((0, 0)) => {
+                sleep(Duration::from_millis(100));
+                continue;
+            }
+            Ok(size) => size,
+            _ => panic!("what"),
+        };
         frame_counter += 1;
         let mut buffer2 = Mat::default();
         opencv::imgproc::cvt_color(&buffer, &mut buffer2, COLOR_BGR2RGB, 0).unwrap();
-        let Some(mut img) = RgbImage::from_raw(1920, 1080, buffer2.data_bytes().unwrap().to_vec())
-        else {
+        let Some(mut img) = RgbImage::from_raw(
+            width as u32,
+            height as u32,
+            buffer2.data_bytes().unwrap().to_vec(),
+        ) else {
             panic!("Image container not big enough");
         };
 
