@@ -13,7 +13,7 @@ class LoadFaces extends FaceEvent {}
 class LoadUnrecognizedFaces extends FaceEvent {}
 
 class AddFace extends FaceEvent {
-  final Face face;
+  final FaceModel face;
 
   const AddFace(this.face);
 
@@ -22,7 +22,7 @@ class AddFace extends FaceEvent {
 }
 
 class UpdateFace extends FaceEvent {
-  final Face face;
+  final FaceModel face;
 
   const UpdateFace(this.face);
 
