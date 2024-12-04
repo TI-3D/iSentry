@@ -17,6 +17,7 @@ use opencv::{
     prelude::*,
     videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_ANY},
 };
+use serde_json::{json, Value};
 use tokio::{
     io::AsyncWriteExt,
     sync::{mpsc::Sender, oneshot, Mutex},
@@ -168,20 +169,34 @@ pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
             });
             tokio::spawn(async move {
                 handler.await;
-                let mut db_conn = Conn::new(db_opts).unwrap();
-                let push_log = db_conn
-                    .prep("INSERT INTO detectionLogs (face) VALUES (:face_id)")
-                    .unwrap();
+                let mut ids = Vec::new();
                 for (_, (id, _)) in &*bounding_boxes_clone2.lock().await {
-                    db_conn
-                        .exec_drop(
-                            push_log.clone(),
-                            params! {
-                                "face_id" => id
-                            },
-                        )
-                        .unwrap();
+                    ids.push(*id);
                 }
+                let response: Value = reqwest::Client::new()
+                    .post("http://localhost:3000/api/detection-logs/create-many")
+                    .json(&ids)
+                    .send()
+                    .await
+                    .unwrap()
+                    .json()
+                    .await
+                    .unwrap();
+                println!("{response}");
+                // let mut db_conn = Conn::new(db_opts).unwrap();
+                // let push_log = db_conn
+                //     .prep("INSERT INTO detectionLogs (face) VALUES (:face_id)")
+                //     .unwrap();
+                // for (_, (id, _)) in &*bounding_boxes_clone2.lock().await {
+                //     db_conn
+                //         .exec_drop(
+                //             push_log.clone(),
+                //             params! {
+                //                 "face_id" => id
+                //             },
+                //         )
+                //         .unwrap();
+                // }
             });
         } else {
             for (bbox, (id, name)) in &*bounding_boxes.lock().await {
