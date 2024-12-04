@@ -8,6 +8,7 @@ import {
     getIdentityById,
     updateIdentity,
     deleteIdentity,
+    getIdentitiesWithoutUserRelation,
 } from "../controllers/IdentityController";
 
 const IdentityRoutes = new Elysia({ prefix: "/identities" })
@@ -15,6 +16,7 @@ const IdentityRoutes = new Elysia({ prefix: "/identities" })
     //route get all identity
     .get("/", () => getIdentities())
 
+    .get("/no-account", () => getIdentitiesWithoutUserRelation())
     // route to create a identity
     .post(
         "/",

@@ -9,6 +9,7 @@ import {
     updateDetectionLog,
     deleteDetectionLog,
     getDetailDetectionLogs,
+    createManyDetectionLog,
 } from "../controllers/DetectionLogController";
 
 const DetectionLogRoutes = new Elysia({ prefix: "/detection-logs" })
@@ -31,6 +32,22 @@ const DetectionLogRoutes = new Elysia({ prefix: "/detection-logs" })
         {
             body: t.Object({
                 face: t.Number({ minLength: 1, maxLength: 100 }),
+            }),
+        }
+    )
+
+    .post(
+        "/create-many",
+        async ({ body }) => {
+            return await createManyDetectionLog(
+                body as {
+                    face: number[];
+                }
+            );
+        },
+        {
+            body: t.Object({
+                face: t.Array(t.Number({ minLength: 1, maxLength: 100 })),
             }),
         }
     )
