@@ -21,8 +21,14 @@ class Face {
     // required this.updatedAt,
   });
 
-  factory Face.fromJson(Map<String, dynamic> json) {
-    return Face(
+  factory FaceModel.fromJson(Map<String, dynamic> json) {
+    final createdAtString = json['createdAt'] as String;
+    final updatedAtString = json['updatedAt'] as String;
+
+    final createdAtDate = DateTime.parse(createdAtString);
+    final updatedAtDate = DateTime.parse(updatedAtString);
+
+    return FaceModel(
       id: json['id'],
       identityId: json['identity'],
       //landmarks: List<int>.from(json['landmarks']),
