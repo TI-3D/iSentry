@@ -10,7 +10,34 @@ export async function getFace() {
         //get all face
         const faces = await prisma.face.findMany({
             orderBy: { id: "asc" },
+            select: {
+                id: true,
+                identity: true,
+                picture_full: true,
+                picture_single: true,
+                singlePictures: {
+                    select: {
+                        path: true,
+                    },
+                },
+                fullPictures: {
+                    select: {
+                        path: true,
+                    },
+                },
+                createdAt: true,
+            },
         });
+        for (const item of faces) {
+            if (item.singlePictures) {
+                const fileName = path.basename(item.singlePictures.path);
+                item.singlePictures.path = `/public/${fileName}`;
+            }
+            if (item.fullPictures) {
+                const fileName = path.basename(item.fullPictures.path);
+                item.fullPictures.path = `/public/${fileName}`;
+            }
+        }
 
         //return response json
         return {
@@ -188,6 +215,7 @@ export async function unrecognizedFace() {
                         path: true,
                     },
                 },
+                createdAt: true,
             },
         });
         for (const item of unrecognized) {

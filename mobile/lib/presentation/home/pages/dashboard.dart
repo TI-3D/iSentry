@@ -121,6 +121,17 @@ class DashboardPage extends StatelessWidget {
       },
     );
   }
+
+  // Fungsi untuk memanggil notifikasi
+  void showNotification(BuildContext context) {
+    print("Notification button pressed!"); // Tambahkan log untuk memverifikasi
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Notifikasi berhasil dikirim!"),
+      ),
+    );
+  }
+
 }
 
 class Faces extends StatelessWidget {

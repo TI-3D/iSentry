@@ -1,15 +1,24 @@
-import 'package:isentry/domain/entities/face.dart';
+class Face {
+  final int id;
+  final int? identityId;
+  //final List<int> landmarks;
+  //final List<int> boundingBox;
+  final int pictureSingleId;
+  final String pictureSinglePath;
+  final int pictureFullId;
+  final DateTime createdAt;
+  // final DateTime updatedAt;
 
-class FaceModel extends Face {
-  const FaceModel({
-    required super.id,
-    required super.identityId,
-    required super.landmarks,
-    required super.boundingBox,
-    required super.pictureSingleId,
-    required super.pictureFullId,
-    required super.createdAt,
-    required super.updatedAt,
+  Face({
+    required this.id,
+    required this.identityId,
+    //required this.landmarks,
+    //required this.boundingBox,
+    required this.pictureSingleId,
+    required this.pictureSinglePath,
+    required this.pictureFullId,
+    required this.createdAt,
+    // required this.updatedAt,
   });
 
   factory FaceModel.fromJson(Map<String, dynamic> json) {
@@ -22,14 +31,13 @@ class FaceModel extends Face {
     return FaceModel(
       id: json['id'],
       identityId: json['identity'],
-      landmarks: List<int>.from(json['landmarks']),
-      boundingBox: List<int>.from(json['bounding_box']),
+      //landmarks: List<int>.from(json['landmarks']),
+      //boundingBox: List<int>.from(json['bounding_box']),
       pictureSingleId: json['picture_single'],
+      pictureSinglePath: json['singlePictures']['path'],
       pictureFullId: json['picture_full'],
-      createdAt: DateTime(createdAtDate.year, createdAtDate.month,
-          createdAtDate.day, createdAtDate.hour, createdAtDate.minute),
-      updatedAt: DateTime(updatedAtDate.year, updatedAtDate.month,
-          updatedAtDate.day, updatedAtDate.hour, updatedAtDate.minute),
+      createdAt: DateTime.parse(json['createdAt']),
+      //updatedAt: DateTime.parse(json['updatedAt']),
     );
   }
 
@@ -37,12 +45,12 @@ class FaceModel extends Face {
     return {
       'id': id,
       'identity': identityId,
-      'landmarks': landmarks,
-      'bounding_box': boundingBox,
+      // 'landmarks': landmarks,
+      // 'bounding_box': boundingBox,
       'picture_single': pictureSingleId,
       'picture_full': pictureFullId,
       'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      // 'updatedAt': updatedAt.toIso8601String(),
     };
   }
 }
