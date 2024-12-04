@@ -19,8 +19,8 @@ class FaceBloc extends Bloc<FaceEvent, FaceState> {
         print(data['data']);
 
         if (data.containsKey('data')) {
-          final List<Face> faces = (data['data'] as List)
-              .map((json) => Face.fromJson(json))
+          final List<FaceModel> faces = (data['data'] as List)
+              .map((json) => FaceModel.fromJson(json))
               .toList();
           print('Mapped Faces: $faces');
           emit(FaceLoaded(faces));
@@ -37,13 +37,20 @@ class FaceBloc extends Bloc<FaceEvent, FaceState> {
     on<LoadUnrecognizedFaces>((event, emit) async {
       emit(FaceLoading());
       try {
+        print("test");
         final url = Uri.http(ipAddress, 'api/faces/unrecognized');
+        print("test 2");
         final data = await NetworkService.get(url.toString());
+        print("test 3");
 
         if (data.containsKey('data')) {
-          final List<Face> faces = (data['data'] as List)
-              .map((json) => Face.fromJson(json))
+          print("test 4");
+          print(data['data']);
+          final List<FaceModel> faces = (data['data'] as List)
+              .map((json) => FaceModel.fromJson(json))
               .toList();
+
+          print(data.containsKey('data'));
           emit(FaceLoaded(faces));
         } else {
           emit(FaceError("Invalid response structure: $data"));

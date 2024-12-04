@@ -13,7 +13,7 @@ class FaceInitial extends FaceState {}
 class FaceLoading extends FaceState {}
 
 class FaceLoaded extends FaceState {
-  final List<Face> faces;
+  final List<FaceModel> faces;
 
   const FaceLoaded(this.faces);
 
