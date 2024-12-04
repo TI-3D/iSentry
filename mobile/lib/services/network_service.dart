@@ -57,19 +57,39 @@ class NetworkService {
       if (statusCode < 200 || statusCode > 400) {
         throw Exception("Error while fetching data");
       }
-        //print("responsee: $res");
       return _instance._decoder.convert(res);
     });
   }
 
-  static Future<dynamic> put(String url,
+  static Future<dynamic> delete(String url,
+      {Map<String, String>? customHeaders}) {
+    if (_isTokenExpired()) {
+      _renewToken();
+    }
+    final allHeaders = {..._instance.headers, ...?customHeaders};
+    return http
+        .delete(Uri.parse(url), headers: allHeaders)
+        .then((http.Response response) {
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+
+      _updateCookie(response);
+
+      if (statusCode < 200 || statusCode > 400) {
+        throw Exception("Error while fetching data");
+      }
+      return _instance._decoder.convert(res);
+    });
+  }
+
+  static Future<dynamic> patch(String url,
       {body, encoding, Map<String, String>? customHeaders}) {
     if (_isTokenExpired()) {
       _renewToken();
     }
     final allHeaders = {..._instance.headers, ...?customHeaders};
     return http
-        .put(Uri.parse(url),
+        .patch(Uri.parse(url),
             body: _instance._encoder.convert(body),
             headers: allHeaders,
             encoding: encoding)
@@ -80,7 +100,7 @@ class NetworkService {
       _updateCookie(response);
 
       if (statusCode < 200 || statusCode > 400) {
-        throw Exception("Error while fetching data");
+        throw Exception("Error while patching data");
       }
       return _instance._decoder.convert(res);
     });
@@ -108,6 +128,8 @@ class NetworkService {
       SecureStorageService.write("jwt_token", token);
       SecureStorageService.write("jwt_refresh_token", refreshToken);
       _instance.headers["Authorization"] = "Bearer $token";
+    } else {
+      print("Failed to renew token: ${body['message']}");
     }
   }
 

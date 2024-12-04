@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:path_provider/path_provider.dart';
+// ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -11,6 +12,7 @@ class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _CameraPageState createState() => _CameraPageState();
 }
 
@@ -32,7 +34,7 @@ class _CameraPageState extends State<CameraPage> {
 
   Future<void> _initVlcPlayer() async {
     _vlcViewController = VlcPlayerController.network(
-      "rtsp://192.168.25.215:8554/test",
+      "rtsp://192.168.69.190:8554/test",
       autoPlay: true,
     );
   }

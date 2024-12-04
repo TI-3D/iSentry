@@ -1,19 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:isentry/presentation/home/pages/unrecognized/bottom_sheets/add_data.dart';
-import 'package:isentry/presentation/widgets/components/sort.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:isentry/core/configs/ip_address.dart';
+import 'package:isentry/presentation/home/bloc/faces/face_bloc.dart';
+import 'package:isentry/presentation/home/bloc/faces/face_event.dart';
+import 'package:isentry/presentation/home/bloc/faces/face_state.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'bottom_sheets/add_data.dart';
+import 'package:isentry/presentation/widgets/components/sort.dart';
 
-class UnrecognizedPage extends StatefulWidget {
+class UnrecognizedPage extends StatelessWidget {
   const UnrecognizedPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _UnrecognizedPageState createState() => _UnrecognizedPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) =>
+          FaceBloc()..add(LoadUnrecognizedFaces()), // Inisialisasi FaceBloc
+      child: const _UnrecognizedPageView(),
+    );
+  }
 }
 
-class _UnrecognizedPageState extends State<UnrecognizedPage> {
-  // List to keep track of the selected state for each image
-  final List<bool> _isSelected = List.generate(6, (_) => false);
+class _UnrecognizedPageView extends StatefulWidget {
+  const _UnrecognizedPageView();
+
+  @override
+  _UnrecognizedPageViewState createState() => _UnrecognizedPageViewState();
+}
+
+class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
+  final List<bool> _isSelected =
+      []; // Akan diisi sesuai jumlah wajah dari state
 
   void _showAddDataBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -24,12 +41,6 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
       ),
       builder: (_) => const AddDataUnreg(),
     );
-  }
-
-  void _toggleSelection(int index) {
-    setState(() {
-      _isSelected[index] = !_isSelected[index];
-    });
   }
 
   @override
@@ -47,98 +58,126 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 25),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            childAspectRatio: 0.75,
-          ),
-          itemCount: 6,
-          itemBuilder: (context, index) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GestureDetector(
-                  onTap: () => _toggleSelection(
-                      index), // Menambahkan onTap untuk seluruh gambar
-                  child: Card(
-                    color: Colors.grey[200],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 150,
-                          decoration: BoxDecoration(
+      body: BlocBuilder<FaceBloc, FaceState>(
+        builder: (context, state) {
+          if (state is FaceLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is FaceLoaded) {
+            // Update jumlah _isSelected sesuai jumlah data
+            if (_isSelected.isEmpty) {
+              _isSelected
+                  .addAll(List.generate(state.faces.length, (_) => false));
+            }
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 25),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  childAspectRatio: 0.75,
+                ),
+                itemCount: state.faces.length,
+                itemBuilder: (context, index) {
+                  final face = state.faces[index];
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _isSelected[index] = !_isSelected[index];
+                          });
+                        },
+                        child: Card(
+                          color: Colors.grey[200],
+                          shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
-                            image: const DecorationImage(
-                              image: AssetImage('assets/images/nani.jpg'),
-                              fit: BoxFit.cover,
-                            ),
                           ),
-                          child: Stack(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Positioned(
-                                top: 8,
-                                left: 8,
-                                child: Icon(
-                                  _isSelected[index]
-                                      ? Icons.check_circle
-                                      : Icons.circle_outlined,
-                                  color: _isSelected[index]
-                                      ? Colors.black
-                                      : Colors.white,
-                                  size: 24,
+                              Container(
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  image: DecorationImage(
+                                    image: NetworkImage(
+                                        "http://$ipAddress${face.pictureSinglePath}"),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                      top: 8,
+                                      left: 8,
+                                      child: Icon(
+                                        _isSelected[index]
+                                            ? Icons.check_circle
+                                            : Icons.circle_outlined,
+                                        color: _isSelected[index]
+                                            ? Colors.black
+                                            : Colors.white,
+                                        size: 24,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(
-                    'Anomali#0${index + 1}',
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        LucideIcons.calendarDays,
-                        size: 12,
-                        color: Colors.grey,
                       ),
-                      SizedBox(width: 4),
-                      Text(
-                        '25 June 2024, 08:00',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                      const SizedBox(height: 4),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          'Face#${face.id}',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              LucideIcons.calendarDays,
+                              size: 12,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${face.createdAt}',
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
-                  ),
-                ),
-              ],
+                  );
+                },
+              ),
             );
-          },
-        ),
+          } else if (state is FaceError) {
+            return Center(
+              child: Text(
+                'Error: ${state.message}',
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
+          } else {
+            return const Center(child: Text('No Data Available'));
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddDataBottomSheet(context),

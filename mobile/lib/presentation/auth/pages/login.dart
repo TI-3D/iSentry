@@ -31,8 +31,8 @@ class LoginPage extends StatelessWidget {
               QuickAlert.show(
                 context: context,
                 type: QuickAlertType.error,
-                title: 'Oops!', 
-                text: 'You are not authorized as the Owner', 
+                title: 'Oops!',
+                text: 'You are not authorized as the Owner',
               );
               return;
             } else if (state.auth.role == Role.OWNER) {
@@ -83,7 +83,8 @@ class LoginPage extends StatelessWidget {
                             passwordController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("Username or password is missing. Please try again!"),
+                              content: Text(
+                                  "Username or password is missing. Please try again!"),
                               duration: Duration(seconds: 3),
                             ),
                           );
@@ -130,6 +131,7 @@ class LoginPage extends StatelessWidget {
                             context, const LoginResidentPage());
                       },
                     ),
+
                     const SizedBox(height: 20),
                     CustomElevatedButton(
                       buttonText: 'Guest Mode',
@@ -139,7 +141,7 @@ class LoginPage extends StatelessWidget {
                       onPressed: () {
                         AppNavigator.pushReplacement(
                           context,
-                          const HomePage(userName: "Guest"),
+                          const HomePage(userId: 1),
                         );
                       },
                     ),

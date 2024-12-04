@@ -15,7 +15,6 @@ class UserModel extends User {
     final createdAtString = json['createdAt'] as String;
     final updatedAtString = json['updatedAt'] as String;
 
-    // Konversi ke DateTime hanya dengan tahun, bulan, dan tanggal
     final createdAtDate = DateTime.parse(createdAtString);
     final updatedAtDate = DateTime.parse(updatedAtString);
 
