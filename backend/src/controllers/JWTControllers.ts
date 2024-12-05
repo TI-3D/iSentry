@@ -1,4 +1,5 @@
 import prisma from "../../prisma/client";
+import { error } from "elysia";
 import { JWTPayloadSpec } from "@elysiajs/jwt";
 
 export type JwtParameter = {
@@ -13,18 +14,18 @@ export type JwtParameter = {
 export const verify = async (token: string, jwt: JwtParameter) => {
     const profile = await jwt.verify(token);
     if (!profile) {
-        return {
+        return error(403, {
             success: false,
             message: "Token not valid",
-        };
+        });
     }
 
     const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
     if (profile.exp && profile.exp < currentTime) {
-        return {
+        return error(403, {
             success: false,
             message: "Token has expired",
-        };
+        });
     }
 
     const token_from_db = await prisma.token.findUnique({
@@ -32,10 +33,10 @@ export const verify = async (token: string, jwt: JwtParameter) => {
     });
 
     if (!token_from_db) {
-        return {
+        return error(403, {
             success: false,
             message: "Token not found in database",
-        };
+        });
     }
 };
 
