@@ -15,7 +15,7 @@ datasource db {
 
 model User {
   id                Int               @id @default(autoincrement())
-  tokens             Token[]
+  tokens            Token[]
   username          String
   name              String
   password          String

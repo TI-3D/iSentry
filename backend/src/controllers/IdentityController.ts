@@ -1,6 +1,7 @@
 //import prisma client
 import prisma from "../../prisma/client";
 import { deleteUser } from "./UserController";
+const path = require("path");
 
 /**
  * Getting all identity
@@ -20,6 +21,38 @@ export async function getIdentities() {
         };
     } catch (e: unknown) {
         console.error(`Error getting identity: ${e}`);
+    }
+}
+
+export async function getIdentitiesWithoutUserRelation() {
+    try {
+        // Get identities without a relation in the User table
+        const identities = await prisma.identity.findMany({
+            where: {
+                id: {
+                    notIn: (
+                        await prisma.user.findMany({
+                            select: {
+                                identityId: true,
+                            },
+                        })
+                    )
+                        .map((user) => user.identityId)
+                        .filter((id): id is number => id !== null), // Extract identityIds from users and filter out null values
+                },
+            },
+            orderBy: { id: "asc" },
+        });
+
+        // Return response JSON
+        return {
+            success: true,
+            message: "List Data Identity Without User Relation!",
+            data: identities,
+        };
+    } catch (e: unknown) {
+        console.error(`Error getting identities without relation: ${e}`);
+        throw new Error("Failed to get identities without user relation.");
     }
 }
 
@@ -51,6 +84,20 @@ export async function getIdentityById(id: string) {
         const identityId = parseInt(id);
         const identities = await prisma.identity.findUnique({
             where: { id: identityId },
+            select: {
+                id: true,
+                name: true,
+                faces: {
+                    select: {
+                        id: true,
+                        singlePictures: {
+                            select: {
+                                path: true,
+                            },
+                        },
+                    },
+                },
+            },
         });
 
         if (!identities) {
@@ -59,6 +106,14 @@ export async function getIdentityById(id: string) {
                 message: "Identity Not Found!",
                 data: null,
             };
+        }
+
+        for (const face of identities.faces) {
+            if (!face.singlePictures) {
+                continue;
+            }
+            const fileName = path.basename(face.singlePictures.path);
+            face.singlePictures.path = `/public/${fileName}`;
         }
 
         return {
