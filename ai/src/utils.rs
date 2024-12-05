@@ -5,7 +5,7 @@ use imageproc::drawing::{draw_hollow_rect_mut, draw_text_mut};
 use crate::model::bounding_box::BoundingBox;
 
 pub enum Msg {
-    Error
+    Error,
 }
 
 pub trait LabelID {

@@ -1,10 +1,16 @@
 use std::time::Duration;
 
 use axum::extract::{Multipart, State};
-use tokio::{sync::oneshot::{self, error::TryRecvError}, time::sleep};
+use tokio::{
+    sync::oneshot::{self, error::TryRecvError},
+    time::sleep,
+};
 use uuid::Uuid;
 
-use crate::{job::{Job, JobKind, JobResult, JobSender}, web_server::{error::WebError, AppState, IPItem, IPResponse}};
+use crate::{
+    job::{Job, JobKind, JobResult, JobSender},
+    web_server::{error::WebError, AppState, IPItem, IPResponse},
+};
 
 pub async fn process_image(
     State(state): State<AppState>,

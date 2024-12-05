@@ -3,10 +3,12 @@
 use std::time::Instant;
 
 use ab_glyph::{FontRef, PxScale};
-use dlib_face_recognition::{FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait, Point, Rectangle};
+use dlib_face_recognition::{
+    FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, ImageMatrix,
+    LandmarkPredictor, LandmarkPredictorTrait, Point, Rectangle,
+};
 use image::{imageops::FilterType, Rgb, RgbImage};
 use imageproc::drawing::draw_text_mut;
-
 
 fn tick<R>(name: &str, f: impl Fn() -> R) -> R {
     let now = std::time::Instant::now();
@@ -16,17 +18,11 @@ fn tick<R>(name: &str, f: impl Fn() -> R) -> R {
 }
 
 pub fn example() {
-    let first_photo = image::load_from_memory(include_bytes!(
-        "../../assets/obama_1.jpg"
-    ))
-    .unwrap();
+    let first_photo = image::load_from_memory(include_bytes!("../../assets/obama_1.jpg")).unwrap();
     let first_photo = first_photo.resize(512, 512, FilterType::Gaussian).to_rgb8();
     let matrix_photo_1 = ImageMatrix::from_image(&first_photo);
 
-    let second_photo = image::load_from_memory(include_bytes!(
-        "../../assets/obama_2.jpg"
-    ))
-    .unwrap();
+    let second_photo = image::load_from_memory(include_bytes!("../../assets/obama_2.jpg")).unwrap();
     let second_photo = second_photo
         .resize(512, 512, FilterType::Gaussian)
         .to_rgb8();
@@ -106,10 +102,9 @@ fn draw_point(image: &mut RgbImage, point: &Point, colour: Rgb<u8>) {
 
 pub fn example2() {
     let manifest_dir = dotenvy::var("CARGO_MANIFEST_DIR").unwrap();
-    let mut image =
-        image::open(format!("{manifest_dir}/assets/obama_2.jpg"))
-            .unwrap()
-            .to_rgb8();
+    let mut image = image::open(format!("{manifest_dir}/assets/obama_2.jpg"))
+        .unwrap()
+        .to_rgb8();
     let matrix = ImageMatrix::from_image(&image);
 
     let detector = FaceDetector::default();
@@ -139,10 +134,8 @@ pub fn example2() {
     // let mut image = ril::Image::<ril::Rgb>::from_bytes(ril::ImageFormat::Jpeg, image.as_raw()).unwrap();
     let mut image = RgbImage::from(image);
 
-    let font = FontRef::try_from_slice(include_bytes!(
-        "../../assets/Montserrat-Medium.ttf"
-    ))
-    .unwrap();
+    let font =
+        FontRef::try_from_slice(include_bytes!("../../assets/Montserrat-Medium.ttf")).unwrap();
 
     let text = "";
 
@@ -164,9 +157,7 @@ pub fn example2() {
         text,
     );
 
-    if let Err(e) = image
-        .save(format!("{manifest_dir}/assets/obama_2_out.jpg"))
-    {
+    if let Err(e) = image.save(format!("{manifest_dir}/assets/obama_2_out.jpg")) {
         println!("Error saving the image: {e}");
     } else {
         println!(

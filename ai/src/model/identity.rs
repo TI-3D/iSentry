@@ -31,7 +31,10 @@ pub fn update(
         let (face_id, embedding, identity_id, name) = row;
         let embedding: Vec<f64> = bincode::deserialize(&embedding)?;
         if embedding.len() != 128 {
-            return Err(eyre!("Embedding is not [f64; 128] for face_id: {}", face_id));
+            return Err(eyre!(
+                "Embedding is not [f64; 128] for face_id: {}",
+                face_id
+            ));
         }
         let embedding = FaceEncoding::from_vec(&embedding).unwrap();
         faces.insert(face_id, identity_id, embedding);
