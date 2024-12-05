@@ -14,4 +14,8 @@ class SecureStorageService {
   static Future<void> delete(String key) async {
     await _storage.delete(key: key);
   }
+
+  static Future<void> deleteAll() async {
+    await _storage.deleteAll();
+  }
 }

@@ -27,11 +27,12 @@ class NetworkService {
         .then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
+      print('Response body: $res');
 
       _updateCookie(response);
 
       if (statusCode < 200 || statusCode > 400) {
-        throw Exception("Error while fetching data");
+        throw Exception("Error while fetching data $statusCode");
       }
       return _instance._decoder.convert(res);
     });
