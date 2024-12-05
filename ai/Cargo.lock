@@ -72,6 +72,7 @@ dependencies = [
  "dlib-face-recognition",
  "dotenvy",
  "eyre",
+ "futures-util",
  "image",
  "imageproc",
  "mysql",
