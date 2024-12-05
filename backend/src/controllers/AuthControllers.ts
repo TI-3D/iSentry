@@ -30,10 +30,6 @@ export const login = async (
             type: "refresh",
         });
 
-        await prisma.token.deleteMany({
-            where: { userId: user.id },
-        });
-
         await prisma.token.createMany({
             data: [
                 { token, userId: user.id, type: "ACCESS" },
@@ -67,6 +63,40 @@ export const login = async (
         };
     } catch (err) {
         console.error("Login error:", err);
+        return error(500, { success: false, message: "Internal Server Error" });
+    }
+};
+
+export const logout = async (id: string) => {
+    try {
+        const idUser = parseInt(id);
+        const checkId = await prisma.user.findUnique({
+            where: { id: idUser },
+        });
+
+        if (!checkId) {
+            return error(404, { success: false, message: "User not found" });
+        }
+
+        const checkToken = await prisma.token.findMany({
+            where: { userId: idUser },
+        });
+
+        if (!checkToken) {
+            return error(404, { success: false, message: "Token not found" });
+        }
+
+        await prisma.token.deleteMany({
+            where: { userId: idUser },
+        });
+
+        // Mengirimkan respons sukses
+        return {
+            success: true,
+            message: "Logout successful",
+        };
+    } catch (err) {
+        console.error("Logout error:", err);
         return error(500, { success: false, message: "Internal Server Error" });
     }
 };
