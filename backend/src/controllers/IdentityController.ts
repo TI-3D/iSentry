@@ -1,6 +1,7 @@
 //import prisma client
 import prisma from "../../prisma/client";
 import { deleteUser } from "./UserController";
+const path = require("path");
 
 /**
  * Getting all identity
@@ -83,6 +84,20 @@ export async function getIdentityById(id: string) {
         const identityId = parseInt(id);
         const identities = await prisma.identity.findUnique({
             where: { id: identityId },
+            select: {
+                id: true,
+                name: true,
+                faces: {
+                    select: {
+                        id: true,
+                        singlePictures: {
+                            select: {
+                                path: true,
+                            },
+                        },
+                    },
+                },
+            },
         });
 
         if (!identities) {
@@ -91,6 +106,14 @@ export async function getIdentityById(id: string) {
                 message: "Identity Not Found!",
                 data: null,
             };
+        }
+
+        for (const face of identities.faces) {
+            if (!face.singlePictures) {
+                continue;
+            }
+            const fileName = path.basename(face.singlePictures.path);
+            face.singlePictures.path = `/public/${fileName}`;
         }
 
         return {

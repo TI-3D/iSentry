@@ -3,10 +3,11 @@ import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/presentation/auth/pages/login.dart';
 import 'package:isentry/presentation/home/pages/profile/qr_code.dart';
 import 'package:isentry/presentation/widgets/appBar/appbar.dart';
+import 'package:isentry/services/secure_storage_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class AccountSettingsPage extends StatelessWidget {
-  final int userId;
+  final String userId;
   const AccountSettingsPage({super.key, required this.userId});
 
   @override
@@ -203,6 +204,7 @@ class AccountSettingsPage extends StatelessWidget {
                     letterSpacing: 1),
               ),
               onTap: () {
+                SecureStorageService.deleteAll();
                 AppNavigator.pushAndRemove(context, const LoginPage());
               },
             ),

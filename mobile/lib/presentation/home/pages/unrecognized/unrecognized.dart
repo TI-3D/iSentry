@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:isentry/core/configs/ip_address.dart';
 import 'package:isentry/presentation/home/bloc/faces/face_bloc.dart';
 import 'package:isentry/presentation/home/bloc/faces/face_event.dart';
@@ -81,6 +82,8 @@ class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
                 itemCount: state.faces.length,
                 itemBuilder: (context, index) {
                   final face = state.faces[index];
+                  final formattedDate =
+                      DateFormat("d MMMM yyyy, HH:mm").format(face.createdAt);
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -152,10 +155,10 @@ class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '${face.createdAt}',
+                              formattedDate,
                               style: const TextStyle(
                                 color: Colors.grey,
-                                fontSize: 12,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

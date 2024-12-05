@@ -9,7 +9,7 @@ import 'package:isentry/presentation/home/pages/unrecognized/unrecognized.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class HomePage extends StatefulWidget {
-  final int userId;
+  final String userId;
   const HomePage({super.key, required this.userId});
 
   @override

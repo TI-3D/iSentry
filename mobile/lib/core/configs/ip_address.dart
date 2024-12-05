@@ -1,1 +1,2 @@
-const String ipAddress = '103.49.239.37:3000';
+const String ipCamera = '192.168.2.144';
+const String ipAddress = '$ipCamera:3000';

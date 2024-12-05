@@ -8,7 +8,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
 class QrCodePage extends StatelessWidget {
-  final int userId;
+  final String userId;
   QrCodePage({super.key, required this.userId});
 
   final ScreenshotController _screenshotController = ScreenshotController();
