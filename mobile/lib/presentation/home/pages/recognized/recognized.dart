@@ -11,7 +11,7 @@ import 'package:isentry/presentation/home/pages/recognized/bottom_sheets/edit_da
 import 'package:lucide_icons/lucide_icons.dart';
 
 class RecognizedPage extends StatefulWidget {
-  final int userId;
+  final String userId;
   const RecognizedPage({super.key, required this.userId});
 
   @override

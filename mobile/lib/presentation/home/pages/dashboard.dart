@@ -13,10 +13,11 @@ import 'package:isentry/presentation/widgets/components/line_chart.dart';
 import 'package:isentry/presentation/widgets/components/sort.dart';
 import 'package:isentry/presentation/home/pages/profile/account_settings.dart';
 import 'package:isentry/presentation/home/pages/detection_log.dart';
+import 'package:isentry/services/notification_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class DashboardPage extends StatelessWidget {
-  final int userId;
+  final String userId;
   final Function toRecognized;
   final Function toUnrecognized;
   const DashboardPage({
@@ -28,7 +29,7 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<UserBloc>().add(GetUserById(id: '$userId'));
+    context.read<UserBloc>().add(GetUserById(id: userId));
 
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
@@ -110,7 +111,37 @@ class DashboardPage extends StatelessWidget {
               ),
               Expanded(
                 flex: 27,
-                child: Activity(),
+                //child: Activity(),
+                child: Column(
+                  children: [
+                    const Activity(),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Callback untuk memanggil notifikasi
+                          showNotification(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 25),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        child: const Text(
+                          "Send Notification",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           );
@@ -123,7 +154,8 @@ class DashboardPage extends StatelessWidget {
   }
 
   // Fungsi untuk memanggil notifikasi
-  void showNotification(BuildContext context) {
+  void showNotification(BuildContext context) async {
+    await NotificationService.showNotification("kocak", "geming");
     print("Notification button pressed!"); // Tambahkan log untuk memverifikasi
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -131,7 +163,6 @@ class DashboardPage extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class Faces extends StatelessWidget {

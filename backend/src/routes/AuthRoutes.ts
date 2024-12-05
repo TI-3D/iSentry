@@ -1,5 +1,5 @@
 import { Elysia, t } from "elysia";
-import { login } from "../controllers/AuthControllers";
+import { login, logout } from "../controllers/AuthControllers";
 import jwt from "@elysiajs/jwt";
 import { renew } from "../controllers/JWTControllers";
 
@@ -47,6 +47,9 @@ const AuthRoutes = new Elysia({ prefix: "/auth" })
                 refresh_token: t.String(),
             }),
         }
-    );
+    )
+    .post("/logout/:id", async ({ params: { id } }) => {
+        return await logout(id);
+    });
 
 export default AuthRoutes;

@@ -8,6 +8,7 @@ import 'package:isentry/presentation/home/bloc/user/user_bloc.dart';
 import 'package:isentry/presentation/splash/bloc/splash_cubit.dart';
 import 'package:isentry/presentation/splash/pages/splash.dart';
 import 'package:isentry/services/notification_service.dart';
+import 'package:isentry/services/websocket_service.dart';
 // import 'package:isentry/services/websocket_service.dart';
 
 void main() async {
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
     );
 
     // Inisialisasi WebSocketService
-    // WebSocketService().connect(context);
+    WebSocketService.connect(context);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,

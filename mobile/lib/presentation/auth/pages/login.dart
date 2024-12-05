@@ -37,7 +37,7 @@ class LoginPage extends StatelessWidget {
               return;
             } else if (state.auth.role == Role.OWNER) {
               AppNavigator.pushReplacement(
-                  context, HomePage(userId: state.auth.id));
+                  context, HomePage(userId: '${state.auth.id}'));
             }
           } else if (state is LoginFailure) {
             ScaffoldMessenger.of(context)
@@ -131,7 +131,6 @@ class LoginPage extends StatelessWidget {
                             context, const LoginResidentPage());
                       },
                     ),
-
                     const SizedBox(height: 20),
                     CustomElevatedButton(
                       buttonText: 'Guest Mode',
@@ -141,7 +140,7 @@ class LoginPage extends StatelessWidget {
                       onPressed: () {
                         AppNavigator.pushReplacement(
                           context,
-                          const HomePage(userId: 1),
+                          const HomePage(userId: '1'),
                         );
                       },
                     ),

@@ -14,7 +14,7 @@ import 'models/live_stream_state.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
-  const String server = "rtmp://192.168.1.26:8554";
+  const String server = "rtmp://192.168.76.165:1935";
   const streamKey = "test";
 
   runApp(
