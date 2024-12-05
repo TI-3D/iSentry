@@ -16,7 +16,7 @@ import 'package:isentry/presentation/home/pages/detection_log.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class DashboardPage extends StatelessWidget {
-  final int userId;
+  final String userId;
   final Function toRecognized;
   final Function toUnrecognized;
   const DashboardPage({
@@ -28,7 +28,7 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<UserBloc>().add(GetUserById(id: '$userId'));
+    context.read<UserBloc>().add(GetUserById(id: userId));
 
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
@@ -131,7 +131,6 @@ class DashboardPage extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class Faces extends StatelessWidget {
