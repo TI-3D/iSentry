@@ -11,12 +11,13 @@ use std::{
 use ab_glyph::{FontRef, PxScale};
 use chrono::Utc;
 use image::RgbImage;
-use mysql::{prelude::Queryable, Conn};
+use mysql::{params, prelude::Queryable, Conn};
 use opencv::{
     imgproc::COLOR_BGR2RGB,
     prelude::*,
     videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_ANY},
 };
+use serde_json::{json, Value};
 use tokio::{
     io::AsyncWriteExt,
     sync::{mpsc::Sender, oneshot, Mutex},
@@ -30,9 +31,9 @@ use crate::{
     utils::LabelID,
 };
 
-pub async fn run(_db_opts: mysql::Opts, tx: Sender<Job>) {
+pub async fn run(db_opts: mysql::Opts, tx: Sender<Job>) {
     // tokio::spawn(auto_record(db_opts, tx.clone()));
-    tokio::spawn(auto_label(tx));
+    tokio::spawn(auto_label(db_opts, tx));
 }
 
 pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
@@ -68,7 +69,7 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
     }
 }
 
-pub async fn auto_label(tx: Sender<Job>) {
+pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
     let link = dotenvy::var("RTMP_RAW").unwrap();
 
     let mut input = loop {
@@ -76,7 +77,7 @@ pub async fn auto_label(tx: Sender<Job>) {
             Ok(cap) => cap,
             Err(e) => {
                 tracing::error!("Can't open {link}: {e}");
-                continue; 
+                continue;
             }
         };
         match input.is_opened() {
@@ -85,7 +86,7 @@ pub async fn auto_label(tx: Sender<Job>) {
             Err(e) => {
                 tracing::error!("RTSP stream {link} hasn't been opened: {e}");
             }
-        } 
+        }
         sleep(Duration::from_secs(60)).await;
     };
 
@@ -111,20 +112,29 @@ pub async fn auto_label(tx: Sender<Job>) {
     loop {
         let mut buffer = Mat::default();
         input.read(&mut buffer).unwrap();
-        if let Ok((false, width, height)) = buffer.size().map(|size| {
+        let (width, height) = match buffer.size().map(|size| {
             (
-                size.width == 1920 && size.height == 1080,
+                // size.width == 1920 && size.height == 1080,
                 size.width,
                 size.height,
             )
         }) {
-            panic!("Input stream is not 1920x1080; got size {width}x{height}");
-        }
+            // (false, w, h) => panic!("Input stream is not 1920x1080; got size {w}x{h}"),
+            Ok((0, 0)) => {
+                sleep(Duration::from_millis(100));
+                continue;
+            }
+            Ok(size) => size,
+            _ => panic!("what"),
+        };
         frame_counter += 1;
         let mut buffer2 = Mat::default();
         opencv::imgproc::cvt_color(&buffer, &mut buffer2, COLOR_BGR2RGB, 0).unwrap();
-        let Some(mut img) = RgbImage::from_raw(1920, 1080, buffer2.data_bytes().unwrap().to_vec())
-        else {
+        let Some(mut img) = RgbImage::from_raw(
+            width as u32,
+            height as u32,
+            buffer2.data_bytes().unwrap().to_vec(),
+        ) else {
             panic!("Image container not big enough");
         };
 
@@ -132,10 +142,12 @@ pub async fn auto_label(tx: Sender<Job>) {
             //tracing::info!("Something");
             num_scanning_jobs.fetch_add(1, Ordering::SeqCst);
             let tx_clone = tx.clone();
+            let db_opts = db_opts.clone();
             let bounding_boxes_clone = bounding_boxes.clone();
+            let bounding_boxes_clone2 = bounding_boxes.clone();
             let img_clone = img.clone();
             let num_scanning_jobs_clone = num_scanning_jobs.clone();
-            tokio::spawn(async move {
+            let handler = tokio::spawn(async move {
                 let (ons_tx, ons_rx) = oneshot::channel::<JobResult>();
 
                 let job_id = Uuid::new_v4();
@@ -164,8 +176,39 @@ pub async fn auto_label(tx: Sender<Job>) {
                 }
                 num_scanning_jobs_clone.fetch_sub(1, Ordering::SeqCst);
             });
+            tokio::spawn(async move {
+                handler.await;
+                // let mut ids = Vec::new();
+                // for (_, (id, _)) in &*bounding_boxes_clone2.lock().await {
+                //     ids.push(*id);
+                // }
+                // let response: Value = reqwest::Client::new()
+                //     .post("http://localhost:3000/api/detection-logs/create-many")
+                //     .json(&ids)
+                //     .send()
+                //     .await
+                //     .unwrap()
+                //     .json()
+                //     .await
+                //     .unwrap();
+                // println!("{response}");
+                let mut db_conn = Conn::new(db_opts).unwrap();
+                let push_log = db_conn
+                    .prep("INSERT INTO detectionLogs (face) VALUES (:face_id)")
+                    .unwrap();
+                for (_, (id, _)) in &*bounding_boxes_clone2.lock().await {
+                    db_conn
+                        .exec_drop(
+                            push_log.clone(),
+                            params! {
+                                "face_id" => id
+                            },
+                        )
+                        .unwrap();
+                }
+            });
         } else {
-            for (bbox, name) in &*bounding_boxes.lock().await {
+            for (bbox, (id, name)) in &*bounding_boxes.lock().await {
                 img.label(bbox, name, &font, font_height, scale);
             }
         }

@@ -29,7 +29,7 @@ pub enum JobKind {
 pub enum JobResult {
     AutoLabel(
         Vec<BoundingBox>,
-        Vec<String>,
+        Vec<(u64, String)>,
     ),
     #[allow(clippy::type_complexity)]
     ProcessImage(String, Vec<(String, (i64, i64, u64, u64), Vec<f64>)>),
