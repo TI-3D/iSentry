@@ -33,7 +33,7 @@ pub async fn process_image(
         let id = Uuid::new_v4();
 
         state
-            .tx
+            .job_tx
             .send(Job {
                 id,
                 sender: JobSender::WebServer,

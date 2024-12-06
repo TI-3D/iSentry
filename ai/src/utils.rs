@@ -4,6 +4,8 @@ use imageproc::drawing::{draw_hollow_rect_mut, draw_text_mut};
 
 use crate::model::bounding_box::BoundingBox;
 
+pub type DetectionOutput = (String, u64, u64);
+
 pub enum Msg {
     Error,
 }

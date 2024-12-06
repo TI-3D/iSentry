@@ -204,7 +204,7 @@ pub async fn auto_label(
         .into_iter()
         .map(|name| match name {
             Label::Name(id, name_str) => (id, name_str),
-            Label::Id(id, _) => (id, id.to_string()),
+            Label::Id(id, _) => (id, format!("anomali#{id}")),
         })
         .collect::<Vec<(u64, String)>>();
 

@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 use std::{
     sync::{
         atomic::{AtomicU8, Ordering},
@@ -17,10 +15,9 @@ use opencv::{
     prelude::*,
     videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_ANY},
 };
-use serde_json::{json, Value};
 use tokio::{
     io::AsyncWriteExt,
-    sync::{mpsc::Sender, oneshot, Mutex},
+    sync::{broadcast, mpsc, oneshot, Mutex},
     time::sleep,
 };
 use uuid::Uuid;
@@ -28,15 +25,19 @@ use uuid::Uuid;
 use crate::{
     ffmpeg,
     job::{Job, JobKind, JobResult, JobSender},
-    utils::LabelID,
+    utils::{DetectionOutput, LabelID},
 };
 
-pub async fn run(db_opts: mysql::Opts, tx: Sender<Job>) {
+pub async fn run(
+    db_opts: mysql::Opts,
+    job_tx: mpsc::Sender<Job>,
+    detection_tx: broadcast::Sender<DetectionOutput>,
+) {
     // tokio::spawn(auto_record(db_opts, tx.clone()));
-    tokio::spawn(auto_label(db_opts, tx));
+    tokio::spawn(auto_label(db_opts, job_tx, detection_tx));
 }
 
-pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
+pub async fn auto_record(db_opts: mysql::Opts, _tx: mpsc::Sender<Job>) {
     let mut db_conn = Conn::new(db_opts).unwrap();
 
     let stmt1 = db_conn
@@ -69,7 +70,11 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
     }
 }
 
-pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
+pub async fn auto_label(
+    db_opts: mysql::Opts,
+    job_tx: mpsc::Sender<Job>,
+    detection_tx: broadcast::Sender<DetectionOutput>,
+) {
     let link = dotenvy::var("RTMP_RAW").unwrap();
 
     let mut input = loop {
@@ -121,7 +126,7 @@ pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
         }) {
             // (false, w, h) => panic!("Input stream is not 1920x1080; got size {w}x{h}"),
             Ok((0, 0)) => {
-                sleep(Duration::from_millis(100));
+                sleep(Duration::from_millis(100)).await;
                 continue;
             }
             Ok(size) => size,
@@ -141,7 +146,7 @@ pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
         if frame_counter % 120 == 0 && num_scanning_jobs.load(Ordering::SeqCst) <= 1 {
             //tracing::info!("Something");
             num_scanning_jobs.fetch_add(1, Ordering::SeqCst);
-            let tx_clone = tx.clone();
+            let tx_clone = job_tx.clone();
             let db_opts = db_opts.clone();
             let bounding_boxes_clone = bounding_boxes.clone();
             let bounding_boxes_clone2 = bounding_boxes.clone();
@@ -176,8 +181,9 @@ pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
                 }
                 num_scanning_jobs_clone.fetch_sub(1, Ordering::SeqCst);
             });
+            let detection_tx = detection_tx.clone();
             tokio::spawn(async move {
-                handler.await;
+                let _ = handler.await;
                 // let mut ids = Vec::new();
                 // for (_, (id, _)) in &*bounding_boxes_clone2.lock().await {
                 //     ids.push(*id);
@@ -196,7 +202,7 @@ pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
                 let push_log = db_conn
                     .prep("INSERT INTO detectionLogs (face) VALUES (:face_id)")
                     .unwrap();
-                for (_, (id, _)) in &*bounding_boxes_clone2.lock().await {
+                for (_, (id, name)) in &*bounding_boxes_clone2.lock().await {
                     db_conn
                         .exec_drop(
                             push_log.clone(),
@@ -205,10 +211,14 @@ pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
                             },
                         )
                         .unwrap();
+                    let detection_id = db_conn.last_insert_id();
+                    if let Err(e) = detection_tx.send((name.clone(), *id, detection_id)) {
+                        tracing::error!("An error occured during detection report sending: {e}");
+                    }
                 }
             });
         } else {
-            for (bbox, (id, name)) in &*bounding_boxes.lock().await {
+            for (bbox, (_, name)) in &*bounding_boxes.lock().await {
                 img.label(bbox, name, &font, font_height, scale);
             }
         }
