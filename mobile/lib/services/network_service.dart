@@ -30,6 +30,9 @@ class NetworkService {
       print('Response body: $res');
 
       _updateCookie(response);
+      if (statusCode == 403) {
+        throw Exception("Unauthorized access (403)");
+      }
 
       if (statusCode < 200 || statusCode > 400) {
         throw Exception("Error while fetching data $statusCode");
