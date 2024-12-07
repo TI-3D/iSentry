@@ -3,7 +3,7 @@ import 'package:isentry/domain/entities/face.dart';
 class FaceModel extends Face {
   const FaceModel({
     required super.id,
-    // required super.identityId,
+    required super.identityId,
     // required super.landmarks,
     // required super.boundingBox,
     required super.pictureSingleId,
@@ -21,13 +21,13 @@ class FaceModel extends Face {
     // final updatedAtDate = DateTime.parse(updatedAtString);
 
     return FaceModel(
-      id: json['id'],
-      // identityId: json['identity'],
+      id: json['id'] as int,
+      identityId: json['identity'] as int?,
       // landmarks: List<int>.from(json['landmarks']),
       // boundingBox: List<int>.from(json['bounding_box']),
-      pictureSingleId: json['picture_single'],
+      pictureSingleId: json['picture_single'] as int,
       pictureSinglePath: json['singlePictures']['path'],
-      pictureFullId: json['picture_full'],
+      pictureFullId: json['picture_full'] as int,
       createdAt: DateTime(createdAtDate.year, createdAtDate.month,
           createdAtDate.day, createdAtDate.hour, createdAtDate.minute),
       // updatedAt: DateTime(updatedAtDate.year, updatedAtDate.month,
@@ -38,7 +38,7 @@ class FaceModel extends Face {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      // 'identity': identityId,
+      'identity': identityId,
       // 'landmarks': landmarks,
       // 'bounding_box': boundingBox,
       'picture_single': pictureSingleId,
