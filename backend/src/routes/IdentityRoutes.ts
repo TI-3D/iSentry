@@ -9,6 +9,7 @@ import {
     updateIdentity,
     deleteIdentity,
     getIdentitiesWithoutUserRelation,
+    createIdentityAndUpdateFace,
 } from "../controllers/IdentityController";
 
 const IdentityRoutes = new Elysia({ prefix: "/identities" })
@@ -18,18 +19,21 @@ const IdentityRoutes = new Elysia({ prefix: "/identities" })
 
     .get("/no-account", () => getIdentitiesWithoutUserRelation())
     // route to create a identity
+
     .post(
         "/",
         async ({ body }) => {
-            return await createIdentity(
+            return await createIdentityAndUpdateFace(
                 body as {
                     name: string;
+                    faceIds: number[];
                 }
             );
         },
         {
             body: t.Object({
                 name: t.String({ minLength: 3, maxLength: 100 }),
+                faceIds: t.Array(t.Number(), { minLength: 0, maxLength: 100 }),
             }),
         }
     )
