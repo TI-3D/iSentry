@@ -1,7 +1,8 @@
 use axum::{
-    routing::{get, post},
+    routing::{any, get, post},
     Router,
 };
+use handler::ws_handler;
 use handlers::{process_image, register_face};
 use mysql::Pool;
 use tokio::{net::TcpListener, signal, sync::mpsc::Sender};
@@ -12,6 +13,7 @@ use crate::job::Job;
 mod error;
 mod handlers;
 mod response;
+mod handler;
 
 pub use response::{IPItem, IPResponse};
 
@@ -20,6 +22,7 @@ pub async fn run(db_pool: mysql::Pool, tx: Sender<Job>) {
         .route("/", get(root))
         .route("/process-image", post(process_image))
         .route("/validate-face", post(register_face))
+        .route("/subscribe-notif", any(ws_handler))
         .with_state(AppState { db_pool, tx });
 
     let ai_server_address = dotenvy::var("WEB_ADDRESS").unwrap();

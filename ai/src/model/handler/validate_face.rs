@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use ab_glyph::{FontRef, PxScale};
 use dlib_face_recognition::{
-    FaceDetector, FaceDetectorCnn, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait
+    FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait
 };
 use image::DynamicImage;
 use mysql::{params, prelude::Queryable, PooledConn};
@@ -16,8 +16,8 @@ use crate::{
 };
 
 pub async fn validate_face(
-    //detector: Arc<Mutex<FaceDetector>>,
-    detector: Arc<Mutex<FaceDetectorCnn>>,
+    detector: Arc<Mutex<FaceDetector>>,
+    //detector: Arc<Mutex<FaceDetectorCnn>>,
     landmark_predictor: &LandmarkPredictor,
     face_encoder: Arc<Mutex<FaceEncoderNetwork>>,
     db_conn: &mut PooledConn,

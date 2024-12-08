@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
+import 'package:isentry/presentation/auth/pages/login.dart';
 import 'package:isentry/presentation/home/bloc/detection_log/detection_bloc.dart';
 import 'package:isentry/presentation/home/bloc/detection_log/detection_event.dart';
 import 'package:isentry/presentation/home/bloc/detection_log/detection_state.dart';
@@ -13,10 +14,11 @@ import 'package:isentry/presentation/widgets/components/line_chart.dart';
 import 'package:isentry/presentation/widgets/components/sort.dart';
 import 'package:isentry/presentation/home/pages/profile/account_settings.dart';
 import 'package:isentry/presentation/home/pages/detection_log.dart';
+import 'package:isentry/services/notification_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class DashboardPage extends StatelessWidget {
-  final int userId;
+  final String userId;
   final Function toRecognized;
   final Function toUnrecognized;
   const DashboardPage({
@@ -28,102 +30,143 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<UserBloc>().add(GetUserById(id: '$userId'));
+    context.read<UserBloc>().add(GetUserById(id: userId));
 
-    return BlocBuilder<UserBloc, UserState>(
-      builder: (context, state) {
-        if (state is UserInitial || state is UserLoading) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is UserLoaded) {
-          return Column(
-            children: [
-              Expanded(
-                flex: 12,
-                child: Container(
-                  color: AppColors.primary,
-                  padding: const EdgeInsets.only(left: 35, right: 35, top: 40),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Hallo ${state.user.name}',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.5,
-                                color: Color(0xFFc8cad1)),
+    return BlocListener<UserBloc, UserState>(
+      listener: (context, state) {
+        if (state is AutoLogout) {
+          AppNavigator.push(context, const LoginPage());
+        }
+      },
+      child: BlocBuilder<UserBloc, UserState>(
+        builder: (context, state) {
+          if (state is UserInitial || state is UserLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is UserFailure) {
+            return Center(child: Text('Error: ${state.errorMessage}'));
+          } else if (state is UserLoaded) {
+            return Column(
+              children: [
+                Expanded(
+                  flex: 12,
+                  child: Container(
+                    color: AppColors.primary,
+                    padding:
+                        const EdgeInsets.only(left: 35, right: 35, top: 40),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Hallo ${state.user.name}',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 1.5,
+                                  color: Color(0xFFc8cad1)),
+                            ),
+                            const Text(
+                              "My Dashboard",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 1.5,
+                                  fontSize: 16),
+                            )
+                          ],
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            AppNavigator.push(
+                                context, AccountSettingsPage(userId: userId));
+                          },
+                          icon: const Icon(
+                            (LucideIcons.userCircle2),
+                            size: 40,
                           ),
-                          const Text(
-                            "My Dashboard",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.5,
-                                fontSize: 16),
-                          )
-                        ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 11,
+                  child: Faces(
+                    toRecognized: toRecognized,
+                    toUnrecognized: toUnrecognized,
+                  ),
+                ),
+                const Expanded(
+                  flex: 27,
+                  child: Column(
+                    children: [
+                      MySort(
+                        texts: ['Today', 'Week', 'Month', 'Year'],
+                        leftPadding: 35,
+                        rightPadding: 35,
                       ),
-                      IconButton(
-                        onPressed: () {
-                          AppNavigator.push(
-                              context, AccountSettingsPage(userId: userId));
-                        },
-                        icon: const Icon(
-                          (LucideIcons.userCircle2),
-                          size: 40,
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 20, right: 30),
+                          child: AspectRatio(
+                            aspectRatio: 3,
+                            child: LineChartDashboard(),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 27,
+                  //child: Activity(),
+                  child: Column(
+                    children: [
+                      const Activity(),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15.0),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Callback untuk memanggil notifikasi
+                            showNotification(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 25),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: const Text(
+                            "Send Notification",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              Expanded(
-                flex: 11,
-                child: Faces(
-                  toRecognized: toRecognized,
-                  toUnrecognized: toUnrecognized,
-                ),
-              ),
-              const Expanded(
-                flex: 27,
-                child: Column(
-                  children: [
-                    MySort(
-                      texts: ['Today', 'Week', 'Month', 'Year'],
-                      leftPadding: 35,
-                      rightPadding: 35,
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 20, right: 30),
-                        child: AspectRatio(
-                          aspectRatio: 3,
-                          child: LineChartDashboard(),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 27,
-                child: Activity(),
-              ),
-            ],
+              ],
+            );
+          }
+          return const Center(
+            child: Text("No Data Found"),
           );
-        }
-        return const Center(
-          child: Text("Unexpected state!"),
-        );
-      },
+        },
+      ),
     );
   }
 
   // Fungsi untuk memanggil notifikasi
-  void showNotification(BuildContext context) {
+  void showNotification(BuildContext context) async {
+    await NotificationService.showNotification("kocak", "geming");
     print("Notification button pressed!"); // Tambahkan log untuk memverifikasi
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -131,7 +174,6 @@ class DashboardPage extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class Faces extends StatelessWidget {

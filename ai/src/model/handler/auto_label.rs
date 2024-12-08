@@ -2,7 +2,7 @@ use std::{path::PathBuf, sync::Arc};
 
 use ab_glyph::{FontRef, PxScale};
 use dlib_face_recognition::{
-    FaceDetector, FaceDetectorCnn, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, FaceLandmarks, ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait
+    FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, FaceLandmarks, ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait
 };
 use image::DynamicImage;
 use mysql::{params, prelude::Queryable, PooledConn};
@@ -19,8 +19,8 @@ use crate::{
 };
 
 pub async fn auto_label(
-    //detector: Arc<Mutex<FaceDetector>>,
-    detector: Arc<Mutex<FaceDetectorCnn>>,
+    detector: Arc<Mutex<FaceDetector>>,
+    //detector: Arc<Mutex<FaceDetectorCnn>>,
     landmark_predictor: &LandmarkPredictor,
     face_encoder: Arc<Mutex<FaceEncoderNetwork>>,
     db_conn: &mut PooledConn,
@@ -58,7 +58,7 @@ pub async fn auto_label(
     }
 
     enum Label {
-        Name(String),
+        Name(u64, String),
         /// (id, is_new)
         Id(u64, bool),
     }
@@ -76,7 +76,7 @@ pub async fn auto_label(
         .iter()
         .zip(bboxes.iter())
         .map(|(embedding, bbox)| match faces.identity(embedding) {
-            (_, Some(identity_id)) => Label::Name(identities.get(&identity_id).unwrap().clone()),
+            (Some(face_id), Some(identity_id)) => Label::Name(face_id, identities.get(&identity_id).unwrap().clone()),
             (Some(face_id), None) => Label::Id(face_id, false),
             (None, None) => {
                 let bbox = bincode::serialize(&bbox).unwrap();
@@ -95,6 +95,7 @@ pub async fn auto_label(
                 Label::Id(id, true)
                 // db_conn.exec(push_face, params)
             }
+            _ => panic!("HOW?")
         })
         .collect::<Vec<Label>>();
 
@@ -110,7 +111,7 @@ pub async fn auto_label(
     };
     for (bbox, label) in bboxes.iter().zip(names.iter()) {
         let name = match label {
-            Label::Name(name) => name,
+            Label::Name(_, name) => name,
             Label::Id(id, _) => &id.to_string(),
         };
         image.label(bbox, name, &font, font_height, scale);
@@ -199,10 +200,10 @@ pub async fn auto_label(
     let names = names
         .into_iter()
         .map(|name| match name {
-            Label::Name(name_str) => name_str,
-            Label::Id(id, _) => id.to_string(),
+            Label::Name(id, name_str) => (id, name_str),
+            Label::Id(id, _) => (id, id.to_string()),
         })
-        .collect::<Vec<String>>();
+        .collect::<Vec<(u64, String)>>();
 
     if job
         .tx
