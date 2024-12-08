@@ -82,7 +82,7 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: mpsc::Sender<Job>) {
                 },
             )
             .unwrap();
-        sleep(Duration::from_secs(5)).await;
+        sleep(Duration::from_secs(15)).await;
     }
 }
 
