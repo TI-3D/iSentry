@@ -68,7 +68,7 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: mpsc::Sender<Job>) {
 
         let link = dotenvy::var("RTMP_LABEL").unwrap();
         let timestamp = Utc::now().format("%Y-%m-%d-%H:%M").to_string();
-        let homepath = std::env::var("HOME").unwrap_or(std::env::var("HOMEPATH").unwrap());
+        let homepath = std::env::var("HOME").unwrap();
         let filepath = format!("{homepath}/AutoRecord-{timestamp}.mp4",);
 
         ffmpeg::save_chunk(&link, record_time as u64, &filepath).await;
