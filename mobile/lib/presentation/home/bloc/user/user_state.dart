@@ -39,3 +39,5 @@ class AllUserLoaded extends UserState {
 }
 
 class UserDeleted extends UserState {}
+
+class AutoLogout extends UserState {}
