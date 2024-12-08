@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
 import 'package:isentry/presentation/auth/bloc/login_event.dart';
-// import 'package:isentry/presentation/auth/bloc/login_state.dart';
 import 'package:isentry/presentation/widgets/components/bottom_sheet.dart';
 
 class AddAccount extends StatefulWidget {
+  final int identityId;
+  final String userId;
   final String name;
-  const AddAccount({super.key, required this.name});
+  const AddAccount(
+      {super.key,
+      required this.name,
+      required this.userId,
+      required this.identityId});
 
   @override
 
@@ -125,8 +130,12 @@ class _AddAccountState extends State<AddAccount> {
                       username: _username.text,
                       password: _password.text,
                       role: 'RESIDENT',
+                      ownerId: int.parse(widget.userId),
+                      identityId: widget.identityId,
                     ),
                   );
+
+              Navigator.of(context).pop();
 
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -134,7 +143,6 @@ class _AddAccountState extends State<AddAccount> {
                   duration: Duration(seconds: 3),
                 ),
               );
-              Navigator.of(context).pop();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,

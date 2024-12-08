@@ -54,6 +54,8 @@ class LoginBloc extends Bloc<AuthEvent, LoginState> {
           'username': event.username,
           'password': event.password,
           'role': event.role,
+          'ownerId': event.ownerId,
+          'identityId': event.identityId,
         });
 
         if (response['success']) {
