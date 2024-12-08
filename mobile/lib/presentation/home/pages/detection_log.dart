@@ -42,7 +42,7 @@ class DetectionLogPage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final detail = allDetails[index];
                   final formattedDate =
-                      DateFormat("d MMMM yyyy").format(detail.timestamp);
+                      DateFormat("d MMMM yyyy, HH:hh").format(detail.timestamp);
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
@@ -60,7 +60,8 @@ class DetectionLogPage extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                detail.identityName ?? 'Anomali',
+                                detail.identityName ??
+                                    'Anomali#${detail.faceId}',
                                 style: const TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w500,

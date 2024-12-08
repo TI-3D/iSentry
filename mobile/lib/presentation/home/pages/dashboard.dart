@@ -7,6 +7,9 @@ import 'package:isentry/presentation/auth/pages/login.dart';
 import 'package:isentry/presentation/home/bloc/detection_log/detection_bloc.dart';
 import 'package:isentry/presentation/home/bloc/detection_log/detection_event.dart';
 import 'package:isentry/presentation/home/bloc/detection_log/detection_state.dart';
+import 'package:isentry/presentation/home/bloc/faces/face_bloc.dart';
+import 'package:isentry/presentation/home/bloc/faces/face_event.dart';
+import 'package:isentry/presentation/home/bloc/faces/face_state.dart';
 import 'package:isentry/presentation/home/bloc/user/user_bloc.dart';
 import 'package:isentry/presentation/home/bloc/user/user_event.dart';
 import 'package:isentry/presentation/home/bloc/user/user_state.dart';
@@ -187,14 +190,18 @@ class Faces extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<DetectionBloc>().add(DetectionDetail());
-    return BlocBuilder<DetectionBloc, DetectionState>(
+    context.read<FaceBloc>().add(LoadFaces());
+    return BlocBuilder<FaceBloc, FaceState>(
       builder: (context, state) {
-        if (state is DetectionLoading) {
+        if (state is FaceLoading) {
           return const CircularProgressIndicator();
-        } else if (state is DetectionFailure) {
-          return Center(child: Text('Error: ${state.errorMessage}'));
-        } else if (state is DetailDetectionLoaded) {
+        } else if (state is FaceError) {
+          return Center(child: Text('Error: ${state.message}'));
+        } else if (state is FaceLoaded) {
+          final recognized =
+              state.faces.where((face) => face.identityId != null).length;
+          final unrecognized =
+              state.faces.where((face) => face.identityId == null).length;
           return Container(
             color: AppColors.primary,
             padding: const EdgeInsets.only(left: 35, right: 35),
@@ -240,7 +247,7 @@ class Faces extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                "${state.recognizedDetails.length}",
+                                "$recognized",
                                 style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 35,
@@ -301,7 +308,7 @@ class Faces extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                "${state.unrecognizedDetails.length}",
+                                "$unrecognized",
                                 style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 35,
@@ -412,7 +419,8 @@ class Activity extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                detail.identityName ?? 'Unknown',
+                                detail.identityName ??
+                                    'Anomali#${detail.faceId}',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500,
