@@ -19,10 +19,17 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           UserModel user = UserModel.fromJson(response['data']);
           emit(UserLoaded(user));
         } else {
+          if (response.statusCode == 403) {
+            emit(AutoLogout());
+          }
           emit(UserFailure(response['message']));
         }
       } catch (e) {
-        emit(UserFailure("Failed to fetch user: $e"));
+        if (e.toString().contains("Unauthorized access (403)")) {
+          emit(AutoLogout());
+        } else {
+          emit(UserFailure("Failed to fetch user: $e"));
+        }
       }
     });
 

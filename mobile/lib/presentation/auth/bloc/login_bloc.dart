@@ -24,8 +24,12 @@ class LoginBloc extends Bloc<AuthEvent, LoginState> {
           String refreshToken = response['data']['token_refresh'];
           SecureStorageService.write("jwt_token", token);
           SecureStorageService.write("jwt_refresh_token", refreshToken);
+
           NetworkService.setToken(token);
           emit(LoginSuccess(auth));
+          SecureStorageService.write("name", auth.name);
+          SecureStorageService.write("username", auth.username);
+          SecureStorageService.write("id", auth.id.toString());
         } else {
           emit(const LoginFailure('Incorrect username or password'));
         }
@@ -37,6 +41,7 @@ class LoginBloc extends Bloc<AuthEvent, LoginState> {
     });
 
     on<LogoutRequested>((event, emit) {
+      SecureStorageService.deleteAll;
       emit(LoginInitial());
     });
 
@@ -54,12 +59,12 @@ class LoginBloc extends Bloc<AuthEvent, LoginState> {
         if (response['success']) {
           emit(SignupSuccess());
         } else {
-          emit(const LoginFailure('Username is already registered')); 
+          emit(const LoginFailure('Username is already registered'));
         }
       } catch (e, stackTrace) {
         debugPrint('error during login: $e');
         debugPrint('stackTrace: $stackTrace');
-        emit(const LoginFailure('Sign up failed')); 
+        emit(const LoginFailure('Sign up failed'));
       }
     });
   }
