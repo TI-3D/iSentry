@@ -1,6 +1,6 @@
 use std::{
     sync::{
-        atomic::{AtomicU8, Ordering},
+        atomic::{AtomicBool, AtomicU8, Ordering},
         Arc,
     },
     time::Duration,
@@ -28,23 +28,28 @@ use crate::{
     utils::{DetectionOutput, LabelID},
 };
 
+static HAS_PUBLISH_LABEL: AtomicBool = AtomicBool::new(false);
+
 pub async fn run(
     db_opts: mysql::Opts,
     job_tx: mpsc::Sender<Job>,
     detection_tx: broadcast::Sender<DetectionOutput>,
 ) {
-    // tokio::spawn(auto_record(db_opts, tx.clone()));
+    tokio::spawn(auto_record(db_opts.clone(), job_tx.clone()));
     tokio::spawn(auto_label(db_opts, job_tx, detection_tx));
 }
 
 pub async fn auto_record(db_opts: mysql::Opts, _tx: mpsc::Sender<Job>) {
-    let mut db_conn = Conn::new(db_opts).unwrap();
-
-    let stmt1 = db_conn
-        .prep("INSERT INTO gallery_items (path, type, capture_method) VALUES (?1, VIDEO, AUTO)")
-        .unwrap();
-
+    while !HAS_PUBLISH_LABEL.load(Ordering::Relaxed) {
+        sleep(Duration::from_secs(1)).await;
+    }
     loop {
+        let mut db_conn = Conn::new(db_opts.clone()).unwrap();
+
+        let stmt1 = db_conn
+            .prep("INSERT INTO gallery_items (path, type, capture_method, createdAt) VALUES (:path, VIDEO, AUTO, :created_at)")
+            .unwrap();
+
         // ffmpeg -i rtsp://localhost:8554/stream -c copy -f segment -segment_time 3600 -reset_timestamps 1 output_%03d.mp4
         // ffmpeg -i rtsp://localhost:8554/stream -c copy -t 3600 output.mp4
 
@@ -52,21 +57,30 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: mpsc::Sender<Job>) {
         let seconds = time.timestamp_millis() / 1000;
         let seconds_from_last_hour = seconds % 3600;
         let next_hour_in_seconds = 3600 - seconds_from_last_hour;
-        let more_than_5_minutes = next_hour_in_seconds > 60;
+        let more_than_5_minutes = next_hour_in_seconds > 60 * 5;
 
         let record_time = if more_than_5_minutes {
             next_hour_in_seconds
         } else {
             sleep(Duration::from_secs(next_hour_in_seconds as u64)).await;
-            3600
+            60 * 10
         };
 
         let link = dotenvy::var("RTMP_LABEL").unwrap();
-        let timestamp = Utc::now();
-        let filename = format!("AutoRecord-{}.mp4", timestamp.format("%Y-%m-%d-%H:%M"));
+        let timestamp = Utc::now().format("%Y-%m-%d-%H:%M").to_string();
+        let homepath = dotenvy::var("HOME").unwrap_or(dotenvy::var("HOMEPATH").unwrap());
+        let filepath = format!("{homepath}/AutoRecord-{timestamp}.mp4",);
 
-        ffmpeg::save_chunk(&link, record_time as u64, &filename).await;
-        db_conn.exec_drop(&stmt1, ("abc",)).unwrap();
+        ffmpeg::save_chunk(&link, record_time as u64, &filepath).await;
+        db_conn
+            .exec_drop(
+                &stmt1,
+                params! {
+                    "path" => filepath,
+                    "created_at" => timestamp
+                },
+            )
+            .unwrap();
     }
 }
 
@@ -113,6 +127,8 @@ pub async fn auto_label(
 
     let bounding_boxes = Arc::new(Mutex::new(Vec::new()));
     let num_scanning_jobs = Arc::new(AtomicU8::new(0));
+
+    HAS_PUBLISH_LABEL.store(true, Ordering::Relaxed);
 
     loop {
         let mut buffer = Mat::default();
