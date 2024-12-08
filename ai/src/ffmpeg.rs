@@ -15,7 +15,7 @@ pub async fn save_chunk(link: &str, record_time: u64, filename: &str) {
 
         #[rustfmt::skip]
         let args = [
-            "-rw_timeout", "5000000",
+            //"-rw_timeout", "5000000",
             "-i", link,
             "-c", "copy",
             "-t", &record_time.to_string(),
