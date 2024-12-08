@@ -20,6 +20,9 @@ pub async fn save_chunk(link: &str, record_time: u64, filename: &str) {
 
     let mut command = Command::new("ffmpeg");
     command.args(args);
+    let mut process = command.spawn().unwrap();
+    let exit_status = process.wait().await.unwrap();
+    tracing::info!("SaveChunk exit_status: {exit_status}");
 }
 
 pub async fn generate_thumbails(link: &str) -> io::Result<Child> {
