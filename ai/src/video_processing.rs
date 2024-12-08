@@ -19,7 +19,7 @@ use opencv::{
 use tokio::{
     io::AsyncWriteExt,
     sync::{broadcast, mpsc, oneshot, Mutex},
-    time::sleep,
+    time::{sleep, Instant},
 };
 use uuid::Uuid;
 
@@ -136,6 +136,7 @@ pub async fn auto_label(
     const IMAGE_HEIGHT: i32 = 540;
 
     loop {
+        let start = Instant::now();
         let mut buffer = Mat::default();
         input.read(&mut buffer).unwrap();
         let (width, height) = match buffer.size().map(|size| {
@@ -256,6 +257,10 @@ pub async fn auto_label(
         }
 
         output_stdin.write_all(img.as_raw()).await.unwrap();
+        let elapsed = start.elapsed().as_millis();
+        if elapsed < 1000 / 30 {
+            sleep(Duration::from_millis((1000 / 30 - elapsed) as u64)).await;
+        }
     }
 }
 
