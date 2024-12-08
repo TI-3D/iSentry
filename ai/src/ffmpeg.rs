@@ -1,28 +1,57 @@
-use std::process::Stdio;
+use std::{process::Stdio, time::Duration};
 
 use tokio::{
     io,
     process::{Child, Command},
+    time::sleep,
 };
 use tracing::info;
 
 pub async fn save_chunk(link: &str, record_time: u64, filename: &str) {
-    let args = [
-        "-i",
-        link,
-        "-c",
-        "copy",
-        "-t",
-        &record_time.to_string(),
-        filename,
-    ];
-    info!("AutoRecord: \nrecord_time: {}", record_time);
+    let max_retires = 20;
+    let mut attempt = 0;
+    while attempt < max_retires {
+        attempt += 1;
 
-    let mut command = Command::new("ffmpeg");
-    command.args(args);
-    let mut process = command.spawn().unwrap();
-    let exit_status = process.wait().await.unwrap();
-    tracing::info!("SaveChunk exit_status: {exit_status}");
+        #[rustfmt::skip]
+        let args = [
+            "-rw_timeout", "5000000",
+            "-i", link,
+            "-c", "copy",
+            "-t", &record_time.to_string(),
+            filename,
+        ];
+        info!("AutoRecord: \nrecord_time: {}", record_time);
+
+        let mut command = Command::new("ffmpeg");
+        command.args(args);
+        let mut process = match command.spawn() {
+            Ok(proc) => proc,
+            Err(e) => {
+                tracing::error!("Failed to start ffmpeg: {e}");
+                continue; // Retry on failure to spawn
+            }
+        };
+
+        let exit_status = match process.wait().await {
+            Ok(status) if status.success() => {
+                tracing::info!("SaveChunk succeeded with exit_status: {status}");
+                break; // Exit loop if ffmpeg succeeded
+            }
+            Ok(status) => {
+                tracing::warn!("ffmpeg failed with exit_status: {status}");
+                status
+            }
+            Err(e) => {
+                tracing::error!("Error waiting for ffmpeg: {e}");
+                continue;
+            }
+        };
+        tracing::info!("SaveChunk exit_status: {exit_status}");
+
+        tracing::info!("Retrying in 5 seconds...");
+        sleep(Duration::from_secs(5)).await; // Wait before retrying
+    }
 }
 
 pub async fn generate_thumbails(link: &str) -> io::Result<Child> {
