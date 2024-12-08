@@ -16,12 +16,14 @@ pub async fn save_chunk(link: &str, record_time: u64, filename: &str) {
         #[rustfmt::skip]
         let args = [
             //"-rw_timeout", "5000000",
+            "-hide_banner",
+            "-loglevel", "warning",
             "-i", link,
             "-c", "copy",
             "-t", &record_time.to_string(),
             filename,
         ];
-        info!("AutoRecord: \nrecord_time: {}", record_time);
+        info!("AutoRecord: \npath: {filename} \nrecord_time: {}", record_time);
 
         let mut command = Command::new("ffmpeg");
         command.args(args);
