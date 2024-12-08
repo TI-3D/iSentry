@@ -47,7 +47,7 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: mpsc::Sender<Job>) {
         let mut db_conn = Conn::new(db_opts.clone()).unwrap();
 
         let stmt1 = db_conn
-            .prep("INSERT INTO medias (path, type, capture_method, createdAt) VALUES (:path, VIDEO, AUTO, :created_at)")
+            .prep("INSERT INTO medias (path, type, capture_method, createdAt) VALUES (:path, \"VIDEO\", \"AUTO\", :created_at)")
             .unwrap();
 
         // ffmpeg -i rtsp://localhost:8554/stream -c copy -f segment -segment_time 3600 -reset_timestamps 1 output_%03d.mp4
