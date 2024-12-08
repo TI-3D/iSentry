@@ -3,6 +3,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  static int _notifId = 0;
 
   static Future<void> init() async {
     
@@ -37,7 +38,7 @@ class NotificationService {
     );
 
     await _notificationsPlugin.show(
-      0, // ID notifikasi
+      _notifId++, 
       title,
       body,
       platformDetails,
