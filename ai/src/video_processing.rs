@@ -149,6 +149,13 @@ pub async fn auto_label(
             // (false, w, h) => panic!("Input stream is not 1920x1080; got size {w}x{h}"),
             Ok((0, 0)) => {
                 sleep(Duration::from_millis(100)).await;
+                let img = RgbImage::from_pixel(IMAGE_WIDTH as u32, IMAGE_HEIGHT as u32, image::Rgb::black());
+                output_stdin.write_all(img.as_raw()).await.unwrap();
+                let elapsed = start.elapsed().as_millis();
+                if elapsed < 1000 / 30 {
+                    sleep(Duration::from_millis((1000 / 30 - elapsed) as u64)).await;
+                }
+                tracing::info!("Sleep because 0x0 buffer");
                 continue;
             }
             Ok(size) => size,
