@@ -73,11 +73,11 @@ pub async fn generate_thumbails(link: &str) -> io::Result<Child> {
 pub async fn push_frames_to_rtsp(_audio_link: &str, target_link: &str) -> io::Result<Child> {
     Command::new("ffmpeg")
         .args([
-            "-hide_banner", "-loglevel", "error",
+            "-hide_banner", "-loglevel", "warning",
             "-framerate", "30",                   // Set frame rate
             "-f", "rawvideo",                     // Raw video format
             "-pix_fmt", "rgb24",                  // Pixel format (RGB)
-            "-s", &format!("{}x{}", 1920, 1080),// Frame size
+            "-s", &format!("{}x{}", 960, 540),// Frame size
             "-i", "-",                            // Input from stdin
             // "-itsoffset", "0.5",                  // Sync audio with the video
             // "-i", audio_link, // Input RTSP audio stream

@@ -8,7 +8,8 @@ use std::{
 
 use ab_glyph::{FontRef, PxScale};
 use chrono::Utc;
-use image::RgbImage;
+use image::{DynamicImage, RgbImage};
+use imageproc::definitions::HasBlack;
 use mysql::{params, prelude::Queryable, Conn};
 use opencv::{
     imgproc::COLOR_BGR2RGB,
@@ -25,7 +26,7 @@ use uuid::Uuid;
 use crate::{
     ffmpeg,
     job::{Job, JobKind, JobResult, JobSender},
-    utils::{DetectionOutput, LabelID},
+    utils::{self, DetectionOutput, LabelID},
 };
 
 static HAS_PUBLISH_LABEL: AtomicBool = AtomicBool::new(false);
@@ -130,6 +131,9 @@ pub async fn auto_label(
 
     HAS_PUBLISH_LABEL.store(true, Ordering::Relaxed);
 
+    const IMAGE_WIDTH: i32 = 960;
+    const IMAGE_HEIGHT: i32 = 540;
+
     loop {
         let mut buffer = Mat::default();
         input.read(&mut buffer).unwrap();
@@ -146,18 +150,29 @@ pub async fn auto_label(
                 continue;
             }
             Ok(size) => size,
-            _ => panic!("what"),
+            Err(e) => {
+                tracing::error!("Error getting buffer size: {e}");
+                panic!("what");
+            }
         };
         frame_counter += 1;
         let mut buffer2 = Mat::default();
         opencv::imgproc::cvt_color(&buffer, &mut buffer2, COLOR_BGR2RGB, 0).unwrap();
-        let Some(mut img) = RgbImage::from_raw(
+        let mut img = RgbImage::from_raw(
             width as u32,
             height as u32,
             buffer2.data_bytes().unwrap().to_vec(),
-        ) else {
-            panic!("Image container not big enough");
-        };
+        )
+        .unwrap();
+        if (width != IMAGE_WIDTH) && (height != IMAGE_HEIGHT) {
+            let img_dyn = DynamicImage::ImageRgb8(img);
+            img = utils::resize_and_pad_image(
+                &img_dyn,
+                IMAGE_WIDTH as u32,
+                IMAGE_HEIGHT as u32,
+                image::Rgb::black(),
+            );
+        }
 
         if frame_counter % 120 == 0 && num_scanning_jobs.load(Ordering::SeqCst) <= 1 {
             //tracing::info!("Something");
