@@ -51,8 +51,8 @@ pub async fn save_chunk(link: &str, record_time: u64, filename: &str) {
         };
         tracing::info!("SaveChunk exit_status: {exit_status}");
 
-        tracing::info!("Retrying in 5 seconds...");
-        sleep(Duration::from_secs(5)).await; // Wait before retrying
+        tracing::info!("Retrying in 10 seconds...");
+        sleep(Duration::from_secs(10)).await; // Wait before retrying
     }
 }
 
