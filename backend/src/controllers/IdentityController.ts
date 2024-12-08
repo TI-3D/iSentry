@@ -3,6 +3,7 @@ import { fa } from "@faker-js/faker/.";
 import prisma from "../../prisma/client";
 import { deleteUser } from "./UserController";
 const path = require("path");
+import { Role } from "@prisma/client";
 
 /**
  * Getting all identity
@@ -216,7 +217,7 @@ export async function deleteIdentity(id: string) {
     try {
         const identityId = parseInt(id);
         const user = await prisma.user.findFirst({
-            where: { identityId: identityId },
+            where: { identityId: identityId, role: Role.RESIDENT },
         });
         if (user) {
             await deleteUser(user.id.toString());

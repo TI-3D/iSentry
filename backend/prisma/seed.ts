@@ -122,7 +122,7 @@ async function main() {
             username: "obamabarack",
             name: "Barack Obama",
             password: await Bun.password.hash("12345678"),
-            identityId: identity1.id,
+            identityId: null,
             role: "OWNER",
         },
     });
