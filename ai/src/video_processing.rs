@@ -69,8 +69,8 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: mpsc::Sender<Job>) {
 
         let link = dotenvy::var("RTMP_LABEL").unwrap();
         let timestamp = Utc::now().format("%Y-%m-%d-%H:%M").to_string();
-        let homepath = std::env::var("HOME").unwrap();
-        let filepath = format!("{homepath}/AutoRecord-{timestamp}.mp4",);
+        let media_dir = std::env::var("ISENTRY_MEDIA_DIR").unwrap();
+        let filepath = format!("{media_dir}/AutoRecord-{timestamp}.mp4",);
 
         ffmpeg::save_chunk(&link, record_time as u64, &filepath).await;
         db_conn
@@ -82,6 +82,7 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: mpsc::Sender<Job>) {
                 },
             )
             .unwrap();
+        sleep(Duration::from_secs(5)).await;
     }
 }
 
