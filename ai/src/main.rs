@@ -1,7 +1,7 @@
 use ai::{model, video_processing, web_server};
 use dotenvy::var;
 use mysql::Pool;
-use tokio::sync::mpsc;
+use tokio::sync::{broadcast, mpsc};
 
 #[tokio::main]
 async fn main() {
@@ -25,11 +25,16 @@ async fn main() {
 
     let db_pool = Pool::new(db_opts.clone()).unwrap();
 
-    let (tx, rx) = mpsc::channel(128);
+    let (job_tx, job_rx) = mpsc::channel(128);
+    let (detection_tx, detection_rx) = broadcast::channel::<(String, u64, u64)>(32);
 
-    let handler_webserver = tokio::spawn(web_server::run(db_pool.clone(), tx.clone()));
-    let handler_aiservice = tokio::spawn(video_processing::run(db_opts, tx));
-    let handler_videoproc = tokio::spawn(model::run(db_pool, rx));
+    let handler_webserver = tokio::spawn(web_server::run(
+        db_pool.clone(),
+        job_tx.clone(),
+        detection_rx,
+    ));
+    let handler_aiservice = tokio::spawn(video_processing::run(db_opts, job_tx, detection_tx));
+    let handler_videoproc = tokio::spawn(model::run(db_pool, job_rx));
 
     let _ = tokio::join!(handler_webserver, handler_aiservice, handler_videoproc);
 }

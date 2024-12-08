@@ -1,25 +1,59 @@
-use std::process::Stdio;
+use std::{process::Stdio, time::Duration};
 
 use tokio::{
     io,
     process::{Child, Command},
+    time::sleep,
 };
 use tracing::info;
 
 pub async fn save_chunk(link: &str, record_time: u64, filename: &str) {
-    let args = [
-        "-i",
-        link,
-        "-c",
-        "copy",
-        "-t",
-        &record_time.to_string(),
-        filename,
-    ];
-    info!("AutoRecord: \nrecord_time: {}", record_time);
+    let max_retires = 20;
+    let mut attempt = 0;
+    while attempt < max_retires {
+        attempt += 1;
 
-    let mut command = Command::new("ffmpeg");
-    command.args(args);
+        #[rustfmt::skip]
+        let args = [
+            //"-rw_timeout", "5000000",
+            "-hide_banner",
+            "-loglevel", "warning",
+            "-i", link,
+            "-c", "copy",
+            "-t", &record_time.to_string(),
+            filename,
+        ];
+        info!("AutoRecord: \npath: {filename} \nrecord_time: {}", record_time);
+
+        let mut command = Command::new("ffmpeg");
+        command.args(args);
+        let mut process = match command.spawn() {
+            Ok(proc) => proc,
+            Err(e) => {
+                tracing::error!("Failed to start ffmpeg: {e}");
+                continue; // Retry on failure to spawn
+            }
+        };
+
+        let exit_status = match process.wait().await {
+            Ok(status) if status.success() => {
+                tracing::info!("SaveChunk succeeded with exit_status: {status}");
+                break; // Exit loop if ffmpeg succeeded
+            }
+            Ok(status) => {
+                tracing::warn!("ffmpeg failed with exit_status: {status}");
+                status
+            }
+            Err(e) => {
+                tracing::error!("Error waiting for ffmpeg: {e}");
+                continue;
+            }
+        };
+        tracing::info!("SaveChunk exit_status: {exit_status}");
+
+        tracing::info!("Retrying in 10 seconds...");
+        sleep(Duration::from_secs(10)).await; // Wait before retrying
+    }
 }
 
 pub async fn generate_thumbails(link: &str) -> io::Result<Child> {
@@ -41,11 +75,11 @@ pub async fn generate_thumbails(link: &str) -> io::Result<Child> {
 pub async fn push_frames_to_rtsp(_audio_link: &str, target_link: &str) -> io::Result<Child> {
     Command::new("ffmpeg")
         .args([
-            "-hide_banner", "-loglevel", "error",
+            "-hide_banner", "-loglevel", "warning",
             "-framerate", "30",                   // Set frame rate
             "-f", "rawvideo",                     // Raw video format
             "-pix_fmt", "rgb24",                  // Pixel format (RGB)
-            "-s", &format!("{}x{}", 1920, 1080),// Frame size
+            "-s", &format!("{}x{}", 960, 540),// Frame size
             "-i", "-",                            // Input from stdin
             // "-itsoffset", "0.5",                  // Sync audio with the video
             // "-i", audio_link, // Input RTSP audio stream
