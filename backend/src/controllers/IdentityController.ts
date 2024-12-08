@@ -1,4 +1,5 @@
 //import prisma client
+import { fa } from "@faker-js/faker/.";
 import prisma from "../../prisma/client";
 import { deleteUser } from "./UserController";
 const path = require("path");
@@ -75,6 +76,103 @@ export async function createIdentity(options: { name: string }) {
         console.error(`Error creating identity: ${e}`);
     }
 }
+
+export async function createIdentityAndUpdateFace(options: {
+    name: string;
+    faceIds: number[];
+}) {
+    const { name, faceIds } = options;
+    if (!faceIds || faceIds.length === 0) {
+        return {
+            success: false,
+            message: "faceIds cannot be empty",
+        };
+    }
+    try {
+        const result = await prisma.$transaction(async (prisma) => {
+            const identity = await prisma.identity.create({
+                data: {
+                    name,
+                },
+            });
+
+            const updatedFaces = await prisma.face.updateMany({
+                where: {
+                    id: {
+                        in: faceIds,
+                    },
+                },
+                data: {
+                    identity: identity.id,
+                },
+            });
+
+            return { identity, updatedFaces };
+        });
+
+        return {
+            success: true,
+            message: "Identity Created and Faces Updated Successfully!",
+            data: {
+                identityName: result.identity.name,
+                updatedFaceIds: faceIds,
+            },
+        };
+    } catch (e: unknown) {
+        console.error(`Error creating identity and updating faces: ${e}`);
+        return {
+            success: false,
+            message: "Failed to create identity and update faces",
+            error: e instanceof Error ? e.message : String(e),
+        };
+    }
+}
+
+// export async function createIdentityWithFace(options: {
+//     name: string;
+//     embedding: Buffer;
+//     picture_full: number | null;
+//     picture_single: number | null;
+//     bounding_box: Buffer;
+// }) {
+//     const { name, embedding, picture_full, picture_single, bounding_box } =
+//         options;
+
+//     try {
+//         const result = await prisma.$transaction(async (prisma) => {
+//             const identity = await prisma.identity.create({
+//                 data: {
+//                     name,
+//                 },
+//             });
+
+//             const face = await prisma.face.create({
+//                 data: {
+//                     identity: identity.id,
+//                     embedding,
+//                     picture_full: picture_full ?? null,
+//                     picture_single: picture_single ?? null,
+//                     bounding_box,
+//                 },
+//             });
+
+//             return { identity, face };
+//         });
+
+//         return {
+//             success: true,
+//             message: "Identity and Face Created Successfully!",
+//             data: result,
+//         };
+//     } catch (e: unknown) {
+//         console.error(`Error creating identity and face: ${e}`);
+//         return {
+//             success: false,
+//             message: "Failed to create identity and face",
+//             error: e instanceof Error ? e.message : String(e),
+//         };
+//     }
+// }
 
 /**
  * Getting a identity by ID

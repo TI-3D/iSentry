@@ -4,12 +4,16 @@ import swagger from "@elysiajs/swagger";
 import { staticPlugin } from "@elysiajs/static";
 
 const app = new Elysia();
-app.use(staticPlugin({ assets: "assets", prefix: "/public" }));
+const homepath =
+    process.env.HOME ?? process.env.HOMEPATH ?? process.env.USERPROFILE ?? "";
+app.use(
+    staticPlugin({ assets: `${homepath}/isentry/medias`, prefix: "/public" })
+);
 app.use(swagger());
 app.get("/", () => "Hello Elysia!");
 app.group("/api", (app) => app.use(Routes));
 app.listen({
-    hostname: "192.168.2.144",
+    hostname: "0.0.0.0", // change sesuai IP address
     port: 3000,
 });
 
