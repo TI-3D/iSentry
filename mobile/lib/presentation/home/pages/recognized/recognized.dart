@@ -219,6 +219,7 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                                 Future.delayed(
                                                     const Duration(seconds: 1),
                                                     () {
+                                                  // ignore: use_build_context_synchronously
                                                   context
                                                       .read<UserBloc>()
                                                       .add(GetAllUser());
@@ -239,7 +240,7 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                                 isScrollControlled: true,
                                                 builder: (_) => Details(
                                                   name: identities.name,
-                                                  lastActivity: '-',
+                                                  id: identities.id,
                                                 ),
                                               );
                                               break;

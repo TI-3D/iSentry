@@ -52,3 +52,12 @@ class DetailDetectionLoaded extends DetectionState {
   @override
   List<Object?> get props => [recognizedDetails, unrecognizedDetails];
 }
+
+class ByIdentityLoaded extends DetectionState {
+  final List<DetectionModel> detection;
+
+  ByIdentityLoaded(this.detection);
+
+  @override
+  List<Object?> get props => [detection];
+}
