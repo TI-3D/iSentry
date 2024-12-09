@@ -106,28 +106,30 @@ export async function createManyDetectionLog(options: { face: number[] }) {
 
 export async function getDetectionLogIdentity(id: string) {
     try {
-        const identity = await prisma.identity.findUnique({
+        const identityy = await prisma.identity.findUnique({
             where: { id: parseInt(id) },
             select: {
                 name: true,
                 faces: {
                     select: {
                         id: true,
+                        identity: true,
                     },
                 },
             },
         });
-        if (!identity) {
+        if (!identityy) {
             return {
                 success: false,
                 message: "Identity Not Found!",
                 data: null,
             };
         }
+        const faceIds = identityy.faces.map((face) => face.id);
         const detectionLogs = await prisma.detection_Log.findMany({
             where: {
                 face: {
-                    in: identity.faces.map((face) => face.id),
+                    in: faceIds,
                 },
             },
         });
@@ -137,7 +139,7 @@ export async function getDetectionLogIdentity(id: string) {
             data: detectionLogs,
         };
     } catch (e: unknown) {
-        console.error(`Error getting detection log: ${e}`);
+        console.error(Error);
     }
 }
 /**
