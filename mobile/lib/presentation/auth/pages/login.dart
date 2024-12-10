@@ -132,18 +132,18 @@ class LoginPage extends StatelessWidget {
                       },
                     ),
                     const SizedBox(height: 20),
-                    CustomElevatedButton(
-                      buttonText: 'Guest Mode',
-                      Backcolor: const Color(0xFFf1f4f9),
-                      TextColor: Colors.black,
-                      border: const BorderSide(color: Colors.black, width: 1),
-                      onPressed: () {
-                        AppNavigator.pushReplacement(
-                          context,
-                          const HomePage(userId: '1'),
-                        );
-                      },
-                    ),
+                    // CustomElevatedButton(
+                    //   buttonText: 'Guest Mode',
+                    //   Backcolor: const Color(0xFFf1f4f9),
+                    //   TextColor: Colors.black,
+                    //   border: const BorderSide(color: Colors.black, width: 1),
+                    //   onPressed: () {
+                    //     AppNavigator.pushReplacement(
+                    //       context,
+                    //       const HomePage(userId: '1'),
+                    //     );
+                    //   },
+                    // ),
                   ],
                 ),
                 Center(
