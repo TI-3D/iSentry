@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:isentry/presentation/home/bloc/identity/identity_bloc.dart';
 import 'package:isentry/presentation/home/bloc/identity/identity_event.dart';
@@ -45,12 +46,20 @@ class _RecognizedPageState extends State<RecognizedPage> {
     return BlocConsumer<IdentityBloc, IdentityState>(
       listener: (context, state) {
         if (state is IdentityDeleted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Identity deleted successfully')),
+          Fluttertoast.showToast(
+            msg: 'Identity deleted successfully',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.TOP,
+            backgroundColor: Colors.green,
+            textColor: Colors.white
           );
         } else if (state is IdentityFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${state.errorMessage}')),
+          Fluttertoast.showToast(
+            msg: 'Failed to delete identity: ${state.errorMessage}',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.TOP,
+            backgroundColor: Colors.red,
+            textColor: Colors.white
           );
         }
       },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
@@ -141,10 +142,11 @@ class DashboardPage extends StatelessWidget {
   void showNotification(BuildContext context) async {
     await NotificationService.showNotification("kocak", "geming");
     print("Notification button pressed!"); // Tambahkan log untuk memverifikasi
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Notifikasi berhasil dikirim!"),
-      ),
+    Fluttertoast.showToast(
+      msg: 'Notification sent successfully!',
+      gravity: ToastGravity.TOP,
+      backgroundColor: Colors.green,
+      textColor: Colors.white,
     );
   }
 }
