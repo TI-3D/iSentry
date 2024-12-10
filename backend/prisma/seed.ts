@@ -40,11 +40,6 @@ async function main() {
             name: "Gjorge Ivanov",
         },
     });
-    // const identity5 = await prisma.identity.create({
-    //     data: {
-    //         name: "Anomali",
-    //     },
-    // });
     const identity6 = await prisma.identity.create({
         data: {
             name: "Joe Biden",
@@ -127,7 +122,7 @@ async function main() {
             username: "obamabarack",
             name: "Barack Obama",
             password: await Bun.password.hash("12345678"),
-            identityId: identity1.id,
+            identityId: null,
             role: "OWNER",
         },
     });
@@ -161,16 +156,6 @@ async function main() {
             ownerId: identity1.id,
         },
     });
-    // const user5 = await prisma.user.create({
-    //     data: {
-    //         username: "jokowi",
-    //         name: "Joko Widodo",
-    //         password: await Bun.password.hash("12345678"),
-    //         identityId: identity5.id,
-    //         role: "RESIDENT",
-    //         ownerId: identity1.id,
-    //     },
-    // });
     const user6 = await prisma.user.create({
         data: {
             username: "bidenjoe",
@@ -410,11 +395,18 @@ async function main() {
     });
 
     // gallery item
+    const homepath =
+        process.env.HOME ??
+        process.env.HOMEPATH ??
+        process.env.USERPROFILE ??
+        "";
+
+    // gallery item
     const video1 = await prisma.media.create({
         data: {
             capture_method: "AUTO",
             type: "VIDEO",
-            path: Bun.resolveSync("./assets/video1.mp4", process.cwd()),
+            path: Bun.resolveSync("./isentry/medias/video1.mp4", homepath),
         },
     });
     const picturefull1 = await prisma.media.create({
@@ -422,8 +414,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/e1eedd7d-b61a-45df-af8d-8ed20910ca0e.jpg",
-                process.cwd()
+                "./isentry/medias/e1eedd7d-b61a-45df-af8d-8ed20910ca0e.jpg",
+                homepath
             ),
         },
     });
@@ -432,8 +424,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/775cb60f-d4b7-4cbd-968e-37d3d112bd0f.jpg",
-                process.cwd()
+                "./isentry/medias/775cb60f-d4b7-4cbd-968e-37d3d112bd0f.jpg",
+                homepath
             ),
         },
     });
@@ -442,8 +434,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/70ea0044-5680-444e-b7c6-3f507f39db27.jpg",
-                process.cwd()
+                "./isentry/medias/70ea0044-5680-444e-b7c6-3f507f39db27.jpg",
+                homepath
             ),
         },
     });
@@ -452,8 +444,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/80571cd9-098e-480a-be36-45f52fc3439d.jpg",
-                process.cwd()
+                "./isentry/medias/80571cd9-098e-480a-be36-45f52fc3439d.jpg",
+                homepath
             ),
         },
     });
@@ -462,8 +454,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/fbef80d3-5447-4e41-83ab-b214d7ec0471.jpg",
-                process.cwd()
+                "./isentry/medias/fbef80d3-5447-4e41-83ab-b214d7ec0471.jpg",
+                homepath
             ),
         },
     });
@@ -472,8 +464,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/55404325-4b45-4a85-8066-1f2386946735.jpg",
-                process.cwd()
+                "./isentry/medias/55404325-4b45-4a85-8066-1f2386946735.jpg",
+                homepath
             ),
         },
     });
@@ -482,8 +474,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/b0fca000-0e31-49a6-8aaf-97dd47356ce9.jpg",
-                process.cwd()
+                "./isentry/medias/b0fca000-0e31-49a6-8aaf-97dd47356ce9.jpg",
+                homepath
             ),
         },
     });
@@ -492,8 +484,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/fb698524-b1f8-4b4c-a9bf-c0b4f40e7983.jpg",
-                process.cwd()
+                "./isentry/medias/fb698524-b1f8-4b4c-a9bf-c0b4f40e7983.jpg",
+                homepath
             ),
         },
     });
@@ -502,8 +494,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/41baa19a-15e8-433d-a076-2107cea3a522.jpg",
-                process.cwd()
+                "./isentry/medias/41baa19a-15e8-433d-a076-2107cea3a522.jpg",
+                homepath
             ),
         },
     });
@@ -512,8 +504,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/8a303786-44f9-430a-9d16-c7a52f238228.jpg",
-                process.cwd()
+                "./isentry/medias/8a303786-44f9-430a-9d16-c7a52f238228.jpg",
+                homepath
             ),
         },
     });
@@ -522,8 +514,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/8ef27278-ae12-45f8-bce6-4aadb625a429.jpg",
-                process.cwd()
+                "./isentry/medias/8ef27278-ae12-45f8-bce6-4aadb625a429.jpg",
+                homepath
             ),
         },
     });
@@ -532,8 +524,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/61a0d35a-13cb-44c5-89b4-4d30e646ddcc.jpg",
-                process.cwd()
+                "./isentry/medias/61a0d35a-13cb-44c5-89b4-4d30e646ddcc.jpg",
+                homepath
             ),
         },
     });
@@ -542,8 +534,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/718b47c2-f56f-4031-818a-c5c2eedae502.jpg",
-                process.cwd()
+                "./isentry/medias/718b47c2-f56f-4031-818a-c5c2eedae502.jpg",
+                homepath
             ),
         },
     });
@@ -552,8 +544,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/219c018d-773d-4e45-adb7-84080a57a7f8.jpg",
-                process.cwd()
+                "./isentry/medias/219c018d-773d-4e45-adb7-84080a57a7f8.jpg",
+                homepath
             ),
         },
     });
@@ -562,8 +554,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/6a7c1eff-fadd-4a6e-b615-c6b84ce7f3d9.jpg",
-                process.cwd()
+                "./isentry/medias/6a7c1eff-fadd-4a6e-b615-c6b84ce7f3d9.jpg",
+                homepath
             ),
         },
     });
@@ -572,8 +564,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/1367c96c-b24b-4f38-b642-283b13325f49.jpg",
-                process.cwd()
+                "./isentry/medias/1367c96c-b24b-4f38-b642-283b13325f49.jpg",
+                homepath
             ),
         },
     });
@@ -582,8 +574,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/d3af6b68-9efa-416f-9302-038853a69aa1.jpg",
-                process.cwd()
+                "./isentry/medias/d3af6b68-9efa-416f-9302-038853a69aa1.jpg",
+                homepath
             ),
         },
     });
@@ -592,8 +584,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/e5b5f0ad-2550-46a8-9f51-bc449a3cc47c.jpg",
-                process.cwd()
+                "./isentry/medias/e5b5f0ad-2550-46a8-9f51-bc449a3cc47c.jpg",
+                homepath
             ),
         },
     });
@@ -602,8 +594,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/f04c209e-1085-4fa9-8f6c-be89c1c293e0.jpg",
-                process.cwd()
+                "./isentry/medias/f04c209e-1085-4fa9-8f6c-be89c1c293e0.jpg",
+                homepath
             ),
         },
     });
@@ -612,8 +604,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/fe69a327-ef61-4006-9e55-fa75f7d7198d.jpg",
-                process.cwd()
+                "./isentry/medias/fe69a327-ef61-4006-9e55-fa75f7d7198d.jpg",
+                homepath
             ),
         },
     });
@@ -622,8 +614,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/d7e8e8b9-1e26-4292-a95b-45f1c39fd756.jpg",
-                process.cwd()
+                "./isentry/medias/d7e8e8b9-1e26-4292-a95b-45f1c39fd756.jpg",
+                homepath
             ),
         },
     });
@@ -632,8 +624,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/8aa2e6cd-558e-43dd-86ab-a663aa0b8ed5.jpg",
-                process.cwd()
+                "./isentry/medias/8aa2e6cd-558e-43dd-86ab-a663aa0b8ed5.jpg",
+                homepath
             ),
         },
     });
@@ -642,8 +634,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/babd3f33-7e8e-4e02-aa47-29a5e599ef50.jpg",
-                process.cwd()
+                "./isentry/medias/babd3f33-7e8e-4e02-aa47-29a5e599ef50.jpg",
+                homepath
             ),
         },
     });
@@ -652,8 +644,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/6e6a29dd-ecd1-48de-b767-2857aab4c4f2.jpg",
-                process.cwd()
+                "./isentry/medias/6e6a29dd-ecd1-48de-b767-2857aab4c4f2.jpg",
+                homepath
             ),
         },
     });
@@ -662,8 +654,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/ffcab562-d6e5-45c6-86ca-c1479793e046.jpg",
-                process.cwd()
+                "./isentry/medias/ffcab562-d6e5-45c6-86ca-c1479793e046.jpg",
+                homepath
             ),
         },
     });
@@ -672,8 +664,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/d353c7ee-29ca-4f3e-bf27-558c9e69dae4.jpg",
-                process.cwd()
+                "./isentry/medias/d353c7ee-29ca-4f3e-bf27-558c9e69dae4.jpg",
+                homepath
             ),
         },
     });
@@ -682,8 +674,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/b1d69673-e7a7-484d-826c-9b78c313f449.jpg",
-                process.cwd()
+                "./isentry/medias/b1d69673-e7a7-484d-826c-9b78c313f449.jpg",
+                homepath
             ),
         },
     });
@@ -692,8 +684,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/247fa30d-ece1-4519-ae11-0b18cecce73c.jpg",
-                process.cwd()
+                "./isentry/medias/247fa30d-ece1-4519-ae11-0b18cecce73c.jpg",
+                homepath
             ),
         },
     });
@@ -702,8 +694,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/9a46b601-0abd-4f17-beb6-527aaf6d4347.jpg",
-                process.cwd()
+                "./isentry/medias/9a46b601-0abd-4f17-beb6-527aaf6d4347.jpg",
+                homepath
             ),
         },
     });
@@ -712,8 +704,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/f6675286-91b2-44c5-86d4-f2ca9381c963.jpg",
-                process.cwd()
+                "./isentry/medias/f6675286-91b2-44c5-86d4-f2ca9381c963.jpg",
+                homepath
             ),
         },
     });
@@ -722,8 +714,8 @@ async function main() {
             capture_method: "AUTO",
             type: "PICTURE",
             path: Bun.resolveSync(
-                "./assets/df484056-d9bb-4faa-a542-0cb87bd48869.jpg",
-                process.cwd()
+                "./isentry/medias/df484056-d9bb-4faa-a542-0cb87bd48869.jpg",
+                homepath
             ),
         },
     });

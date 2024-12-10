@@ -1,7 +1,9 @@
 //import prisma client
+import { fa } from "@faker-js/faker/.";
 import prisma from "../../prisma/client";
 import { deleteUser } from "./UserController";
 const path = require("path");
+import { Role } from "@prisma/client";
 
 /**
  * Getting all identity
@@ -73,6 +75,57 @@ export async function createIdentity(options: { name: string }) {
         };
     } catch (e: unknown) {
         console.error(`Error creating identity: ${e}`);
+    }
+}
+
+export async function createIdentityAndUpdateFace(options: {
+    name: string;
+    faceIds: number[];
+}) {
+    const { name, faceIds } = options;
+    if (!faceIds || faceIds.length === 0) {
+        return {
+            success: false,
+            message: "faceIds cannot be empty",
+        };
+    }
+    try {
+        const result = await prisma.$transaction(async (prisma) => {
+            const identity = await prisma.identity.create({
+                data: {
+                    name,
+                },
+            });
+
+            const updatedFaces = await prisma.face.updateMany({
+                where: {
+                    id: {
+                        in: faceIds,
+                    },
+                },
+                data: {
+                    identity: identity.id,
+                },
+            });
+
+            return { identity, updatedFaces };
+        });
+
+        return {
+            success: true,
+            message: "Identity Created and Faces Updated Successfully!",
+            data: {
+                identityName: result.identity.name,
+                updatedFaceIds: faceIds,
+            },
+        };
+    } catch (e: unknown) {
+        console.error(`Error creating identity and updating faces: ${e}`);
+        return {
+            success: false,
+            message: "Failed to create identity and update faces",
+            error: e instanceof Error ? e.message : String(e),
+        };
     }
 }
 
@@ -164,7 +217,7 @@ export async function deleteIdentity(id: string) {
     try {
         const identityId = parseInt(id);
         const user = await prisma.user.findFirst({
-            where: { identityId: identityId },
+            where: { identityId: identityId, role: Role.RESIDENT },
         });
         if (user) {
             await deleteUser(user.id.toString());

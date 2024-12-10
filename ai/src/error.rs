@@ -1,3 +1,3 @@
 pub enum AppError {
-    Failed
+    Failed,
 }

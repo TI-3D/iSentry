@@ -16,7 +16,7 @@ impl From<&Rectangle> for BoundingBox {
             top: value.top as i32,
             left: value.left as i32,
             width: (value.right - value.left) as u32,
-            height: (value.bottom - value.top) as u32
+            height: (value.bottom - value.top) as u32,
         }
     }
 }

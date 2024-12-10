@@ -1,8 +1,6 @@
-#![allow(unused)]
-
 use std::{
     sync::{
-        atomic::{AtomicU8, Ordering},
+        atomic::{AtomicBool, AtomicU8, Ordering},
         Arc,
     },
     time::Duration,
@@ -10,40 +8,49 @@ use std::{
 
 use ab_glyph::{FontRef, PxScale};
 use chrono::Utc;
-use image::RgbImage;
+use image::{DynamicImage, RgbImage};
+use imageproc::definitions::HasBlack;
 use mysql::{params, prelude::Queryable, Conn};
 use opencv::{
     imgproc::COLOR_BGR2RGB,
     prelude::*,
     videoio::{VideoCapture, VideoCaptureTrait, VideoCaptureTraitConst, CAP_ANY},
 };
-use serde_json::{json, Value};
 use tokio::{
     io::AsyncWriteExt,
-    sync::{mpsc::Sender, oneshot, Mutex},
-    time::sleep,
+    sync::{broadcast, mpsc, oneshot, Mutex},
+    time::{sleep, Instant},
 };
 use uuid::Uuid;
 
 use crate::{
     ffmpeg,
     job::{Job, JobKind, JobResult, JobSender},
-    utils::LabelID,
+    utils::{self, DetectionOutput, LabelID},
 };
 
-pub async fn run(db_opts: mysql::Opts, tx: Sender<Job>) {
-    // tokio::spawn(auto_record(db_opts, tx.clone()));
-    tokio::spawn(auto_label(db_opts, tx));
+static HAS_PUBLISH_LABEL: AtomicBool = AtomicBool::new(false);
+
+pub async fn run(
+    db_opts: mysql::Opts,
+    job_tx: mpsc::Sender<Job>,
+    detection_tx: broadcast::Sender<DetectionOutput>,
+) {
+    tokio::spawn(auto_record(db_opts.clone(), job_tx.clone()));
+    tokio::spawn(auto_label(db_opts, job_tx, detection_tx));
 }
 
-pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
-    let mut db_conn = Conn::new(db_opts).unwrap();
-
-    let stmt1 = db_conn
-        .prep("INSERT INTO gallery_items (path, type, capture_method) VALUES (?1, VIDEO, AUTO)")
-        .unwrap();
-
+pub async fn auto_record(db_opts: mysql::Opts, _tx: mpsc::Sender<Job>) {
+    while !HAS_PUBLISH_LABEL.load(Ordering::Relaxed) {
+        sleep(Duration::from_secs(1)).await;
+    }
     loop {
+        let mut db_conn = Conn::new(db_opts.clone()).unwrap();
+
+        let stmt1 = db_conn
+            .prep("INSERT INTO medias (path, type, capture_method, createdAt, updatedAt) VALUES (:path, \"VIDEO\", \"AUTO\", :created_at, NOW())")
+            .unwrap();
+
         // ffmpeg -i rtsp://localhost:8554/stream -c copy -f segment -segment_time 3600 -reset_timestamps 1 output_%03d.mp4
         // ffmpeg -i rtsp://localhost:8554/stream -c copy -t 3600 output.mp4
 
@@ -51,25 +58,39 @@ pub async fn auto_record(db_opts: mysql::Opts, _tx: Sender<Job>) {
         let seconds = time.timestamp_millis() / 1000;
         let seconds_from_last_hour = seconds % 3600;
         let next_hour_in_seconds = 3600 - seconds_from_last_hour;
-        let more_than_5_minutes = next_hour_in_seconds > 60;
+        let more_than_5_minutes = next_hour_in_seconds > 60 * 5;
 
         let record_time = if more_than_5_minutes {
             next_hour_in_seconds
         } else {
             sleep(Duration::from_secs(next_hour_in_seconds as u64)).await;
-            3600
+            60 * 10
         };
 
         let link = dotenvy::var("RTMP_LABEL").unwrap();
-        let timestamp = Utc::now();
-        let filename = format!("AutoRecord-{}.mp4", timestamp.format("%Y-%m-%d-%H:%M"));
+        let timestamp = Utc::now().format("%Y-%m-%d-%H:%M").to_string();
+        let media_dir = std::env::var("ISENTRY_MEDIA_DIR").unwrap();
+        let filepath = format!("{media_dir}/AutoRecord-{timestamp}.mp4",);
 
-        ffmpeg::save_chunk(&link, record_time as u64, &filename).await;
-        db_conn.exec_drop(&stmt1, ("abc",)).unwrap();
+        ffmpeg::save_chunk(&link, record_time as u64, &filepath).await;
+        db_conn
+            .exec_drop(
+                &stmt1,
+                params! {
+                    "path" => filepath,
+                    "created_at" => timestamp
+                },
+            )
+            .unwrap();
+        sleep(Duration::from_secs(15)).await;
     }
 }
 
-pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
+pub async fn auto_label(
+    db_opts: mysql::Opts,
+    job_tx: mpsc::Sender<Job>,
+    detection_tx: broadcast::Sender<DetectionOutput>,
+) {
     let link = dotenvy::var("RTMP_RAW").unwrap();
 
     let mut input = loop {
@@ -109,7 +130,13 @@ pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
     let bounding_boxes = Arc::new(Mutex::new(Vec::new()));
     let num_scanning_jobs = Arc::new(AtomicU8::new(0));
 
+    HAS_PUBLISH_LABEL.store(true, Ordering::Relaxed);
+
+    const IMAGE_WIDTH: i32 = 960;
+    const IMAGE_HEIGHT: i32 = 540;
+
     loop {
+        let start = Instant::now();
         let mut buffer = Mat::default();
         input.read(&mut buffer).unwrap();
         let (width, height) = match buffer.size().map(|size| {
@@ -121,27 +148,45 @@ pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
         }) {
             // (false, w, h) => panic!("Input stream is not 1920x1080; got size {w}x{h}"),
             Ok((0, 0)) => {
-                sleep(Duration::from_millis(100));
+                sleep(Duration::from_millis(100)).await;
+                let img = RgbImage::from_pixel(IMAGE_WIDTH as u32, IMAGE_HEIGHT as u32, image::Rgb::black());
+                output_stdin.write_all(img.as_raw()).await.unwrap();
+                let elapsed = start.elapsed().as_millis();
+                if elapsed < 1000 / 30 {
+                    sleep(Duration::from_millis((1000 / 30 - elapsed) as u64)).await;
+                }
+                tracing::info!("Sleep because 0x0 buffer");
                 continue;
             }
             Ok(size) => size,
-            _ => panic!("what"),
+            Err(e) => {
+                tracing::error!("Error getting buffer size: {e}");
+                panic!("what");
+            }
         };
         frame_counter += 1;
         let mut buffer2 = Mat::default();
         opencv::imgproc::cvt_color(&buffer, &mut buffer2, COLOR_BGR2RGB, 0).unwrap();
-        let Some(mut img) = RgbImage::from_raw(
+        let mut img = RgbImage::from_raw(
             width as u32,
             height as u32,
             buffer2.data_bytes().unwrap().to_vec(),
-        ) else {
-            panic!("Image container not big enough");
-        };
+        )
+        .unwrap();
+        if (width != IMAGE_WIDTH) && (height != IMAGE_HEIGHT) {
+            let img_dyn = DynamicImage::ImageRgb8(img);
+            img = utils::resize_and_pad_image(
+                &img_dyn,
+                IMAGE_WIDTH as u32,
+                IMAGE_HEIGHT as u32,
+                image::Rgb::black(),
+            );
+        }
 
         if frame_counter % 120 == 0 && num_scanning_jobs.load(Ordering::SeqCst) <= 1 {
             //tracing::info!("Something");
             num_scanning_jobs.fetch_add(1, Ordering::SeqCst);
-            let tx_clone = tx.clone();
+            let tx_clone = job_tx.clone();
             let db_opts = db_opts.clone();
             let bounding_boxes_clone = bounding_boxes.clone();
             let bounding_boxes_clone2 = bounding_boxes.clone();
@@ -176,8 +221,9 @@ pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
                 }
                 num_scanning_jobs_clone.fetch_sub(1, Ordering::SeqCst);
             });
+            let detection_tx = detection_tx.clone();
             tokio::spawn(async move {
-                handler.await;
+                let _ = handler.await;
                 // let mut ids = Vec::new();
                 // for (_, (id, _)) in &*bounding_boxes_clone2.lock().await {
                 //     ids.push(*id);
@@ -196,7 +242,7 @@ pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
                 let push_log = db_conn
                     .prep("INSERT INTO detectionLogs (face) VALUES (:face_id)")
                     .unwrap();
-                for (_, (id, _)) in &*bounding_boxes_clone2.lock().await {
+                for (_, (id, name)) in &*bounding_boxes_clone2.lock().await {
                     db_conn
                         .exec_drop(
                             push_log.clone(),
@@ -205,15 +251,23 @@ pub async fn auto_label(db_opts: mysql::Opts, tx: Sender<Job>) {
                             },
                         )
                         .unwrap();
+                    let detection_id = db_conn.last_insert_id();
+                    if let Err(e) = detection_tx.send((name.clone(), *id, detection_id)) {
+                        tracing::error!("An error occured during detection report sending: {e}");
+                    }
                 }
             });
         } else {
-            for (bbox, (id, name)) in &*bounding_boxes.lock().await {
+            for (bbox, (_, name)) in &*bounding_boxes.lock().await {
                 img.label(bbox, name, &font, font_height, scale);
             }
         }
 
         output_stdin.write_all(img.as_raw()).await.unwrap();
+        let elapsed = start.elapsed().as_millis();
+        if elapsed < 1000 / 30 {
+            sleep(Duration::from_millis((1000 / 30 - elapsed) as u64)).await;
+        }
     }
 }
 

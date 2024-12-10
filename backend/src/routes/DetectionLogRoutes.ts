@@ -10,6 +10,7 @@ import {
     deleteDetectionLog,
     getDetailDetectionLogs,
     createManyDetectionLog,
+    getDetectionLogIdentity,
 } from "../controllers/DetectionLogController";
 
 const DetectionLogRoutes = new Elysia({ prefix: "/detection-logs" })
@@ -51,6 +52,10 @@ const DetectionLogRoutes = new Elysia({ prefix: "/detection-logs" })
             }),
         }
     )
+
+    .get("/by-identity/:id", async ({ params: { id } }) => {
+        return await getDetectionLogIdentity(id);
+    })
 
     // route to get detection log by id
     .get("/:id", async ({ params: { id } }) => {

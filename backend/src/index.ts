@@ -2,14 +2,29 @@ import { Elysia } from "elysia";
 import Routes from "./routes";
 import swagger from "@elysiajs/swagger";
 import { staticPlugin } from "@elysiajs/static";
+import { logger } from "@grotto/logysia";
 
 const app = new Elysia();
-app.use(staticPlugin({ assets: "assets", prefix: "/public" }));
+const homepath =
+    process.env.HOME ?? process.env.HOMEPATH ?? process.env.USERPROFILE ?? "";
+app.use(
+    staticPlugin({ assets: `${homepath}/isentry/medias`, prefix: "/public" })
+);
+app.use(
+    logger({
+        logIP: false,
+        writer: {
+            write(msg: string) {
+                console.log(msg);
+            },
+        },
+    })
+);
 app.use(swagger());
 app.get("/", () => "Hello Elysia!");
 app.group("/api", (app) => app.use(Routes));
 app.listen({
-    hostname: "192.168.2.144",
+    hostname: "192.168.77.75",
     port: 3000,
 });
 
