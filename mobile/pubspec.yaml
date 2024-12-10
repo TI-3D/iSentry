@@ -37,6 +37,7 @@ dependencies:
   jwt_decoder: ^2.0.1
   web_socket_channel: ^3.0.1
   flutter_local_notifications: ^18.0.1
+  fluttertoast: ^8.2.8
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.1

@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
 import 'package:isentry/presentation/auth/bloc/login_event.dart';
@@ -95,20 +96,24 @@ class RegisterPage extends StatelessWidget {
                         if (nameController.text.isEmpty ||
                             usernameController.text.isEmpty ||
                             passwordController.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Please fill in all fields"),
-                              duration: Duration(seconds: 3),
-                            ),
+                          Fluttertoast.showToast(
+                            msg: 'Please fill in all fields!',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.TOP,
+                            timeInSecForIosWeb: 3,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
                           );
                           return;
                         } else if (passwordController.text !=
                             confirmPasswordController.text) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Confirm password is incorrect"),
-                              duration: Duration(seconds: 3),
-                            ),
+                          Fluttertoast.showToast(
+                            msg: 'Confirm password is incorrect',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.TOP,
+                            timeInSecForIosWeb: 3,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
                           );
                           return;
                         }

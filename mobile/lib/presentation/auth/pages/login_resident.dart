@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/domain/entities/auth.dart';
 import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
@@ -79,12 +80,13 @@ class LoginResidentPage extends StatelessWidget {
 
                         if (usernameController.text.isEmpty ||
                             passwordController.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                  "Username or password is missing. Please try again!"),
-                              duration: Duration(seconds: 3),
-                            ),
+                          Fluttertoast.showToast(
+                            msg: 'Username or Password is missing. Please try again!',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.TOP,
+                            timeInSecForIosWeb: 3,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
                           );
                           return;
                         }

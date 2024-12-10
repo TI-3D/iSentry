@@ -12,6 +12,8 @@ class FaceInitial extends FaceState {}
 
 class FaceLoading extends FaceState {}
 
+class FaceReloading extends FaceState {}
+
 class FaceLoaded extends FaceState {
   final List<FaceModel> faces;
 
