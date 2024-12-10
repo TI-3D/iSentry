@@ -24,13 +24,18 @@ class SignupSubmitted extends AuthEvent {
   final String username;
   final String password;
   final String role;
+  final int? ownerId;
+  final int? identityId;
 
   const SignupSubmitted(
       {required this.name,
       required this.username,
       required this.password,
-      required this.role});
+      required this.role,
+      this.ownerId,
+      this.identityId});
 
   @override
-  List<Object?> get props => [name, username, password, role];
+  List<Object?> get props =>
+      [name, username, password, role, ownerId, identityId];
 }

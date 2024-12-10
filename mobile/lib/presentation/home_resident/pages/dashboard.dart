@@ -7,7 +7,8 @@ import 'package:isentry/presentation/widgets/components/sort.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class DashboardResidentPage extends StatelessWidget {
-  const DashboardResidentPage({super.key});
+  final String userId;
+  const DashboardResidentPage({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {

@@ -36,7 +36,8 @@ class LoginResidentPage extends StatelessWidget {
               );
               return;
             } else if (state.auth.role == Role.RESIDENT) {
-              AppNavigator.pushReplacement(context, const HomeResidentPage());
+              AppNavigator.pushReplacement(
+                  context, HomeResidentPage(userId: '${state.auth.id}'));
             }
           } else if (state is LoginFailure) {
             ScaffoldMessenger.of(context)
@@ -80,7 +81,8 @@ class LoginResidentPage extends StatelessWidget {
                             passwordController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("Username or password is missing. Please try again!"),
+                              content: Text(
+                                  "Username or password is missing. Please try again!"),
                               duration: Duration(seconds: 3),
                             ),
                           );
