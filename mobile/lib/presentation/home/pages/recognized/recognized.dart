@@ -23,11 +23,19 @@ class RecognizedPage extends StatefulWidget {
 }
 
 class _RecognizedPageState extends State<RecognizedPage> {
+  String searchQuery = '';
+
   @override
   void initState() {
     super.initState();
     context.read<IdentityBloc>().add(GetAllIdentity());
     context.read<UserBloc>().add(GetAllUser());
+  }
+
+  void _onSearchChanged(String query) {
+    setState(() {
+      searchQuery = query.toLowerCase();
+    });
   }
 
   void _showAddDataBottomSheet(BuildContext context) {
@@ -47,20 +55,18 @@ class _RecognizedPageState extends State<RecognizedPage> {
       listener: (context, state) {
         if (state is IdentityDeleted) {
           Fluttertoast.showToast(
-            msg: 'Identity deleted successfully',
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.TOP,
-            backgroundColor: Colors.green,
-            textColor: Colors.white
-          );
+              msg: 'Identity deleted successfully',
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.TOP,
+              backgroundColor: Colors.green,
+              textColor: Colors.white);
         } else if (state is IdentityFailure) {
           Fluttertoast.showToast(
-            msg: 'Failed to delete identity: ${state.errorMessage}',
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.TOP,
-            backgroundColor: Colors.red,
-            textColor: Colors.white
-          );
+              msg: 'Failed to delete identity: ${state.errorMessage}',
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.TOP,
+              backgroundColor: Colors.red,
+              textColor: Colors.white);
         }
       },
       builder: (context, state) {
@@ -94,49 +100,71 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                 left: 25, right: 25, bottom: 2),
                             height: 38,
                             child: TextField(
+                                onChanged:
+                                    _onSearchChanged, 
                                 decoration: InputDecoration(
-                              filled: true,
-                              fillColor: const Color(0xffe4e4e7),
-                              hintText: 'Search...',
-                              hintStyle:
-                                  const TextStyle(color: Color(0xffa1a1aa)),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                borderSide: const BorderSide(
-                                  color: Color(0xffa1a1aa),
-                                  width: 2,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                borderSide: const BorderSide(
-                                  color: Color(0xffa1a1aa),
-                                  width: 2,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                borderSide: const BorderSide(
-                                  color: Colors.black,
-                                  width: 2,
-                                ),
-                              ),
-                              prefixIcon: const Icon(
-                                LucideIcons.search,
-                                color: Color(0xffa1a1aa),
-                                size: 18,
-                              ),
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                            )),
+                                  filled: true,
+                                  fillColor: const Color(0xffe4e4e7),
+                                  hintText: 'Search...',
+                                  hintStyle:
+                                      const TextStyle(color: Color(0xffa1a1aa)),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xffa1a1aa),
+                                      width: 2,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xffa1a1aa),
+                                      width: 2,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: const BorderSide(
+                                      color: Colors.black,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  prefixIcon: const Icon(
+                                    LucideIcons.search,
+                                    color: Color(0xffa1a1aa),
+                                    size: 18,
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                )),
                           ),
                         ),
                       ),
                       body: ListView.builder(
-                        itemCount: identityState.identities.length + 1,
+                        itemCount: identityState.identities
+                            .where((identity) =>
+                                identity.name
+                                    .toLowerCase()
+                                    .contains(searchQuery) ||
+                                identity.id
+                                    .toString()
+                                    .toLowerCase()
+                                    .contains(searchQuery))
+                            .toList()
+                            .length, // Filtered item count
                         itemBuilder: (context, index) {
-                          if (index < identityState.identities.length) {
-                            final identities = identityState.identities[index];
+                          final filteredIdentities = identityState.identities
+                              .where((identity) =>
+                                  identity.name
+                                      .toLowerCase()
+                                      .contains(searchQuery) ||
+                                  identity.id
+                                      .toString()
+                                      .toLowerCase()
+                                      .contains(searchQuery))
+                              .toList();
+                          if (index < filteredIdentities.length) {
+                            final identities = filteredIdentities[index];
                             final hasAccount = userIds.contains(identities.id);
                             final formattedDate = DateFormat("d MMMM yyyy")
                                 .format(identities.updatedAt);
@@ -160,10 +188,8 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                          const Icon(
-                                            (LucideIcons.userCircle2),
-                                            size: 35,
-                                          ),
+                                          const Icon(LucideIcons.userCircle2,
+                                              size: 35),
                                           const SizedBox(width: 10),
                                           Column(
                                             mainAxisAlignment:
@@ -182,10 +208,8 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                                   ),
                                                   const SizedBox(width: 10),
                                                   if (hasAccount)
-                                                    const Icon(
-                                                      Icons.check_box,
-                                                      size: 14,
-                                                    ),
+                                                    const Icon(Icons.check_box,
+                                                        size: 14),
                                                 ],
                                               ),
                                               Text(
@@ -330,17 +354,15 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                 ],
                               ),
                             );
-                          } else {
-                            return const SizedBox(height: 100);
                           }
+                          return const SizedBox(height: 100);
                         },
                       ),
                       floatingActionButton: FloatingActionButton(
                         onPressed: () => _showAddDataBottomSheet(context),
                         backgroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
+                            borderRadius: BorderRadius.circular(30)),
                         child:
                             const Icon(LucideIcons.plus, color: Colors.white),
                       ),
