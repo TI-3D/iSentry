@@ -21,7 +21,6 @@ use crate::{
 
 pub async fn auto_label(
     detector: Arc<Mutex<FaceDetector>>,
-    //detector: Arc<Mutex<FaceDetectorCnn>>,
     landmark_predictor: &LandmarkPredictor,
     face_encoder: Arc<Mutex<FaceEncoderNetwork>>,
     db_conn: &mut PooledConn,

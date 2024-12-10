@@ -254,6 +254,8 @@ pub async fn auto_label(
                     let detection_id = db_conn.last_insert_id();
                     if let Err(e) = detection_tx.send((name.clone(), *id, detection_id)) {
                         tracing::error!("An error occured during detection report sending: {e}");
+                    } else {
+                        tracing::info!("Detection id: {detection_id}");
                     }
                 }
             });
