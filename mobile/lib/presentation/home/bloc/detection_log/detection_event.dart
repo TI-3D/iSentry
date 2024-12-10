@@ -39,3 +39,12 @@ class DetectionSubmitted extends DetectionEvent {
 }
 
 class DetectionDetail extends DetectionEvent {}
+
+class DetectionByIdentity extends DetectionEvent {
+  final String id;
+
+  const DetectionByIdentity({required this.id});
+
+  @override
+  List<Object?> get props => [id];
+}

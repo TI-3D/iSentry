@@ -113,5 +113,26 @@ class DetectionBloc extends Bloc<DetectionEvent, DetectionState> {
         emit(DetectionFailure('Failed to fetch users: $e'));
       }
     });
+
+    on<DetectionByIdentity>((event, emit) async {
+      emit(DetectionLoading());
+
+      try {
+        final url =
+            Uri.http(ipAddress, 'api/detection-logs/by-identity/${event.id}');
+        final response = await NetworkService.get(url.toString());
+
+        if (response['success']) {
+          final detection = (response['data'] as List)
+              .map((detection) => DetectionModel.fromJson(detection))
+              .toList();
+          emit(ByIdentityLoaded(detection));
+        } else {
+          emit(DetectionFailure(response['message'] ?? 'Failed to load users'));
+        }
+      } catch (e) {
+        emit(DetectionFailure("Failed to fetch user: $e"));
+      }
+    });
   }
 }
