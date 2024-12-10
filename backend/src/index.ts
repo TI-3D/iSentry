@@ -24,7 +24,7 @@ app.use(swagger());
 app.get("/", () => "Hello Elysia!");
 app.group("/api", (app) => app.use(Routes));
 app.listen({
-    hostname: "192.168.1.117",
+    hostname: "192.168.77.75",
     port: 3000,
 });
 
