@@ -119,39 +119,9 @@ class DashboardPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                Expanded(
+                const Expanded(
                   flex: 27,
-                  //child: Activity(),
-                  child: Column(
-                    children: [
-                      const Activity(),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15.0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Callback untuk memanggil notifikasi
-                            showNotification(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 25),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          child: const Text(
-                            "Send Notification",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: Activity(),
                 ),
               ],
             );
