@@ -18,8 +18,8 @@ class NetworkService {
   }
 
   static Future<dynamic> get(String url, {Map<String, String>? customHeaders}) {
-    if (_isTokenExpired()) {
-      _renewToken();
+    if (isTokenExpired()) {
+      renewToken();
     }
     final allHeaders = {..._instance.headers, ...?customHeaders};
     return http
@@ -43,8 +43,8 @@ class NetworkService {
 
   static Future<dynamic> post(String url,
       {body, encoding, Map<String, String>? customHeaders}) {
-    if (_isTokenExpired()) {
-      _renewToken();
+    if (isTokenExpired()) {
+      renewToken();
     }
     final allHeaders = {..._instance.headers, ...?customHeaders};
     return http
@@ -67,8 +67,8 @@ class NetworkService {
 
   static Future<dynamic> delete(String url,
       {Map<String, String>? customHeaders}) {
-    if (_isTokenExpired()) {
-      _renewToken();
+    if (isTokenExpired()) {
+      renewToken();
     }
     final allHeaders = {..._instance.headers, ...?customHeaders};
     return http
@@ -88,8 +88,8 @@ class NetworkService {
 
   static Future<dynamic> patch(String url,
       {body, encoding, Map<String, String>? customHeaders}) {
-    if (_isTokenExpired()) {
-      _renewToken();
+    if (isTokenExpired()) {
+      renewToken();
     }
     final allHeaders = {..._instance.headers, ...?customHeaders};
     return http
@@ -110,7 +110,7 @@ class NetworkService {
     });
   }
 
-  static bool _isTokenExpired() {
+  static bool isTokenExpired() {
     final authorization = _instance.headers["Authorization"];
     if (authorization != null) {
       final token = authorization.split(" ")[1];
@@ -120,7 +120,7 @@ class NetworkService {
     }
   }
 
-  static void _renewToken() async {
+  static void renewToken() async {
     final uri = Uri.http(ipAddress, "api/renew-token");
     final res = await http.post(uri, body: {
       'refres_token': SecureStorageService.read("jwt_refresh_token"),
