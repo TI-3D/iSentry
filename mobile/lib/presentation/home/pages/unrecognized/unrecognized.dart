@@ -75,6 +75,12 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
   }
 
   @override
+  void initState() {
+    context.read<FaceBloc>().add(LoadUnrecognizedFaces());    
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
