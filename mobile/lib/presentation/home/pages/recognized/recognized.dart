@@ -89,6 +89,7 @@ class _RecognizedPageState extends State<RecognizedPage> {
                     final userIds =
                         userState.users.map((user) => user.identityId).toSet();
                     return Scaffold(
+                      resizeToAvoidBottomInset: false,
                       appBar: AppBar(
                         backgroundColor: const Color(0xfff1f4f9),
                         elevation: 0,
@@ -100,8 +101,7 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                 left: 25, right: 25, bottom: 2),
                             height: 38,
                             child: TextField(
-                                onChanged:
-                                    _onSearchChanged, 
+                                onChanged: _onSearchChanged,
                                 decoration: InputDecoration(
                                   filled: true,
                                   fillColor: const Color(0xffe4e4e7),
@@ -208,7 +208,8 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                                   ),
                                                   const SizedBox(width: 10),
                                                   if (hasAccount)
-                                                    const Icon(Icons.check_box,
+                                                    const Icon(
+                                                        LucideIcons.checkSquare,
                                                         size: 14),
                                                 ],
                                               ),
@@ -362,7 +363,8 @@ class _RecognizedPageState extends State<RecognizedPage> {
                         onPressed: () => _showAddDataBottomSheet(context),
                         backgroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30)),
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                         child:
                             const Icon(LucideIcons.plus, color: Colors.white),
                       ),
