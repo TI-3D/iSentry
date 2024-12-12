@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:avatar_stack/avatar_stack.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:isentry/presentation/widgets/components/bottom_sheet.dart';
@@ -18,10 +19,19 @@ class _AddDataState extends State<AddData> {
   final TextEditingController _nameController = TextEditingController();
   final List<XFile> _selectedImages = [];
 
-  void _updateImages(XFile image) {
+  void _updateImages(List<XFile> images) {
     setState(() {
-      _selectedImages.add(image);  // Add selected image to the list
+      _selectedImages.addAll(images);
     });
+  }
+
+  void _pickImages() {
+    ImagePickerService.pickImage(
+      context,
+      (images) {
+        _updateImages(images);
+      },
+    );
   }
 
   @override
@@ -31,25 +41,20 @@ class _AddDataState extends State<AddData> {
       content: Column(
         children: [
           Center(
-            child: InkWell(
-              onTap: () => ImagePickerService.pickImage(context, _updateImages as void Function(List<XFile> images)),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  if (_selectedImages.isNotEmpty)
-                    ..._selectedImages.asMap().entries.map((entry) {
-                      int index = entry.key;
-                      XFile image = entry.value;
-                      return Positioned(
-                        left: index * 25.0, // Adjust position for stacking
-                        child: CircleAvatar(
-                          radius: 40,
-                          backgroundImage: FileImage(File(image.path)),
-                        ),
-                      );
-                    }),
-                  if (_selectedImages.isEmpty)
-                    Container(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (_selectedImages.isNotEmpty)
+                  AvatarStack(
+                    height: 70,
+                    avatars: _selectedImages
+                        .map((e) => FileImage(File(e.path)))
+                        .toList(),
+                  )
+                else
+                  GestureDetector(
+                    onTap: _pickImages, // Ikon kamera besar memiliki aksi
+                    child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: const BoxDecoration(
                         color: Colors.black,
@@ -61,8 +66,30 @@ class _AddDataState extends State<AddData> {
                         color: Colors.white,
                       ),
                     ),
-                ],
-              ),
+                  ),
+                if (_selectedImages.isNotEmpty)
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: _pickImages, // Ikon kecil tetap memiliki aksi
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(6),
+                          child: Icon(
+                            LucideIcons.camera,
+                            size: 18,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
           const SizedBox(height: 20),
@@ -106,7 +133,7 @@ class _AddDataState extends State<AddData> {
         alignment: Alignment.centerRight,
         child: Padding(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom, // Adjust padding for keyboard
+            bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
           child: ElevatedButton(
             onPressed: () {

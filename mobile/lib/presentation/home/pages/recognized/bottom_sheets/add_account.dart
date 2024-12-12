@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
 import 'package:isentry/presentation/auth/bloc/login_event.dart';
 import 'package:isentry/presentation/widgets/components/bottom_sheet.dart';
@@ -115,11 +116,13 @@ class _AddAccountState extends State<AddAccount> {
           child: ElevatedButton(
             onPressed: () {
               if (_username.text.isEmpty || _password.text.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("data ada yang kosong"),
-                    duration: Duration(seconds: 3),
-                  ),
+                Fluttertoast.showToast(
+                  msg: 'Some fields are empty',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.TOP,
+                  timeInSecForIosWeb: 3,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
                 );
                 return;
               }
@@ -137,11 +140,13 @@ class _AddAccountState extends State<AddAccount> {
 
               Navigator.of(context).pop();
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Berhasil membuat akun resident'),
-                  duration: Duration(seconds: 3),
-                ),
+              Fluttertoast.showToast(
+                msg: 'Resident account created successfully',
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.TOP,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.green,
+                textColor: Colors.white,
               );
             },
             style: ElevatedButton.styleFrom(
