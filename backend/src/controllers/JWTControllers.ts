@@ -47,18 +47,18 @@ export const renew = async (
 ) => {
     const profile = await jwt_refresh.verify(refresh_token);
     if (!profile) {
-        return {
+        return error(403, {
             success: false,
             message: "Token not valid",
-        };
+        });
     }
 
     const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
     if (profile.exp && profile.exp < currentTime) {
-        return {
+        return error(403, {
             success: false,
             message: "Token has expired",
-        };
+        });
     }
 
     const token_from_db = await prisma.token.findUnique({
@@ -66,17 +66,17 @@ export const renew = async (
     });
 
     if (token_from_db?.type !== "REFRESH") {
-        return {
+        return error(403, {
             success: false,
             message: "Token cannot be used",
-        };
+        });
     }
 
     if (!token_from_db) {
-        return {
+        return error(403, {
             success: false,
             message: "Token not found in database",
-        };
+        });
     }
 
     const token = await jwt.sign({

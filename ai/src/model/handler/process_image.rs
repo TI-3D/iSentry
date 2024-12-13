@@ -2,7 +2,8 @@ use std::sync::Arc;
 
 use ab_glyph::{FontRef, PxScale};
 use dlib_face_recognition::{
-    FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, FaceLandmarks, ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait
+    FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, FaceLandmarks,
+    ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait,
 };
 use image::DynamicImage;
 use tokio::sync::Mutex;

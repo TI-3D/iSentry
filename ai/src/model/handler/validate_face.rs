@@ -2,7 +2,8 @@ use std::sync::Arc;
 
 use ab_glyph::{FontRef, PxScale};
 use dlib_face_recognition::{
-    FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, ImageMatrix, LandmarkPredictor, LandmarkPredictorTrait
+    FaceDetector, FaceDetectorTrait, FaceEncoderNetwork, FaceEncoderTrait, ImageMatrix,
+    LandmarkPredictor, LandmarkPredictorTrait,
 };
 use image::DynamicImage;
 use mysql::{params, prelude::Queryable, PooledConn};

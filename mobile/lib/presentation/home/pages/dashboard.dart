@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
@@ -122,39 +123,9 @@ class DashboardPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                Expanded(
+                const Expanded(
                   flex: 27,
-                  //child: Activity(),
-                  child: Column(
-                    children: [
-                      const Activity(),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15.0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Callback untuk memanggil notifikasi
-                            showNotification(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 25),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          child: const Text(
-                            "Send Notification",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: Activity(),
                 ),
               ],
             );
@@ -171,10 +142,11 @@ class DashboardPage extends StatelessWidget {
   void showNotification(BuildContext context) async {
     await NotificationService.showNotification("kocak", "geming");
     print("Notification button pressed!"); // Tambahkan log untuk memverifikasi
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Notifikasi berhasil dikirim!"),
-      ),
+    Fluttertoast.showToast(
+      msg: 'Notification sent successfully!',
+      gravity: ToastGravity.TOP,
+      backgroundColor: Colors.green,
+      textColor: Colors.white,
     );
   }
 }

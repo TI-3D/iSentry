@@ -15,7 +15,7 @@ mod face_detection;
 mod handler;
 mod identity;
 
-pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
+pub async fn run(db_pool: mysql::Pool, mut job_rx: Receiver<Job>) {
     //let manifest_dir = dotenvy::var("CARGO_MANIFEST_DIR").unwrap();
     let detector = Arc::new(Mutex::new(FaceDetector::default()));
     //let detector = if let Ok(cnn_fd) = FaceDetectorCnn::open(format!(
@@ -60,7 +60,7 @@ pub async fn run(db_pool: mysql::Pool, mut rx: Receiver<Job>) {
         }
     });
 
-    while let Some(job) = rx.recv().await {
+    while let Some(job) = job_rx.recv().await {
         match job.kind {
             JobKind::ProcessImage => {
                 handler::process_image(

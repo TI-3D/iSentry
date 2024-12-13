@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:isentry/core/configs/ip_address.dart';
+import 'package:isentry/data/models/face_model.dart';
 import 'package:isentry/presentation/home/bloc/faces/face_bloc.dart';
 import 'package:isentry/presentation/home/bloc/faces/face_event.dart';
 import 'package:isentry/presentation/home/bloc/faces/face_state.dart';
@@ -9,30 +10,42 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'bottom_sheets/add_data.dart';
 import 'package:isentry/presentation/widgets/components/sort.dart';
 
-class UnrecognizedPage extends StatelessWidget {
+class UnrecognizedPage extends StatefulWidget {
   const UnrecognizedPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          FaceBloc()..add(LoadUnrecognizedFaces()), // Inisialisasi FaceBloc
-      child: const _UnrecognizedPageView(),
+  // ignore: library_private_types_in_public_api
+  _UnrecognizedPageState createState() => _UnrecognizedPageState();
+}
+
+class _UnrecognizedPageState extends State<UnrecognizedPage> {
+  List<bool> _isSelected = [];
+  final List<FaceModel> _selectedFaces = [];
+  bool _multiSelectMode = false;
+
+  Future<void> _openAddDataUnreg() async {
+    bool? reload = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddDataUnreg(selectedFaces: _selectedFaces),
+      ),
     );
+
+    if (reload == true) {
+      print("Reload triggered from AddDataUnreg.");
+      setState(() {
+        _selectedFaces.clear();
+        _isSelected = List.filled(_isSelected.length, false);
+        _multiSelectMode = false;
+      });
+    }
   }
-}
 
-class _UnrecognizedPageView extends StatefulWidget {
-  const _UnrecognizedPageView();
+  void _loadUnrecognizedFaces() {
+    context.read<FaceBloc>().add(LoadUnrecognizedFaces());
+  }
 
-  @override
-  _UnrecognizedPageViewState createState() => _UnrecognizedPageViewState();
-}
-
-class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
-  final List<bool> _isSelected =
-      []; // Akan diisi sesuai jumlah wajah dari state
-
+  // Method to show bottom sheet with selected faces
   void _showAddDataBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -40,8 +53,31 @@ class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => const AddDataUnreg(),
+      builder: (_) => AddDataUnreg(selectedFaces: List.from(_selectedFaces)),
     );
+  }
+
+  void _onFabPressed() {
+    _showAddDataBottomSheet(context);
+  }
+
+  // Function to handle unselect all items and disable multi-select mode
+  void _unselectAll() {
+    setState(() {
+      // Unselect all faces and clear selectedFaces
+      for (int i = 0; i < _isSelected.length; i++) {
+        _isSelected[i] = false;
+      }
+      _selectedFaces.clear();
+      // Disable multi-select mode if no faces are selected
+      _multiSelectMode = false;
+    });
+  }
+
+  @override
+  void initState() {
+    context.read<FaceBloc>().add(LoadUnrecognizedFaces());    
+    super.initState();
   }
 
   @override
@@ -61,13 +97,12 @@ class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
       ),
       body: BlocBuilder<FaceBloc, FaceState>(
         builder: (context, state) {
-          if (state is FaceLoading) {
+          if (state is FaceLoading || state is FaceReloading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is FaceLoaded) {
-            // Update jumlah _isSelected sesuai jumlah data
-            if (_isSelected.isEmpty) {
-              _isSelected
-                  .addAll(List.generate(state.faces.length, (_) => false));
+            // Handle the faces data after reload
+            if (_isSelected.length != state.faces.length) {
+              _isSelected = List.filled(state.faces.length, false);
             }
 
             return Padding(
@@ -89,8 +124,49 @@ class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
                     children: [
                       GestureDetector(
                         onTap: () {
+                          if (_multiSelectMode) {
+                            // Toggle selection in multi-select mode
+                            setState(() {
+                              if (_isSelected[index]) {
+                                _selectedFaces.removeWhere((f) => f.id == face.id);
+                              } else {
+                                _selectedFaces.add(face);
+                              }
+                              _isSelected[index] = !_isSelected[index];
+                            });
+
+                            // If all faces are unselected, disable multi-select mode
+                            if (_selectedFaces.isEmpty) {
+                              setState(() {
+                                _multiSelectMode = false;
+                              });
+                            }
+                          } else {
+                            // Single selection mode
+                            setState(() {
+                              // Clear previous selections
+                              _selectedFaces.clear();
+                              _isSelected = List.filled(_isSelected.length,
+                                  false); // Reset all selections
+                              _selectedFaces.add(face);
+                              _isSelected[index] =
+                                  true; // Mark the current face as selected
+                            });
+                            _showAddDataBottomSheet(context);
+                          }
+                        },
+                        onLongPress: () {
                           setState(() {
-                            _isSelected[index] = !_isSelected[index];
+                            if (!_multiSelectMode) {
+                              // Enable multi-select mode and reset previous selections
+                              _multiSelectMode = true;
+                              _selectedFaces.clear();
+                              _isSelected = List.filled(_isSelected.length,
+                                  false); // Reset all selections
+                            }
+                            // Add the current face to the selection
+                            _isSelected[index] = true;
+                            _selectedFaces.add(face);
                           });
                         },
                         child: Card(
@@ -113,19 +189,20 @@ class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
                                 ),
                                 child: Stack(
                                   children: [
-                                    Positioned(
-                                      top: 8,
-                                      left: 8,
-                                      child: Icon(
-                                        _isSelected[index]
-                                            ? Icons.check_circle
-                                            : Icons.circle_outlined,
-                                        color: _isSelected[index]
-                                            ? Colors.black
-                                            : Colors.white,
-                                        size: 24,
+                                    if (_multiSelectMode)
+                                      Positioned(
+                                        top: 8,
+                                        left: 8,
+                                        child: Icon(
+                                          _isSelected[index]
+                                              ? Icons.check_circle
+                                              : Icons.circle_outlined,
+                                          color: _isSelected[index]
+                                              ? Colors.black
+                                              : Colors.white,
+                                          size: 24,
+                                        ),
                                       ),
-                                    ),
                                   ],
                                 ),
                               ),
@@ -182,14 +259,16 @@ class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddDataBottomSheet(context),
-        backgroundColor: Colors.black,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: const Icon(LucideIcons.plus, color: Colors.white),
-      ),
+      floatingActionButton: _multiSelectMode
+          ? FloatingActionButton(
+              onPressed: _onFabPressed,
+              backgroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: const Icon(LucideIcons.plus, color: Colors.white),
+            )
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
