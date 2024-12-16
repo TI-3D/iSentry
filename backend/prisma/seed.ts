@@ -2581,11 +2581,11 @@ async function main() {
     });
 
     // Define timestamp
-    const startDate = new Date("2024-10-01T00:00:00Z"); // Start date
-    const endDate = new Date("2024-11-30T23:59:59Z"); // End date
+    const startDate = new Date("2024-01-01T00:00:00Z"); // Start date
+    const endDate = new Date("2024-12-18T23:59:59Z"); // End date
 
     // Create array dummy data
-    const dummyData = Array.from({ length: 300 }).map(() => ({
+    const dummyData = Array.from({ length: 400 }).map(() => ({
         face: faker.number.int({ min: 1, max: 19 }), // Generate random faceId
         timestamp: faker.date.between({ from: startDate, to: endDate }), // Generate random timestamp
     }));
