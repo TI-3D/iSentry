@@ -33,7 +33,8 @@ pub async fn run(
         .route("/process-image", post(handler::process_image))
         .route("/validate-face", post(handler::validate_face))
         .route("/subscribe-notif", any(handler::subscribe_notif))
-        .route("doorlock", any(handler::doorlock))
+        .route("/doorlock", any(handler::doorlock))
+        .route("/doorlock/test", any(handler::doorlock_test))
         .with_state(AppState {
             db_pool,
             job_tx,
