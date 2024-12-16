@@ -1,14 +1,18 @@
-import 'dart:io';
-
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:isentry/core/configs/ip_address.dart';
+import 'package:isentry/data/models/face_model.dart';
+import 'package:isentry/presentation/home/bloc/faces/face_bloc.dart';
+import 'package:isentry/presentation/home/bloc/faces/face_event.dart';
 import 'package:isentry/presentation/widgets/components/bottom_sheet.dart';
-import 'package:lucide_icons/lucide_icons.dart';
-import 'package:isentry/services/image_picker_service.dart';
+import 'package:isentry/services/network_service.dart';
 
 class AddDataUnreg extends StatefulWidget {
-  const AddDataUnreg({super.key});
+  final List<FaceModel> selectedFaces; // Daftar wajah yang dipilih
+
+  const AddDataUnreg({required this.selectedFaces, super.key});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -16,22 +20,83 @@ class AddDataUnreg extends StatefulWidget {
 }
 
 class _AddDataUnregState extends State<AddDataUnreg> {
-  final FocusNode _focusNode = FocusNode();
-  final List<XFile> _selectedImages = [];
+  final TextEditingController _nameController =
+      TextEditingController();
+  bool _isLoading = false; // Track loading state
 
-  void _updateImages(List<XFile> images) {
+  Future<void> _uploadData() async {
+    if (widget.selectedFaces.isEmpty) {
+      Fluttertoast.showToast(
+        msg: 'Please select at least one face!',
+        gravity: ToastGravity.TOP,
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return;
+    }
+
+    String name = _nameController.text.trim();
+    if (name.isEmpty) {
+      Fluttertoast.showToast(
+        msg: 'Please enter a name!',
+        gravity: ToastGravity.TOP,
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return;
+    }
+
     setState(() {
-      _selectedImages.addAll(images);  // Add multiple images to the list
+      _isLoading = true;
     });
-  }
 
-  void _pickImages() {
-    ImagePickerService.pickImage(
-      context,
-      (images) {
-        _updateImages(images);  // Update images after they are picked
-      },
-    );
+    try {
+      var uri = Uri.parse("http://$ipAddress/api/identities");
+      var response = await NetworkService.post(
+        uri.toString(),
+        customHeaders: {'Content-Type': 'application/json'},
+        body: {
+          'name': name,
+          'faceIds': widget.selectedFaces
+              .map((face) => face.id)
+              .toList(), 
+        },
+      );
+
+      if (response["success"]) {
+        Fluttertoast.showToast(
+          msg: 'Data saved successfully!',
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+        );
+
+        context.read<FaceBloc>().add(LoadUnrecognizedFaces());
+        Navigator.pop(context, true);
+      } else {
+        Fluttertoast.showToast(
+          msg: 'Failed to save data!',
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+      }
+    } catch (e) {
+      print('ini error');
+      print('Error: $e');
+      Fluttertoast.showToast(
+        msg: 'Error: $e',
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.orange,
+        textColor: Colors.white,
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -40,62 +105,26 @@ class _AddDataUnregState extends State<AddDataUnreg> {
       title: "Add Data",
       content: Column(
         children: [
-          Center(
-            child: InkWell(
-              onTap: _pickImages,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  if (_selectedImages.isNotEmpty)
-                    // Gunakan AvatarStack dengan centering
-                    AvatarStack(
-                      height: 70,
-                      // Force images to be centered
-                      avatars: _selectedImages
-                          .map((e) => FileImage(File(e.path)))
-                          .toList(),
-                    ),
-                  if (_selectedImages.isEmpty)
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: const BoxDecoration(
-                        color: Colors.black,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        LucideIcons.camera,
-                        size: 35,
-                        color: Colors.white,
-                      ),
-                    ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: _pickImages,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(6),
-                          child: Icon(
-                            LucideIcons.camera,
-                            size: 18,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+          if (widget.selectedFaces.isNotEmpty)
+            Center(
+              child: AvatarStack(
+                height: 70,
+                avatars: widget.selectedFaces.map((face) {
+                  return NetworkImage(
+                      "http://$ipAddress${face.pictureSinglePath}");
+                }).toList(),
+              ),
+            )
+          else
+            const Center(
+              child: Text(
+                "No faces found to display.",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
             ),
-          ),
           const SizedBox(height: 20),
           TextField(
-            focusNode: _focusNode,
+            controller: _nameController, 
             cursorColor: Colors.black,
             decoration: InputDecoration(
               hintText: 'Name',
@@ -133,23 +162,26 @@ class _AddDataUnregState extends State<AddDataUnreg> {
         alignment: Alignment.centerRight,
         child: Padding(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom, // Avoid being covered by the keyboard
+            bottom: MediaQuery.of(context)
+                .viewInsets
+                .bottom,
           ),
           child: ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Close bottom sheet after saving data
-            },
+            onPressed:
+                _isLoading ? null : _uploadData,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
               padding: const EdgeInsets.symmetric(horizontal: 25),
             ),
-            child: const Text(
-              "Save",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            child: _isLoading
+                ? const CircularProgressIndicator(color: Colors.white)
+                : const Text(
+                    "Save",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
           ),
         ),
       ),

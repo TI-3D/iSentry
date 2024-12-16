@@ -4,12 +4,14 @@ class MySort extends StatefulWidget {
   final List<String> texts;
   final double leftPadding;
   final double rightPadding;
+  final Function(int) onItemSelected;
 
   const MySort({
     super.key,
     required this.texts,
     required this.leftPadding,
     required this.rightPadding,
+    required this.onItemSelected,
   });
 
   @override
@@ -17,7 +19,7 @@ class MySort extends StatefulWidget {
 }
 
 class _MySortState extends State<MySort> {
-  int selectedIndex = 0; // Default index adalah 0
+  int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +42,9 @@ class _MySortState extends State<MySort> {
             return GestureDetector(
               onTap: () {
                 setState(() {
-                  selectedIndex = index; // Perbarui selectedIndex
+                  selectedIndex = index;
                 });
+                widget.onItemSelected(index);
               },
               child: Container(
                 height: 25,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
@@ -20,7 +21,7 @@ import 'package:isentry/presentation/home/pages/detection_log.dart';
 import 'package:isentry/services/notification_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   final String userId;
   final Function toRecognized;
   final Function toUnrecognized;
@@ -32,8 +33,21 @@ class DashboardPage extends StatelessWidget {
   });
 
   @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  int filter = 0;
+
+  void _onSortItemSelected(int index) {
+    setState(() {
+      filter = index;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    context.read<UserBloc>().add(GetUserById(id: userId));
+    context.read<UserBloc>().add(GetUserById(id: widget.userId));
 
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
@@ -82,8 +96,8 @@ class DashboardPage extends StatelessWidget {
                         ),
                         IconButton(
                           onPressed: () {
-                            AppNavigator.push(
-                                context, AccountSettingsPage(userId: userId));
+                            AppNavigator.push(context,
+                                AccountSettingsPage(userId: widget.userId));
                           },
                           icon: const Icon(
                             (LucideIcons.userCircle2),
@@ -97,64 +111,29 @@ class DashboardPage extends StatelessWidget {
                 Expanded(
                   flex: 11,
                   child: Faces(
-                    toRecognized: toRecognized,
-                    toUnrecognized: toUnrecognized,
-                  ),
-                ),
-                const Expanded(
-                  flex: 27,
-                  child: Column(
-                    children: [
-                      MySort(
-                        texts: ['Today', 'Week', 'Month', 'Year'],
-                        leftPadding: 35,
-                        rightPadding: 35,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 20, right: 30),
-                          child: AspectRatio(
-                            aspectRatio: 3,
-                            child: LineChartDashboard(),
-                          ),
-                        ),
-                      )
-                    ],
+                    toRecognized: widget.toRecognized,
+                    toUnrecognized: widget.toUnrecognized,
                   ),
                 ),
                 Expanded(
                   flex: 27,
-                  //child: Activity(),
                   child: Column(
                     children: [
-                      const Activity(),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15.0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Callback untuk memanggil notifikasi
-                            showNotification(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 25),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          child: const Text(
-                            "Send Notification",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
+                      MySort(
+                        texts: const ['Today', 'Week', 'Month', 'Year'],
+                        leftPadding: 35,
+                        rightPadding: 35,
+                        onItemSelected: _onSortItemSelected,
                       ),
+                      Expanded(
+                        child: FilteredLineChart(filter: filter),
+                      )
                     ],
                   ),
+                ),
+                const Expanded(
+                  flex: 27,
+                  child: Activity(),
                 ),
               ],
             );
@@ -171,10 +150,11 @@ class DashboardPage extends StatelessWidget {
   void showNotification(BuildContext context) async {
     await NotificationService.showNotification("kocak", "geming");
     print("Notification button pressed!"); // Tambahkan log untuk memverifikasi
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Notifikasi berhasil dikirim!"),
-      ),
+    Fluttertoast.showToast(
+      msg: 'Notification sent successfully!',
+      gravity: ToastGravity.TOP,
+      backgroundColor: Colors.green,
+      textColor: Colors.white,
     );
   }
 }
@@ -459,6 +439,24 @@ class Activity extends StatelessWidget {
         }
         return const Center(child: Text("No data found"));
       },
+    );
+  }
+}
+
+class FilteredLineChart extends StatelessWidget {
+  final int filter;
+
+  const FilteredLineChart({super.key, required this.filter});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, right: 30),
+      child: AspectRatio(
+        aspectRatio: 3,
+        child: LineChartDashboard(
+            filter: filter), // Hanya merender ulang LineChartDashboard
+      ),
     );
   }
 }

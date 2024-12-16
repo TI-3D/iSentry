@@ -4,6 +4,7 @@ import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/assets/app_images.dart';
 import 'package:isentry/presentation/auth/pages/login.dart';
 import 'package:isentry/presentation/home/pages/bottom_bar.dart';
+import 'package:isentry/presentation/home_resident/pages/bottom_bar_resident.dart';
 import 'package:isentry/presentation/splash/bloc/splash_cubit.dart';
 import 'package:isentry/presentation/splash/bloc/splash_state.dart';
 import 'package:isentry/services/network_service.dart';
@@ -24,12 +25,23 @@ class SplashPage extends StatelessWidget {
           if (state is Authenticated) {
             final token = await SecureStorageService.read("jwt_token");
             final idString = await SecureStorageService.read("id");
+            final role = await SecureStorageService.read("role");
+            // print("Token: $token");
+            // print("ID: $idString");
+            // print("Role: $role");
             if (idString != null && token != null) {
               NetworkService.setToken(token);
               final id = int.tryParse(idString);
               if (id != null) {
-                AppNavigator.pushReplacement(
-                    context, HomePage(userId: idString));
+                if (role == 'OWNER') {
+                  AppNavigator.pushReplacement(
+                      context, HomePage(userId: idString));
+                } else if (role == 'RESIDENT') {
+                  AppNavigator.pushReplacement(
+                      context, HomeResidentPage(userId: idString));
+                } else {
+                  AppNavigator.pushReplacement(context, const LoginPage());
+                }
               }
             }
           }

@@ -37,128 +37,139 @@ class LogActivityPage extends StatelessWidget {
               : '';
           return Scaffold(
             appBar: AppBar(
-              title: const Text(
-                "Detail Log Detection",
-                style: TextStyle(fontWeight: FontWeight.bold),
+              backgroundColor: const Color(0xfff1f4f9),
+              elevation: 0,
+              title: const Center(
+                child: Text(
+                  "Detail Log Detection",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
-            body: Column(
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      LucideIcons.userCircle2,
-                      color: Colors.black,
-                      size: 40,
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        Text(
-                          "Last Activity ${lastActivity}day",
-                          style: const TextStyle(
-                            color: Colors.black54,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const Text(
-                  "History :",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                // History list with bullet points and connecting lines
-
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount:
-                      state.detection.length > 10 ? 10 : state.detection.length,
-                  itemBuilder: (context, index) {
-                    final sortedDetection = List.from(state.detection);
-                    sortedDetection
-                        .sort((a, b) => b.timestamp.compareTo(a.timestamp));
-                    final identities = sortedDetection[index];
-                    final formattedDate = DateFormat("d MMMM yyyy, HH:mm")
-                        .format(identities.timestamp);
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          children: [
-                            if (index == 0) const SizedBox(height: 10),
-                            if (index > 0)
-                              Container(
-                                width: 2,
-                                height: 10,
-                                color: Colors.black,
-                              ),
-                            const SizedBox(height: 5),
-                            const Icon(
-                              Icons.circle,
+            body: Container(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        LucideIcons.userCircle2,
+                        color: Colors.black,
+                        size: 40,
+                      ),
+                      const SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: const TextStyle(
                               color: Colors.black,
-                              size: 6,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
                             ),
-                            const SizedBox(height: 5),
-                            if (index <
-                                (state.detection.length > 10
-                                        ? 10
-                                        : state.detection.length) -
-                                    1)
-                              Container(
-                                width: 2,
-                                height: 10,
-                                color: Colors.black,
-                              ),
-                          ],
-                        ),
-                        const SizedBox(width: 10),
-                        Column(
-                          children: [
-                            const SizedBox(
-                              height: 7,
+                          ),
+                          Text(
+                            "Last Activity ${lastActivity}day",
+                            style: const TextStyle(
+                              color: Colors.black54,
+                              fontSize: 14,
                             ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  LucideIcons.calendarDays,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  const Text(
+                    "History :",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  // History list with bullet points and connecting lines
+
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: state.detection.length > 10
+                        ? 10
+                        : state.detection.length,
+                    itemBuilder: (context, index) {
+                      final sortedDetection = List.from(state.detection);
+                      sortedDetection
+                          .sort((a, b) => b.timestamp.compareTo(a.timestamp));
+                      final identities = sortedDetection[index];
+                      final formattedDate = DateFormat("d MMMM yyyy, HH:mm")
+                          .format(identities.timestamp);
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            children: [
+                              if (index == 0) const SizedBox(height: 10),
+                              if (index > 0)
+                                Container(
+                                  width: 2,
+                                  height: 10,
                                   color: Colors.black,
-                                  size: 20,
                                 ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  formattedDate,
-                                  style: const TextStyle(
-                                    color: Colors.black54,
-                                    fontSize: 14,
+                              const SizedBox(height: 5),
+                              const Icon(
+                                Icons.circle,
+                                color: Colors.black,
+                                size: 6,
+                              ),
+                              const SizedBox(height: 5),
+                              if (index <
+                                  (state.detection.length > 10
+                                          ? 10
+                                          : state.detection.length) -
+                                      1)
+                                Container(
+                                  width: 2,
+                                  height: 10,
+                                  color: Colors.black,
+                                ),
+                            ],
+                          ),
+                          const SizedBox(width: 10),
+                          Column(
+                            children: [
+                              const SizedBox(
+                                height: 7,
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    LucideIcons.calendarDays,
+                                    color: Colors.black,
+                                    size: 20,
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ],
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    formattedDate,
+                                    style: const TextStyle(
+                                      color: Colors.black54,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           );
         }

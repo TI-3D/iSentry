@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:isentry/core/configs/ip_address.dart';
+import 'package:isentry/data/models/face_model.dart';
 import 'package:isentry/presentation/home/bloc/faces/face_bloc.dart';
 import 'package:isentry/presentation/home/bloc/faces/face_event.dart';
 import 'package:isentry/presentation/home/bloc/faces/face_state.dart';
@@ -9,29 +10,39 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'bottom_sheets/add_data.dart';
 import 'package:isentry/presentation/widgets/components/sort.dart';
 
-class UnrecognizedPage extends StatelessWidget {
+class UnrecognizedPage extends StatefulWidget {
   const UnrecognizedPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          FaceBloc()..add(LoadUnrecognizedFaces()), // Inisialisasi FaceBloc
-      child: const _UnrecognizedPageView(),
+  // ignore: library_private_types_in_public_api
+  _UnrecognizedPageState createState() => _UnrecognizedPageState();
+}
+
+class _UnrecognizedPageState extends State<UnrecognizedPage> {
+  List<bool> _isSelected = [];
+  final List<FaceModel> _selectedFaces = [];
+  bool _multiSelectMode = false;
+
+  Future<void> _openAddDataUnreg() async {
+    bool? reload = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddDataUnreg(selectedFaces: _selectedFaces),
+      ),
     );
+
+    if (reload == true) {
+      setState(() {
+        _selectedFaces.clear();
+        _isSelected = List.filled(_isSelected.length, false);
+        _multiSelectMode = false;
+      });
+    }
   }
-}
 
-class _UnrecognizedPageView extends StatefulWidget {
-  const _UnrecognizedPageView();
-
-  @override
-  _UnrecognizedPageViewState createState() => _UnrecognizedPageViewState();
-}
-
-class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
-  final List<bool> _isSelected =
-      []; // Akan diisi sesuai jumlah wajah dari state
+  void _loadUnrecognizedFaces() {
+    context.read<FaceBloc>().add(LoadUnrecognizedFaces());
+  }
 
   void _showAddDataBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -40,8 +51,57 @@ class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => const AddDataUnreg(),
+      builder: (_) => AddDataUnreg(selectedFaces: List.from(_selectedFaces)),
     );
+  }
+
+  void _onFabPressed() {
+    _showAddDataBottomSheet(context);
+  }
+
+  void _unselectAll() {
+    setState(() {
+      for (int i = 0; i < _isSelected.length; i++) {
+        _isSelected[i] = false;
+      }
+      _selectedFaces.clear();
+      _multiSelectMode = false;
+    });
+  }
+
+  void _deleteSelectedFaces() {
+    for (var face in _selectedFaces) {
+      context.read<FaceBloc>().add(DeleteFace(face.id));
+    }
+
+    setState(() {
+      _selectedFaces.clear();
+      _isSelected = List.filled(_isSelected.length, false);
+      _multiSelectMode = false;
+    });
+    _loadUnrecognizedFaces();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUnrecognizedFaces();
+  }
+
+  void _toggleSelectMode(int index, FaceModel face) {
+    setState(() {
+      _isSelected[index] = !_isSelected[index];
+      if (_isSelected[index]) {
+        _selectedFaces.add(face);
+      } else {
+        _selectedFaces.remove(face);
+      }
+
+      // Automatically exit select mode if no faces are selected
+      if (_selectedFaces.isEmpty) {
+        _multiSelectMode = false;
+      }
+    });
   }
 
   @override
@@ -50,24 +110,25 @@ class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
       appBar: AppBar(
         backgroundColor: const Color(0xfff1f4f9),
         automaticallyImplyLeading: false,
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(0),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(0),
           child: MySort(
-            texts: ['Today', 'Week', 'Month', 'Year'],
+            texts: const ['Today', 'Week', 'Month', 'Year'],
             leftPadding: 25,
             rightPadding: 25,
+            onItemSelected: (int) {
+              0;
+            },
           ),
         ),
       ),
       body: BlocBuilder<FaceBloc, FaceState>(
         builder: (context, state) {
-          if (state is FaceLoading) {
+          if (state is FaceLoading || state is FaceReloading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is FaceLoaded) {
-            // Update jumlah _isSelected sesuai jumlah data
-            if (_isSelected.isEmpty) {
-              _isSelected
-                  .addAll(List.generate(state.faces.length, (_) => false));
+            if (_isSelected.length != state.faces.length) {
+              _isSelected = List.filled(state.faces.length, false);
             }
 
             return Padding(
@@ -84,14 +145,34 @@ class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
                   final face = state.faces[index];
                   final formattedDate =
                       DateFormat("d MMMM yyyy, HH:mm").format(face.createdAt);
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       GestureDetector(
+                        // Allow full image view when not in select mode
                         onTap: () {
-                          setState(() {
-                            _isSelected[index] = !_isSelected[index];
-                          });
+                          if (!_multiSelectMode) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Image.network(
+                                        "http://$ipAddress${face.pictureSinglePath}",
+                                        fit: BoxFit.cover),
+                                  ),
+                                );
+                              },
+                            );
+                          } else {
+                            // In select mode, toggle selection
+                            _toggleSelectMode(index, face);
+                          }
                         },
                         child: Card(
                           color: Colors.grey[200],
@@ -113,19 +194,20 @@ class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
                                 ),
                                 child: Stack(
                                   children: [
-                                    Positioned(
-                                      top: 8,
-                                      left: 8,
-                                      child: Icon(
-                                        _isSelected[index]
-                                            ? Icons.check_circle
-                                            : Icons.circle_outlined,
-                                        color: _isSelected[index]
-                                            ? Colors.black
-                                            : Colors.white,
-                                        size: 24,
+                                    if (_multiSelectMode)
+                                      Positioned(
+                                        top: 8,
+                                        left: 8,
+                                        child: Icon(
+                                          _isSelected[index]
+                                              ? Icons.check_circle
+                                              : Icons.circle_outlined,
+                                          color: _isSelected[index]
+                                              ? Colors.black
+                                              : Colors.white,
+                                          size: 24,
+                                        ),
                                       ),
-                                    ),
                                   ],
                                 ),
                               ),
@@ -136,12 +218,62 @@ class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
                       const SizedBox(height: 4),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text(
-                          'Face#${face.id}',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Face#${face.id}',
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            PopupMenuButton<String>(
+                              onSelected: (value) {
+                                if (value == 'select') {
+                                  setState(() {
+                                    _multiSelectMode = !_multiSelectMode;
+                                    if (!_multiSelectMode) {
+                                      _selectedFaces.clear();
+                                      _isSelected = List.filled(
+                                          _isSelected.length, false);
+                                    }
+                                  });
+                                } else if (value == 'delete') {
+                                  _deleteSelectedFaces();
+                                }
+                              },
+                              itemBuilder: (context) {
+                                return [
+                                  const PopupMenuItem<String>(
+                                    value: 'select',
+                                    child: Row(
+                                      children: [
+                                        Icon(LucideIcons.checkCircle, size: 18),
+                                        SizedBox(width: 10),
+                                        Text('Select'),
+                                      ],
+                                    ),
+                                  ),
+                                  const PopupMenuDivider(height: 1),
+                                  const PopupMenuItem<String>(
+                                    value: 'delete',
+                                    child: Row(
+                                      children: [
+                                        Icon(LucideIcons.trash2,
+                                            size: 18, color: Colors.red),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'Delete',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ];
+                              },
+                            ),
+                          ],
                         ),
                       ),
                       Padding(
@@ -182,14 +314,16 @@ class _UnrecognizedPageViewState extends State<_UnrecognizedPageView> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddDataBottomSheet(context),
-        backgroundColor: Colors.black,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: const Icon(LucideIcons.plus, color: Colors.white),
-      ),
+      floatingActionButton: _multiSelectMode
+          ? FloatingActionButton(
+              onPressed: _onFabPressed,
+              backgroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: const Icon(LucideIcons.plus, color: Colors.white),
+            )
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }

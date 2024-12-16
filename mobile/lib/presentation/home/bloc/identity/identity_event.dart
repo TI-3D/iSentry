@@ -17,3 +17,22 @@ class DeleteIdentity extends IdentityEvent {
   @override
   List<Object?> get props => [id];
 }
+
+class UpdateKey extends IdentityEvent {
+  final String id;
+  final bool key;
+
+  const UpdateKey({required this.id, required this.key});
+
+  @override
+  List<Object?> get props => [id];
+}
+
+class GetIdentityById extends IdentityEvent {
+  final String id;
+
+  const GetIdentityById({required this.id});
+
+  @override
+  List<Object?> get props => [id];
+}
