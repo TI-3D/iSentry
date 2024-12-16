@@ -29,7 +29,9 @@ pub fn update(
     ",
     )? {
         let (face_id, embedding, identity_id, name, key) = row;
-        let embedding: Vec<f64> = bincode::deserialize(&embedding)?;
+        let embedding: Vec<f64> = bincode::deserialize(&embedding).inspect_err(|_| {
+            tracing::error!("Embedding is not [f64; 128] for face_id: {}", face_id)
+        })?;
         if embedding.len() != 128 {
             return Err(eyre!(
                 "Embedding is not [f64; 128] for face_id: {}",
