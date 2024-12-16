@@ -150,6 +150,7 @@ export async function getIdentityById(id: string) {
                         },
                     },
                 },
+                key: true,
             },
         });
 

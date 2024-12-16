@@ -59,6 +59,7 @@ model Identity {
   id                Int               @id @default(autoincrement())
   name              String
   faces             Face[]
+  key               Boolean           @default(false)
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   user              User?
