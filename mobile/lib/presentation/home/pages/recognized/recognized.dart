@@ -315,11 +315,20 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                             const PopupMenuItem<String>(
                                               value: 'detail',
                                               child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
-                                                  Icon(LucideIcons.info,
-                                                      size: 18),
-                                                  SizedBox(width: 10),
-                                                  Text('Detail'),
+                                                  Row(
+                                                    children: [
+                                                      Icon(LucideIcons.info,
+                                                          size: 18),
+                                                      SizedBox(width: 10),
+                                                      Text('Detail'),
+                                                    ],
+                                                  ),
+                                                  // Icon(LucideIcons.info,
+                                                  //     size: 18),
                                                 ],
                                               ),
                                             ),

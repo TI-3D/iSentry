@@ -6,6 +6,7 @@ class IdentityModel extends Identity {
     required super.name,
     required super.createdAt,
     required super.updatedAt,
+    required super.key,
   });
 
   factory IdentityModel.fromJson(Map<String, dynamic> json) {
@@ -21,6 +22,7 @@ class IdentityModel extends Identity {
           updateDate.hour, updateDate.minute),
       createdAt: DateTime(createDate.year, createDate.month, createDate.day,
           createDate.hour, createDate.minute),
+      key: json['key'] as bool,
     );
   }
 
@@ -28,6 +30,7 @@ class IdentityModel extends Identity {
     return {
       'id': id,
       'name': name,
+      'key': key,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
