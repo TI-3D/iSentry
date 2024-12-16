@@ -129,6 +129,61 @@ export async function createIdentityAndUpdateFace(options: {
     }
 }
 
+export async function addFaceToIdentity(options: {
+    identityId: number;
+    faceId: number;
+}) {
+    try {
+        const { identityId, faceId } = options;
+
+        const updatedFace = await prisma.face.update({
+            where: { id: faceId },
+            data: {
+                identity: identityId,
+            },
+        });
+
+        return {
+            success: true,
+            message: "Face Updated Successfully!",
+            data: updatedFace,
+        };
+    } catch (e: unknown) {
+        console.error(`Error updating face: ${e}`);
+        return {
+            success: false,
+            message: "Failed to update face",
+            error: e instanceof Error ? e.message : String(e),
+        };
+    }
+}
+
+export async function removeFaceFromIdentity(options: { faceId: number }) {
+    try {
+        const { faceId } = options;
+
+        const updatedFace = await prisma.face.update({
+            where: { id: faceId },
+            data: {
+                identity: null,
+            },
+        });
+
+        return {
+            success: true,
+            message: "Face Deleted Successfully!",
+            data: updatedFace,
+        };
+    } catch (e: unknown) {
+        console.error(`Error updating face: ${e}`);
+        return {
+            success: false,
+            message: "Failed to deleted face",
+            error: e instanceof Error ? e.message : String(e),
+        };
+    }
+}
+
 /**
  * Getting a identity by ID
  */
