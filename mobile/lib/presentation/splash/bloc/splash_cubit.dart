@@ -13,7 +13,7 @@ class SplashCubit extends Cubit<SplashState> {
 
     if (token != null && refreshToken != null) {
       try {
-        if (NetworkService.isTokenExpired()) {
+        if (await NetworkService.isTokenExpired()) {
           NetworkService.renewToken();
         }
         emit(Authenticated());
