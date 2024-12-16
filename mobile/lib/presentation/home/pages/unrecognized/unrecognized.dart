@@ -76,7 +76,7 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
 
   @override
   void initState() {
-    context.read<FaceBloc>().add(LoadUnrecognizedFaces());    
+    context.read<FaceBloc>().add(LoadUnrecognizedFaces());
     super.initState();
   }
 
@@ -86,12 +86,15 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xfff1f4f9),
         automaticallyImplyLeading: false,
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(0),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(0),
           child: MySort(
-            texts: ['Today', 'Week', 'Month', 'Year'],
+            texts: const ['Today', 'Week', 'Month', 'Year'],
             leftPadding: 25,
             rightPadding: 25,
+            onItemSelected: (int) {
+              0;
+            },
           ),
         ),
       ),
@@ -128,7 +131,8 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
                             // Toggle selection in multi-select mode
                             setState(() {
                               if (_isSelected[index]) {
-                                _selectedFaces.removeWhere((f) => f.id == face.id);
+                                _selectedFaces
+                                    .removeWhere((f) => f.id == face.id);
                               } else {
                                 _selectedFaces.add(face);
                               }

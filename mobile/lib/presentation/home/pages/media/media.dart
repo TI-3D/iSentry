@@ -17,12 +17,15 @@ class _MediaPageState extends State<MediaPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xfff1f4f9),
         automaticallyImplyLeading: false,
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(0),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(0),
           child: MySort(
-            texts: ['Week', 'Month', 'Year'],
+            texts: const ['Week', 'Month', 'Year'],
             leftPadding: 25,
             rightPadding: 25,
+            onItemSelected: (int) {
+              0;
+            },
           ),
         ),
       ),

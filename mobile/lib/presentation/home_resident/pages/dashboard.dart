@@ -23,6 +23,14 @@ class DashboardResidentPage extends StatefulWidget {
 }
 
 class _DashboardResidentPageState extends State<DashboardResidentPage> {
+  int filter = 0;
+
+  void _onSortItemSelected(int index) {
+    setState(() {
+      filter = index;
+    });
+  }
+
   @override
   void initState() {
     context.read<UserBloc>().add(GetUserById(id: widget.userId));
@@ -44,22 +52,23 @@ class _DashboardResidentPageState extends State<DashboardResidentPage> {
                 flex: 12,
                 child: Dashboard(name: state.user.name),
               ),
-              const Expanded(
+              Expanded(
                   flex: 6,
                   child: Center(
                     child: MySort(
-                      texts: ['Week', 'Month', 'Year'],
+                      texts: const ['Week', 'Month', 'Year'],
                       leftPadding: 35,
                       rightPadding: 35,
+                      onItemSelected: _onSortItemSelected,
                     ),
                   )),
-              const Expanded(
+              Expanded(
                   flex: 23,
                   child: Padding(
-                    padding: EdgeInsets.only(top: 20, right: 30),
+                    padding: const EdgeInsets.only(top: 20, right: 30),
                     child: AspectRatio(
                       aspectRatio: 3,
-                      child: LineChartDashboard(),
+                      child: LineChartDashboard(filter: filter),
                     ),
                   )),
               Expanded(
