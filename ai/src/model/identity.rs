@@ -20,7 +20,7 @@ pub fn update(
     faces: &mut Faces,
     identities: &mut Identities,
 ) -> eyre::Result<()> {
-    for row in db_conn.query::<(u64, Vec<u8>, Option<u64>, Option<String>, bool), _>(
+    for row in db_conn.query::<(u64, Vec<u8>, Option<u64>, Option<String>, Option<bool>), _>(
         "
         SELECT faces.id as face_id, faces.embedding, identities.id, identities.name, identities.key
         FROM faces
@@ -39,7 +39,7 @@ pub fn update(
         let embedding = FaceEncoding::from_vec(&embedding).unwrap();
         faces.insert(face_id, identity_id, embedding);
         if let Some(id) = identity_id {
-            identities.insert(id, (name.unwrap(), key));
+            identities.insert(id, (name.unwrap(), key.unwrap()));
         }
     }
     Ok(())
