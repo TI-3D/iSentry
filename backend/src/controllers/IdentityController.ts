@@ -151,6 +151,8 @@ export async function getIdentityById(id: string) {
                     },
                 },
                 key: true,
+                createdAt: true,
+                updatedAt: true,
             },
         });
 
@@ -188,16 +190,18 @@ export async function updateIdentity(
     id: string,
     options: {
         name?: string;
+        key?: boolean;
     }
 ) {
     try {
         const identityId = parseInt(id);
-        const { name } = options;
+        const { name, key } = options;
 
         const identities = await prisma.identity.update({
             where: { id: identityId },
             data: {
                 ...(name ? { name } : {}),
+                ...(key !== undefined ? { key } : {}),
             },
         });
 
