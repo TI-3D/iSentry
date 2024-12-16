@@ -79,13 +79,13 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
       _isSelected = List.filled(_isSelected.length, false);
       _multiSelectMode = false;
     });
-    _loadUnrecognizedFaces(); 
+    _loadUnrecognizedFaces();
   }
 
   @override
   void initState() {
     super.initState();
-    _loadUnrecognizedFaces(); 
+    _loadUnrecognizedFaces();
   }
 
   void _toggleSelectMode(int index, FaceModel face) {
@@ -96,7 +96,7 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
       } else {
         _selectedFaces.remove(face);
       }
-      
+
       // Automatically exit select mode if no faces are selected
       if (_selectedFaces.isEmpty) {
         _multiSelectMode = false;
@@ -110,12 +110,15 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xfff1f4f9),
         automaticallyImplyLeading: false,
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(0),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(0),
           child: MySort(
-            texts: ['Today', 'Week', 'Month', 'Year'],
+            texts: const ['Today', 'Week', 'Month', 'Year'],
             leftPadding: 25,
             rightPadding: 25,
+            onItemSelected: (int) {
+              0;
+            },
           ),
         ),
       ),

@@ -21,7 +21,7 @@ import 'package:isentry/presentation/home/pages/detection_log.dart';
 import 'package:isentry/services/notification_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   final String userId;
   final Function toRecognized;
   final Function toUnrecognized;
@@ -33,8 +33,21 @@ class DashboardPage extends StatelessWidget {
   });
 
   @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  int filter = 0;
+
+  void _onSortItemSelected(int index) {
+    setState(() {
+      filter = index;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    context.read<UserBloc>().add(GetUserById(id: userId));
+    context.read<UserBloc>().add(GetUserById(id: widget.userId));
 
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
@@ -83,8 +96,8 @@ class DashboardPage extends StatelessWidget {
                         ),
                         IconButton(
                           onPressed: () {
-                            AppNavigator.push(
-                                context, AccountSettingsPage(userId: userId));
+                            AppNavigator.push(context,
+                                AccountSettingsPage(userId: widget.userId));
                           },
                           icon: const Icon(
                             (LucideIcons.userCircle2),
@@ -98,27 +111,22 @@ class DashboardPage extends StatelessWidget {
                 Expanded(
                   flex: 11,
                   child: Faces(
-                    toRecognized: toRecognized,
-                    toUnrecognized: toUnrecognized,
+                    toRecognized: widget.toRecognized,
+                    toUnrecognized: widget.toUnrecognized,
                   ),
                 ),
-                const Expanded(
+                Expanded(
                   flex: 27,
                   child: Column(
                     children: [
                       MySort(
-                        texts: ['Today', 'Week', 'Month', 'Year'],
+                        texts: const ['Today', 'Week', 'Month', 'Year'],
                         leftPadding: 35,
                         rightPadding: 35,
+                        onItemSelected: _onSortItemSelected,
                       ),
                       Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 20, right: 30),
-                          child: AspectRatio(
-                            aspectRatio: 3,
-                            child: LineChartDashboard(),
-                          ),
-                        ),
+                        child: FilteredLineChart(filter: filter),
                       )
                     ],
                   ),
@@ -431,6 +439,24 @@ class Activity extends StatelessWidget {
         }
         return const Center(child: Text("No data found"));
       },
+    );
+  }
+}
+
+class FilteredLineChart extends StatelessWidget {
+  final int filter;
+
+  const FilteredLineChart({super.key, required this.filter});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, right: 30),
+      child: AspectRatio(
+        aspectRatio: 3,
+        child: LineChartDashboard(
+            filter: filter), // Hanya merender ulang LineChartDashboard
+      ),
     );
   }
 }

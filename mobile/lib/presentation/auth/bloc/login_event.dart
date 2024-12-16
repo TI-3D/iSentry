@@ -17,7 +17,14 @@ class LoginSubmitted extends AuthEvent {
   List<Object?> get props => [username, password];
 }
 
-class LogoutRequested extends AuthEvent {}
+class LogoutRequested extends AuthEvent {
+  final String id;
+
+  const LogoutRequested({required this.id});
+
+  @override
+  List<Object?> get props => [id];
+}
 
 class SignupSubmitted extends AuthEvent {
   final String name;

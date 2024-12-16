@@ -24,12 +24,15 @@ class _MediaPageState extends State<MediaPage> {
         appBar: AppBar(
           backgroundColor: const Color(0xfff1f4f9),
           automaticallyImplyLeading: false,
-          bottom: const PreferredSize(
-            preferredSize: Size.fromHeight(0),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(0),
             child: MySort(
-              texts: ['Week', 'Month', 'Year'],
+              texts: const ['Week', 'Month', 'Year'],
               leftPadding: 25,
               rightPadding: 25,
+              onItemSelected: (int) {
+                0;
+              },
             ),
           ),
         ),
@@ -39,7 +42,8 @@ class _MediaPageState extends State<MediaPage> {
               return const Center(child: CircularProgressIndicator());
             } else if (state is MediaLoaded) {
               return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 25),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 25),
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
@@ -65,7 +69,8 @@ class _MediaPageState extends State<MediaPage> {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16),
                                   image: DecorationImage(
-                                    image: NetworkImage(mediaItem.path), // Path video atau thumbnail
+                                    image: NetworkImage(mediaItem
+                                        .path), // Path video atau thumbnail
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -78,7 +83,8 @@ class _MediaPageState extends State<MediaPage> {
                                     child: InkWell(
                                       borderRadius: BorderRadius.circular(30),
                                       onTap: () async {
-                                         await _launchVideo(mediaItem.path); // Fungsi untuk membuka video di galeri
+                                        await _launchVideo(mediaItem
+                                            .path); // Fungsi untuk membuka video di galeri
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.all(6),
@@ -148,9 +154,12 @@ class _MediaPageState extends State<MediaPage> {
 
   // Fungsi untuk membuka video di aplikasi galeri
   Future<void> _launchVideo(String filePath) async {
-    final Uri _videoUri = Uri.parse(filePath); // Menggunakan path file lokal untuk video
+    final Uri _videoUri =
+        Uri.parse(filePath); // Menggunakan path file lokal untuk video
     if (await canLaunchUrl(_videoUri)) {
-      await launchUrl(_videoUri, mode: LaunchMode.externalApplication); // Membuka video dengan aplikasi galeri default
+      await launchUrl(_videoUri,
+          mode: LaunchMode
+              .externalApplication); // Membuka video dengan aplikasi galeri default
     } else {
       throw 'Could not launch $filePath'; // Menangani kasus jika tidak bisa membuka video
     }
@@ -158,8 +167,18 @@ class _MediaPageState extends State<MediaPage> {
 
   String _monthName(int month) {
     const monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ];
     return monthNames[month - 1];
   }
