@@ -103,6 +103,7 @@ class NetworkService {
       final int statusCode = response.statusCode;
 
       _updateCookie(response);
+      print('Response body: $res');
 
       if (statusCode < 200 || statusCode > 400) {
         throw Exception("Error while patching data");
