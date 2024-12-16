@@ -35,9 +35,10 @@ pub async fn run(
     db_opts: mysql::Opts,
     job_tx: mpsc::Sender<Job>,
     detection_tx: broadcast::Sender<DetectionOutput>,
+    doorlock_tx: broadcast::Sender<()>,
 ) {
     tokio::spawn(auto_record(db_opts.clone(), job_tx.clone()));
-    tokio::spawn(auto_label(db_opts, job_tx, detection_tx));
+    tokio::spawn(auto_label(db_opts, job_tx, detection_tx, doorlock_tx));
 }
 
 pub async fn auto_record(db_opts: mysql::Opts, _tx: mpsc::Sender<Job>) {
@@ -90,6 +91,7 @@ pub async fn auto_label(
     db_opts: mysql::Opts,
     job_tx: mpsc::Sender<Job>,
     detection_tx: broadcast::Sender<DetectionOutput>,
+    doorlock_tx: broadcast::Sender<()>,
 ) {
     let link = dotenvy::var("RTMP_RAW").unwrap();
 
@@ -149,7 +151,11 @@ pub async fn auto_label(
             // (false, w, h) => panic!("Input stream is not 1920x1080; got size {w}x{h}"),
             Ok((0, 0)) => {
                 sleep(Duration::from_millis(100)).await;
-                let img = RgbImage::from_pixel(IMAGE_WIDTH as u32, IMAGE_HEIGHT as u32, image::Rgb::black());
+                let img = RgbImage::from_pixel(
+                    IMAGE_WIDTH as u32,
+                    IMAGE_HEIGHT as u32,
+                    image::Rgb::black(),
+                );
                 output_stdin.write_all(img.as_raw()).await.unwrap();
                 let elapsed = start.elapsed().as_millis();
                 if elapsed < 1000 / 30 {
@@ -187,6 +193,7 @@ pub async fn auto_label(
             //tracing::info!("Something");
             num_scanning_jobs.fetch_add(1, Ordering::SeqCst);
             let tx_clone = job_tx.clone();
+            let doorlock_tx = doorlock_tx.clone();
             let db_opts = db_opts.clone();
             let bounding_boxes_clone = bounding_boxes.clone();
             let bounding_boxes_clone2 = bounding_boxes.clone();
@@ -242,7 +249,10 @@ pub async fn auto_label(
                 let push_log = db_conn
                     .prep("INSERT INTO detectionLogs (face) VALUES (:face_id)")
                     .unwrap();
-                for (_, (id, name)) in &*bounding_boxes_clone2.lock().await {
+                for (_, (id, name, key)) in &*bounding_boxes_clone2.lock().await {
+                    if *key {
+                        doorlock_tx.send(()).unwrap();
+                    }
                     db_conn
                         .exec_drop(
                             push_log.clone(),
@@ -260,7 +270,7 @@ pub async fn auto_label(
                 }
             });
         } else {
-            for (bbox, (_, name)) in &*bounding_boxes.lock().await {
+            for (bbox, (_, name, _)) in &*bounding_boxes.lock().await {
                 img.label(bbox, name, &font, font_height, scale);
             }
         }

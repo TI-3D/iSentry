@@ -63,7 +63,7 @@ pub async fn auto_label(
         }
 
         enum Label {
-            Name(u64, String),
+            Name(u64, String, bool),
             /// (id, is_new)
             Id(u64, bool),
         }
@@ -82,7 +82,8 @@ pub async fn auto_label(
             .zip(bboxes.iter())
             .map(|(embedding, bbox)| match faces.identity(embedding) {
                 (Some(face_id), Some(identity_id)) => {
-                    Label::Name(face_id, identities.get(&identity_id).unwrap().clone())
+                    let identity = identities.get(&identity_id).unwrap();
+                    Label::Name(face_id, identity.0.clone(), identity.1)
                 }
                 (Some(face_id), None) => Label::Id(face_id, false),
                 (None, None) => {
@@ -118,7 +119,7 @@ pub async fn auto_label(
         };
         for (bbox, label) in bboxes.iter().zip(names.iter()) {
             let name = match label {
-                Label::Name(_, name) => name,
+                Label::Name(_, name, _) => name,
                 Label::Id(id, _) => &id.to_string(),
             };
             image.label(bbox, name, &font, font_height, scale);
@@ -195,19 +196,19 @@ pub async fn auto_label(
             }
         }
 
-        let names = names
+        let data = names
             .into_iter()
             .map(|name| match name {
-                Label::Name(id, name_str) => (id, name_str),
-                Label::Id(id, _) => (id, format!("anomali#{id}")),
+                Label::Name(id, name_str, key) => (id, name_str, key),
+                Label::Id(id, _) => (id, format!("anomali#{id}"), false),
             })
-            .collect::<Vec<(u64, String)>>();
+            .collect::<Vec<(u64, String, bool)>>();
 
         if job
             .tx
             .send(JobResult::AutoLabel(
                 bboxes,
-                names,
+                data,
                 // embeddings,
                 // cropped_images,
                 // image,

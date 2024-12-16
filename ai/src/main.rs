@@ -27,14 +27,16 @@ async fn main() {
 
     let (job_tx, job_rx) = mpsc::channel(128);
     let (detection_tx, detection_rx) = broadcast::channel::<(String, u64, u64)>(32);
+    let (doorlock_tx, doorlock_rx) = broadcast::channel(32);
 
     let handler_webserver = tokio::spawn(web_server::run(
         db_pool.clone(),
         job_tx.clone(),
         detection_rx,
+        doorlock_rx,
     ));
-    let handler_aiservice = tokio::spawn(video_processing::run(db_opts, job_tx, detection_tx));
-    let handler_videoproc = tokio::spawn(model::run(db_pool, job_rx));
+    let handler_aiservice = tokio::spawn(model::run(db_pool, job_rx));
+    let handler_videoproc = tokio::spawn(video_processing::run(db_opts, job_tx, detection_tx, doorlock_tx));
 
     let _ = tokio::join!(handler_webserver, handler_aiservice, handler_videoproc);
 }
