@@ -253,6 +253,7 @@ pub async fn auto_label(
                     if *key {
                         doorlock_tx.send(()).unwrap();
                     }
+                    tracing::info!("face_id {id} with as key {key} detected");
                     db_conn
                         .exec_drop(
                             push_log.clone(),
