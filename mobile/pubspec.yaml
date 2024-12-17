@@ -38,6 +38,8 @@ dependencies:
   web_socket_channel: ^3.0.1
   flutter_local_notifications: ^18.0.1
   fluttertoast: ^8.2.8
+  # get_thumbnail_video: ^0.7.3
+  # flutter_ffmpeg: ^0.4.2
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.1

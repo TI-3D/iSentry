@@ -1,11 +1,22 @@
+import 'dart:io';
+import 'dart:math';
+// import 'dart:ui';
+
+// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+// import 'package:get_thumbnail_video/index.dart';
+// import 'package:get_thumbnail_video/video_thumbnail.dart';
+// import 'package:isentry/core/configs/ip_address.dart';
 import 'package:isentry/presentation/home/bloc/medias/media_bloc.dart';
 import 'package:isentry/presentation/home/bloc/medias/media_event.dart';
 import 'package:isentry/presentation/home/bloc/medias/media_state.dart';
 import 'package:isentry/presentation/widgets/components/sort.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:url_launcher/url_launcher.dart'; // Impor url_launcher
+// import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
 
 class MediaPage extends StatefulWidget {
   const MediaPage({super.key});
@@ -15,7 +26,48 @@ class MediaPage extends StatefulWidget {
   _MediaPageState createState() => _MediaPageState();
 }
 
+String generateRandomString(int length) => String.fromCharCodes(List.generate(
+    length,
+    (_) => Random().nextBool()
+        ? Random().nextInt(26) + 65
+        : Random().nextInt(26) + 97));
+
 class _MediaPageState extends State<MediaPage> {
+  // Function to generate thumbnail dynamically using the provided genThumbnail method
+  Future<String?> generateThumbnail(String videoPath) async {
+    try {
+      return null;
+//       print("Generating thumbnail for video: $videoPath");
+//       final tempDir = await getTemporaryDirectory(); // Temp directory
+//       final random = generateRandomString(6);
+//       final outputFile = File('${tempDir.path}/$random.jpg');
+
+//       print("Output file path: ${outputFile.path}");
+
+//       final FlutterFFmpeg _flutterFFmpeg = FlutterFFmpeg();
+
+// // Perintah FFmpeg untuk menghasilkan thumbnail dari video
+//       final arguments = [
+//         '-f', 'mp4',
+//         '-i', videoPath, // Input video
+//         '-vf', 'thumbnail', // Gunakan filter thumbnail
+//         '-ss',
+//         '00:00:01', // Waktu pada video untuk mengambil thumbnail (misal 5 detik)
+//         '-vframes', '1', // Ambil 1 frame
+//         outputFile.path // Output path untuk thumbnail
+//       ];
+
+//       // Jalankan perintah untuk menghasilkan thumbnail
+//       final statusCode = await _flutterFFmpeg.executeWithArguments(arguments);
+//       print("FFmpeg exited with status code $statusCode");
+
+//       return outputFile.path;
+    } catch (e) {
+      print("Failed to generate thumbnail: $e");
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -30,6 +82,7 @@ class _MediaPageState extends State<MediaPage> {
               texts: const ['Week', 'Month', 'Year'],
               leftPadding: 25,
               rightPadding: 25,
+              // ignore: avoid_types_as_parameter_names
               onItemSelected: (int) {
                 0;
               },
@@ -54,6 +107,10 @@ class _MediaPageState extends State<MediaPage> {
                   itemCount: state.mediaItems.length,
                   itemBuilder: (context, index) {
                     final mediaItem = state.mediaItems[index];
+                    final formattedDate = DateFormat("d MMMM yyyy, HH:mm")
+                        .format(mediaItem.createdAt);
+
+                    // Using FutureBuilder to load thumbnail dynamically
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -64,16 +121,53 @@ class _MediaPageState extends State<MediaPage> {
                           ),
                           child: Stack(
                             children: [
-                              Container(
-                                height: 150,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  image: DecorationImage(
-                                    image: NetworkImage(mediaItem
-                                        .path), // Path video atau thumbnail
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                              FutureBuilder<String?>(
+                                future: generateThumbnail(mediaItem.path),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                        child: CircularProgressIndicator());
+                                  } else if (snapshot.hasError) {
+                                    return const Center(
+                                        child: Icon(Icons.error));
+                                  } else if (snapshot.hasData) {
+                                    if (snapshot.data != null &&
+                                        snapshot.data!.isNotEmpty) {
+                                      return Container(
+                                        height: 150,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          image: DecorationImage(
+                                            image: FileImage(File(snapshot
+                                                .data!)), // Use FileImage for local thumbnails
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      return Container(
+                                        height: 150,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          color: Colors
+                                              .black, // Placeholder if no thumbnail
+                                        ),
+                                      );
+                                    }
+                                  } else {
+                                    return Container(
+                                      height: 150,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(16),
+                                        color: Colors
+                                            .black, // Placeholder if no thumbnail
+                                      ),
+                                    );
+                                  }
+                                },
                               ),
                               // Play button in the center of the image
                               Positioned.fill(
@@ -84,7 +178,7 @@ class _MediaPageState extends State<MediaPage> {
                                       borderRadius: BorderRadius.circular(30),
                                       onTap: () async {
                                         await _launchVideo(mediaItem
-                                            .path); // Fungsi untuk membuka video di galeri
+                                            .path); 
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.all(6),
@@ -127,7 +221,7 @@ class _MediaPageState extends State<MediaPage> {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                '${mediaItem.createdAt.day.toString().padLeft(2, '0')} ${_monthName(mediaItem.createdAt.month)} ${mediaItem.createdAt.year}, ${mediaItem.createdAt.hour.toString().padLeft(2, '0')}:${mediaItem.createdAt.minute.toString().padLeft(2, '0')}',
+                                formattedDate,
                                 style: const TextStyle(
                                   color: Colors.grey,
                                   fontSize: 10,
@@ -152,34 +246,16 @@ class _MediaPageState extends State<MediaPage> {
     );
   }
 
-  // Fungsi untuk membuka video di aplikasi galeri
+  // Function to open video in the gallery app
   Future<void> _launchVideo(String filePath) async {
     final Uri _videoUri =
-        Uri.parse(filePath); // Menggunakan path file lokal untuk video
+        Uri.parse(filePath);
     if (await canLaunchUrl(_videoUri)) {
       await launchUrl(_videoUri,
           mode: LaunchMode
-              .externalApplication); // Membuka video dengan aplikasi galeri default
+              .externalApplication); 
     } else {
-      throw 'Could not launch $filePath'; // Menangani kasus jika tidak bisa membuka video
+      throw 'Could not launch $filePath'; 
     }
-  }
-
-  String _monthName(int month) {
-    const monthNames = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
-    return monthNames[month - 1];
   }
 }
