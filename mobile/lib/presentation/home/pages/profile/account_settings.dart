@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
-import 'package:isentry/domain/entities/auth.dart';
 import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
 import 'package:isentry/presentation/auth/bloc/login_event.dart';
 import 'package:isentry/presentation/auth/bloc/login_state.dart';
@@ -13,13 +12,23 @@ import 'package:isentry/presentation/home/pages/profile/qr_code.dart';
 import 'package:isentry/presentation/widgets/appBar/appbar.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class AccountSettingsPage extends StatelessWidget {
+class AccountSettingsPage extends StatefulWidget {
   final String userId;
   const AccountSettingsPage({super.key, required this.userId});
 
   @override
+  State<AccountSettingsPage> createState() => _AccountSettingsPageState();
+}
+
+class _AccountSettingsPageState extends State<AccountSettingsPage> {
+  @override
+  void initState() {
+    context.read<UserBloc>().add(GetUserById(id: widget.userId));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    context.read<UserBloc>().add(GetUserById(id: userId));
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LogoutSuccess) {
@@ -40,7 +49,7 @@ class AccountSettingsPage extends StatelessWidget {
           } else if (state is UserFailure) {
             return Center(child: Text('Error: ${state.errorMessage}'));
           } else if (state is UserLoaded) {
-            print(state.user.role);
+            final role = state.user.role.toString();
             return Scaffold(
               appBar: CustomAppBar(
                 title: 'Account Settings',
@@ -88,12 +97,12 @@ class AccountSettingsPage extends StatelessWidget {
                             ),
                           ],
                         ),
-                        if (state.user.role == Role.OWNER)
+                        if (role == 'Role.OWNER')
                           IconButton(
                             icon: const Icon(LucideIcons.qrCode, size: 26),
                             onPressed: () {
                               AppNavigator.push(
-                                  context, QrCodePage(userId: userId));
+                                  context, QrCodePage(userId: widget.userId));
                             },
                           ),
                       ],
@@ -238,7 +247,7 @@ class AccountSettingsPage extends StatelessWidget {
                       onTap: () {
                         context
                             .read<LoginBloc>()
-                            .add(LogoutRequested(id: userId));
+                            .add(LogoutRequested(id: widget.userId));
                       },
                     ),
                   ],
