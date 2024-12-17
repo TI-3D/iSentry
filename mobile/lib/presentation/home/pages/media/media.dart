@@ -130,7 +130,7 @@ class _MediaPageState extends State<MediaPage> {
                                 '${mediaItem.createdAt.day.toString().padLeft(2, '0')} ${_monthName(mediaItem.createdAt.month)} ${mediaItem.createdAt.year}, ${mediaItem.createdAt.hour.toString().padLeft(2, '0')}:${mediaItem.createdAt.minute.toString().padLeft(2, '0')}',
                                 style: const TextStyle(
                                   color: Colors.grey,
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
