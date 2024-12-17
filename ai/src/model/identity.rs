@@ -28,17 +28,17 @@ pub fn update(
     ",
     )? {
         let (face_id, embedding, identity_id, name, key) = row;
-        let Ok(embedding) = bincode::deserialize::<Vec<f64>>(&embedding).inspect_err(|e| {
-            tracing::warn!("Embedding is not [f64; 128] for face_id {face_id} with error: {e}");
+        let Ok(embedding) = bincode::deserialize::<Vec<f64>>(&embedding).inspect_err(|_e| {
+            // tracing::warn!("Embedding is not [f64; 128] for face_id {face_id} with error: {_e}");
         }) else {
             continue;
         };
         if embedding.len() != 128 {
-            tracing::warn!("Embedding is not [f64; 128] for face_id: {face_id}");
+            // tracing::warn!("Embedding is not [f64; 128] for face_id: {face_id}");
             continue;
         }
         let Ok(embedding) = FaceEncoding::from_vec(&embedding) else {
-            tracing::warn!("Can't get FaceEncoding from embeding in database for face_id {face_id}");
+            // tracing::warn!("Can't get FaceEncoding from embeding in database for face_id {face_id}");
             continue;
         };
         faces.insert(face_id, identity_id, embedding);

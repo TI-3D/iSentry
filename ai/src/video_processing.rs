@@ -134,8 +134,8 @@ pub async fn auto_label(
 
     HAS_PUBLISH_LABEL.store(true, Ordering::Relaxed);
 
-    const IMAGE_WIDTH: i32 = 960;
-    const IMAGE_HEIGHT: i32 = 540;
+    const IMAGE_WIDTH: i32 = 1920;
+    const IMAGE_HEIGHT: i32 = 1080;
 
     loop {
         let start = Instant::now();
