@@ -20,7 +20,7 @@ class WebSocketService {
         final notif = const JsonDecoder().convert(message);
 
         // Tampilkan notifikasi lokal
-        NotificationService.showNotification("Wajah Terdeteksi", "${notif["name"]} baru saja terdeteksi");
+        NotificationService.showNotification("Face Detected", "${notif["name"]} has just been detected");
       }, onError: (error) {
           print("WebSocket error: $error");
         }, onDone: () {
