@@ -48,7 +48,7 @@ model Detection_Log {
   id                Int               @id @default(autoincrement())
   timestamp         DateTime          @default(now())
   face              Int
-  faceRelation      Face              @relation(fields: [face], references: [id])
+  faceRelation      Face              @relation(fields: [face], references: [id], onDelete: Cascade)
 
   @@map("detectionLogs")
 }

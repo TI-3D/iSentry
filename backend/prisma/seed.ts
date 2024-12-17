@@ -40,6 +40,11 @@ async function main() {
             name: "Gjorge Ivanov",
         },
     });
+    const identity5 = await prisma.identity.create({
+        data: {
+            name: "Joko Widodo",
+        },
+    });
     const identity6 = await prisma.identity.create({
         data: {
             name: "Joe Biden",
@@ -119,9 +124,9 @@ async function main() {
     // user
     const user1 = await prisma.user.create({
         data: {
-            username: "obamabarack",
-            name: "Barack Obama",
-            password: await Bun.password.hash("12345678"),
+            username: "isentry",
+            name: "Team OP",
+            password: await Bun.password.hash("op091024"),
             identityId: null,
             role: "OWNER",
         },
@@ -152,6 +157,16 @@ async function main() {
             name: "Gjorge Ivanov",
             password: await Bun.password.hash("12345678"),
             identityId: identity4.id,
+            role: "RESIDENT",
+            ownerId: identity1.id,
+        },
+    });
+    const user5 = await prisma.user.create({
+        data: {
+            username: "widodojoko",
+            name: "Joko Widodo",
+            password: await Bun.password.hash("12345678"),
+            identityId: identity5.id,
             role: "RESIDENT",
             ownerId: identity1.id,
         },
