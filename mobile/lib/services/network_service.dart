@@ -32,6 +32,7 @@ class NetworkService {
 
       _updateCookie(response);
       if (statusCode == 403) {
+        SecureStorageService.deleteAll();
         throw Exception("Unauthorized access (403)");
       }
 

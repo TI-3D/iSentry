@@ -19,6 +19,12 @@ class SplashPage extends StatelessWidget {
       body: BlocListener<SplashCubit, SplashState>(
         listener: (context, state) async {
           if (state is UnAuthenticated) {
+            final token = await SecureStorageService.read("jwt_token");
+            final idString = await SecureStorageService.read("id");
+            final role = await SecureStorageService.read("role");
+            print("Token: $token");
+            print("ID: $idString");
+            print("Role: $role");
             AppNavigator.pushReplacement(context, const LoginPage());
           }
 
@@ -26,9 +32,9 @@ class SplashPage extends StatelessWidget {
             final token = await SecureStorageService.read("jwt_token");
             final idString = await SecureStorageService.read("id");
             final role = await SecureStorageService.read("role");
-            // print("Token: $token");
-            // print("ID: $idString");
-            // print("Role: $role");
+            print("Token: $token");
+            print("ID: $idString");
+            print("Role: $role");
             if (idString != null && token != null) {
               NetworkService.setToken(token);
               final id = int.tryParse(idString);
