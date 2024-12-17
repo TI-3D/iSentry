@@ -137,8 +137,8 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 0.75,
+                  mainAxisSpacing: 0,
+                  childAspectRatio: 0.7,
                 ),
                 itemCount: state.faces.length,
                 itemBuilder: (context, index) {
@@ -215,9 +215,8 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 4),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        padding: const EdgeInsets.only(left: 8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -229,6 +228,9 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
                               ),
                             ),
                             PopupMenuButton<String>(
+                              icon: const Icon(
+                                LucideIcons.moreVertical,
+                              ),
                               onSelected: (value) {
                                 if (value == 'select') {
                                   setState(() {
