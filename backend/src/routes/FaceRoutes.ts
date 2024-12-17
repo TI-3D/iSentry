@@ -9,6 +9,7 @@ import {
     updateFace,
     deleteFace,
     unrecognizedFace,
+    validateFace,
 } from "../controllers/FaceController";
 
 const FaceRoutes = new Elysia({ prefix: "/faces" })
@@ -37,6 +38,19 @@ const FaceRoutes = new Elysia({ prefix: "/faces" })
                 picture_full: t.Optional(t.Number()),
                 picture_single: t.Optional(t.Number()),
                 bounding_box: t.String(),
+            }),
+        }
+    )
+
+    // route to validate a face
+    .post(
+        "/validate",
+        async ({ body }) => {
+            return await validateFace(body.face);
+        },
+        {
+            body: t.Object({
+                face: t.File(),
             }),
         }
     )
