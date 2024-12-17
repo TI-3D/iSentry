@@ -14,14 +14,13 @@ import 'package:isentry/presentation/home/bloc/faces/face_state.dart';
 import 'package:isentry/presentation/home/bloc/user/user_bloc.dart';
 import 'package:isentry/presentation/home/bloc/user/user_event.dart';
 import 'package:isentry/presentation/home/bloc/user/user_state.dart';
-import 'package:isentry/presentation/widgets/components/line_chart.dart';
-import 'package:isentry/presentation/widgets/components/sort.dart';
 import 'package:isentry/presentation/home/pages/profile/account_settings.dart';
 import 'package:isentry/presentation/home/pages/detection_log.dart';
+import 'package:isentry/presentation/widgets/components/sortGraph.dart';
 import 'package:isentry/services/notification_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   final String userId;
   final Function toRecognized;
   final Function toUnrecognized;
@@ -33,8 +32,19 @@ class DashboardPage extends StatelessWidget {
   });
 
   @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<DetectionBloc>().add(DetectionDetail());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    context.read<UserBloc>().add(GetUserById(id: userId));
+    context.read<UserBloc>().add(GetUserById(id: widget.userId));
 
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
@@ -83,8 +93,8 @@ class DashboardPage extends StatelessWidget {
                         ),
                         IconButton(
                           onPressed: () {
-                            AppNavigator.push(
-                                context, AccountSettingsPage(userId: userId));
+                            AppNavigator.push(context,
+                                AccountSettingsPage(userId: widget.userId));
                           },
                           icon: const Icon(
                             (LucideIcons.userCircle2),
@@ -98,30 +108,17 @@ class DashboardPage extends StatelessWidget {
                 Expanded(
                   flex: 11,
                   child: Faces(
-                    toRecognized: toRecognized,
-                    toUnrecognized: toUnrecognized,
+                    toRecognized: widget.toRecognized,
+                    toUnrecognized: widget.toUnrecognized,
                   ),
                 ),
                 const Expanded(
                   flex: 27,
-                  child: Column(
-                    children: [
-                      MySort(
-                        texts: ['Today', 'Week', 'Month', 'Year'],
-                        leftPadding: 35,
-                        rightPadding: 35,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 20, right: 30),
-                          child: AspectRatio(
-                            aspectRatio: 3,
-                            child: LineChartDashboard(),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
+                  // child: Text("hallo"),
+                  child: Sortgraph(
+                      texts: ['Today', 'Week', 'Month', 'Year'],
+                      leftPadding: 35,
+                      rightPadding: 35),
                 ),
                 const Expanded(
                   flex: 27,
@@ -317,7 +314,6 @@ class Activity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<DetectionBloc>().add(DetectionDetail());
     return BlocBuilder<DetectionBloc, DetectionState>(
       builder: (context, state) {
         if (state is DetectionLoading) {

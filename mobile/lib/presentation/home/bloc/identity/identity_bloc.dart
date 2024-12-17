@@ -27,6 +27,43 @@ class IdentityBloc extends Bloc<IdentityEvent, IdentityState> {
       }
     });
 
+    on<UpdateKey>((event, emit) async {
+      emit(IdentityLoading());
+
+      try {
+        final url = Uri.http(ipAddress, 'api/identities/${event.id}');
+        final response = await NetworkService.patch(url.toString(), body: {
+          'key': event.key,
+        });
+
+        if (response['success']) {
+          emit(KeyUpdated(id: event.id, key: event.key));
+        } else {
+          emit(IdentityFailure(response['message']));
+        }
+      } catch (e) {
+        emit(IdentityFailure("Failed to fetch user: $e"));
+      }
+    });
+
+    on<GetIdentityById>((event, emit) async {
+      emit(IdentityLoading());
+
+      try {
+        final url = Uri.http(ipAddress, 'api/identities/${event.id}');
+        final response = await NetworkService.get(url.toString());
+
+        if (response['success']) {
+          IdentityModel identities = IdentityModel.fromJson(response['data']);
+          emit(IdentityLoaded(identities));
+        } else {
+          emit(IdentityFailure(response['message']));
+        }
+      } catch (e) {
+        emit(IdentityFailure("Failed to fetch user: $e"));
+      }
+    });
+
     on<DeleteIdentity>((event, emit) async {
       emit(IdentityLoading());
 

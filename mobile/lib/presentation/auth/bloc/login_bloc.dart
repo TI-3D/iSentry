@@ -27,22 +27,35 @@ class LoginBloc extends Bloc<AuthEvent, LoginState> {
 
           NetworkService.setToken(token);
           emit(LoginSuccess(auth));
-          SecureStorageService.write("name", auth.name);
-          SecureStorageService.write("username", auth.username);
           SecureStorageService.write("id", auth.id.toString());
+          SecureStorageService.write("role", auth.role.name.toString());
         } else {
           emit(const LoginFailure('Incorrect username or password'));
         }
       } catch (e, stackTrace) {
         debugPrint('error during login: $e');
         debugPrint('stackTrace: $stackTrace');
-        emit(const LoginFailure('Login failed'));
+        emit(const LoginFailure('Incorect Username or Password'));
       }
     });
 
-    on<LogoutRequested>((event, emit) {
-      SecureStorageService.deleteAll;
-      emit(LoginInitial());
+    on<LogoutRequested>((event, emit) async {
+      emit(LoginLoading());
+      try {
+        var url = Uri.http(ipAddress, 'api/auth/logout/${event.id}');
+        var response = await NetworkService.post(url.toString());
+
+        if (response['success']) {
+          SecureStorageService.deleteAll();
+          emit(LogoutSuccess());
+        } else {
+          emit(const LoginFailure('User not found'));
+        }
+      } catch (e, stackTrace) {
+        debugPrint('error during login: $e');
+        debugPrint('stackTrace: $stackTrace');
+        emit(const LoginFailure('Logout failed'));
+      }
     });
 
     on<SignupSubmitted>((event, emit) async {

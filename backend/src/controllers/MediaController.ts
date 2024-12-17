@@ -37,7 +37,7 @@ export async function getGallery() {
                 OR: [
                     {
                         type: Item_type.PICTURE,
-                        capture_method: Capture_method.AUTO,
+                        capture_method: Capture_method.MANUAL,
                     },
                     {
                         type: Item_type.VIDEO,

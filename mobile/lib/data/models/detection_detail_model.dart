@@ -5,6 +5,7 @@ class DetectionDetailModel {
   final int? identityId;
   final String? identityName;
   final bool isRecognized;
+  final int? quantity;
 
   const DetectionDetailModel({
     required this.id,
@@ -13,6 +14,7 @@ class DetectionDetailModel {
     required this.identityName,
     required this.timestamp,
     required this.isRecognized,
+    this.quantity,
   });
 
   factory DetectionDetailModel.fromJson(

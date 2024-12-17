@@ -24,17 +24,22 @@ pub async fn run(
     db_pool: mysql::Pool,
     job_tx: mpsc::Sender<Job>,
     detection_rx: broadcast::Receiver<DetectionOutput>,
+    doorlock_rx: broadcast::Receiver<()>,
 ) {
     let detection_rx = Arc::new(Mutex::new(detection_rx));
+    let doorlock_rx = Arc::new(Mutex::new(doorlock_rx));
     let app = Router::new()
         .route("/", get(root))
         .route("/process-image", post(handler::process_image))
         .route("/validate-face", post(handler::validate_face))
         .route("/subscribe-notif", any(handler::subscribe_notif))
+        .route("/doorlock", any(handler::doorlock))
+        .route("/doorlock/test", any(handler::doorlock_test))
         .with_state(AppState {
             db_pool,
             job_tx,
             detection_rx,
+            doorlock_rx,
         });
 
     let ai_server_address = dotenvy::var("WEB_ADDRESS").unwrap();
@@ -59,6 +64,7 @@ struct AppState {
     pub db_pool: Pool,
     pub job_tx: mpsc::Sender<Job>,
     pub detection_rx: Arc<Mutex<broadcast::Receiver<DetectionOutput>>>,
+    pub doorlock_rx: Arc<Mutex<broadcast::Receiver<()>>>,
 }
 
 async fn root() -> &'static str {

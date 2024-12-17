@@ -32,7 +32,6 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
     );
 
     if (reload == true) {
-      print("Reload triggered from AddDataUnreg.");
       setState(() {
         _selectedFaces.clear();
         _isSelected = List.filled(_isSelected.length, false);
@@ -45,7 +44,6 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
     context.read<FaceBloc>().add(LoadUnrecognizedFaces());
   }
 
-  // Method to show bottom sheet with selected faces
   void _showAddDataBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -61,23 +59,49 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
     _showAddDataBottomSheet(context);
   }
 
-  // Function to handle unselect all items and disable multi-select mode
   void _unselectAll() {
     setState(() {
-      // Unselect all faces and clear selectedFaces
       for (int i = 0; i < _isSelected.length; i++) {
         _isSelected[i] = false;
       }
       _selectedFaces.clear();
-      // Disable multi-select mode if no faces are selected
       _multiSelectMode = false;
     });
   }
 
+  void _deleteSelectedFaces() {
+    for (var face in _selectedFaces) {
+      context.read<FaceBloc>().add(DeleteFace(face.id));
+    }
+
+    setState(() {
+      _selectedFaces.clear();
+      _isSelected = List.filled(_isSelected.length, false);
+      _multiSelectMode = false;
+    });
+    _loadUnrecognizedFaces();
+  }
+
   @override
   void initState() {
-    context.read<FaceBloc>().add(LoadUnrecognizedFaces());    
     super.initState();
+    _loadUnrecognizedFaces();
+  }
+
+  void _toggleSelectMode(int index, FaceModel face) {
+    setState(() {
+      _isSelected[index] = !_isSelected[index];
+      if (_isSelected[index]) {
+        _selectedFaces.add(face);
+      } else {
+        _selectedFaces.remove(face);
+      }
+
+      // Automatically exit select mode if no faces are selected
+      if (_selectedFaces.isEmpty) {
+        _multiSelectMode = false;
+      }
+    });
   }
 
   @override
@@ -86,12 +110,15 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xfff1f4f9),
         automaticallyImplyLeading: false,
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(0),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(0),
           child: MySort(
-            texts: ['Today', 'Week', 'Month', 'Year'],
+            texts: const ['Today', 'Week', 'Month', 'Year'],
             leftPadding: 25,
             rightPadding: 25,
+            onItemSelected: (int) {
+              0;
+            },
           ),
         ),
       ),
@@ -100,7 +127,6 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
           if (state is FaceLoading || state is FaceReloading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is FaceLoaded) {
-            // Handle the faces data after reload
             if (_isSelected.length != state.faces.length) {
               _isSelected = List.filled(state.faces.length, false);
             }
@@ -111,63 +137,42 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 0.75,
+                  mainAxisSpacing: 0,
+                  childAspectRatio: 0.7,
                 ),
                 itemCount: state.faces.length,
                 itemBuilder: (context, index) {
                   final face = state.faces[index];
                   final formattedDate =
                       DateFormat("d MMMM yyyy, HH:mm").format(face.createdAt);
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       GestureDetector(
+                        // Allow full image view when not in select mode
                         onTap: () {
-                          if (_multiSelectMode) {
-                            // Toggle selection in multi-select mode
-                            setState(() {
-                              if (_isSelected[index]) {
-                                _selectedFaces.removeWhere((f) => f.id == face.id);
-                              } else {
-                                _selectedFaces.add(face);
-                              }
-                              _isSelected[index] = !_isSelected[index];
-                            });
-
-                            // If all faces are unselected, disable multi-select mode
-                            if (_selectedFaces.isEmpty) {
-                              setState(() {
-                                _multiSelectMode = false;
-                              });
-                            }
+                          if (!_multiSelectMode) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Image.network(
+                                        "http://$ipAddress${face.pictureSinglePath}",
+                                        fit: BoxFit.cover),
+                                  ),
+                                );
+                              },
+                            );
                           } else {
-                            // Single selection mode
-                            setState(() {
-                              // Clear previous selections
-                              _selectedFaces.clear();
-                              _isSelected = List.filled(_isSelected.length,
-                                  false); // Reset all selections
-                              _selectedFaces.add(face);
-                              _isSelected[index] =
-                                  true; // Mark the current face as selected
-                            });
-                            _showAddDataBottomSheet(context);
+                            // In select mode, toggle selection
+                            _toggleSelectMode(index, face);
                           }
-                        },
-                        onLongPress: () {
-                          setState(() {
-                            if (!_multiSelectMode) {
-                              // Enable multi-select mode and reset previous selections
-                              _multiSelectMode = true;
-                              _selectedFaces.clear();
-                              _isSelected = List.filled(_isSelected.length,
-                                  false); // Reset all selections
-                            }
-                            // Add the current face to the selection
-                            _isSelected[index] = true;
-                            _selectedFaces.add(face);
-                          });
                         },
                         child: Card(
                           color: Colors.grey[200],
@@ -210,15 +215,67 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 4),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text(
-                          'Face#${face.id}',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Face#${face.id}',
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            PopupMenuButton<String>(
+                              icon: const Icon(
+                                LucideIcons.moreVertical,
+                              ),
+                              onSelected: (value) {
+                                if (value == 'select') {
+                                  setState(() {
+                                    _multiSelectMode = !_multiSelectMode;
+                                    if (!_multiSelectMode) {
+                                      _selectedFaces.clear();
+                                      _isSelected = List.filled(
+                                          _isSelected.length, false);
+                                    }
+                                  });
+                                } else if (value == 'delete') {
+                                  _deleteSelectedFaces();
+                                }
+                              },
+                              itemBuilder: (context) {
+                                return [
+                                  const PopupMenuItem<String>(
+                                    value: 'select',
+                                    child: Row(
+                                      children: [
+                                        Icon(LucideIcons.checkCircle, size: 18),
+                                        SizedBox(width: 10),
+                                        Text('Select'),
+                                      ],
+                                    ),
+                                  ),
+                                  const PopupMenuDivider(height: 1),
+                                  const PopupMenuItem<String>(
+                                    value: 'delete',
+                                    child: Row(
+                                      children: [
+                                        Icon(LucideIcons.trash2,
+                                            size: 18, color: Colors.red),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'Delete',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ];
+                              },
+                            ),
+                          ],
                         ),
                       ),
                       Padding(

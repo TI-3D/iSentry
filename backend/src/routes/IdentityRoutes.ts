@@ -29,7 +29,6 @@ const IdentityRoutes = new Elysia({ prefix: "/identities" })
                 body as {
                     name: string;
                     faceIds: number[];
-                    key: boolean;
                 }
             );
         },
@@ -37,7 +36,6 @@ const IdentityRoutes = new Elysia({ prefix: "/identities" })
             body: t.Object({
                 name: t.String({ minLength: 3, maxLength: 100 }),
                 faceIds: t.Array(t.Number(), { minLength: 0, maxLength: 100 }),
-                key: t.Boolean(),
             }),
         }
     )

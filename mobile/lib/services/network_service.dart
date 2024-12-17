@@ -17,9 +17,10 @@ class NetworkService {
     _instance.headers["Authorization"] = "Bearer $token";
   }
 
-  static Future<dynamic> get(String url, {Map<String, String>? customHeaders}) async {
-    if (await _isTokenExpired()) {
-      _renewToken();
+  static Future<dynamic> get(String url,
+      {Map<String, String>? customHeaders}) async {
+    if (await isTokenExpired()) {
+      renewToken();
     }
     final allHeaders = {..._instance.headers, ...?customHeaders};
     return http
@@ -31,6 +32,7 @@ class NetworkService {
 
       _updateCookie(response);
       if (statusCode == 403) {
+        SecureStorageService.deleteAll();
         throw Exception("Unauthorized access (403)");
       }
 
@@ -43,8 +45,8 @@ class NetworkService {
 
   static Future<dynamic> post(String url,
       {body, encoding, Map<String, String>? customHeaders}) async {
-    if (await _isTokenExpired()) {
-      _renewToken();
+    if (await isTokenExpired()) {
+      renewToken();
     }
     final allHeaders = {..._instance.headers, ...?customHeaders};
     return http
@@ -67,8 +69,8 @@ class NetworkService {
 
   static Future<dynamic> delete(String url,
       {Map<String, String>? customHeaders}) async {
-    if (await _isTokenExpired()) {
-      _renewToken();
+    if (await isTokenExpired()) {
+      renewToken();
     }
     final allHeaders = {..._instance.headers, ...?customHeaders};
     return http
@@ -88,8 +90,8 @@ class NetworkService {
 
   static Future<dynamic> patch(String url,
       {body, encoding, Map<String, String>? customHeaders}) async {
-    if (await _isTokenExpired()) {
-      _renewToken();
+    if (await isTokenExpired()) {
+      renewToken();
     }
     final allHeaders = {..._instance.headers, ...?customHeaders};
     return http
@@ -102,6 +104,7 @@ class NetworkService {
       final int statusCode = response.statusCode;
 
       _updateCookie(response);
+      print('Response body: $res');
 
       if (statusCode < 200 || statusCode > 400) {
         throw Exception("Error while patching data");
@@ -110,7 +113,7 @@ class NetworkService {
     });
   }
 
-  static Future<bool> _isTokenExpired() async {
+  static Future<bool> isTokenExpired() async {
     final authorization = _instance.headers["Authorization"];
     final token = await SecureStorageService.read("jwt_token");
     final refreshToken = await SecureStorageService.read("jwt_refresh_token");
@@ -122,23 +125,22 @@ class NetworkService {
     }
   }
 
-  static void _renewToken() async {
-    final uri = Uri.http(ipAddress, "api/auth/renew-token");
+  static void renewToken() async {
+    final uri = Uri.http(ipAddress, "api/renew-token");
     final token_refresh = await SecureStorageService.read("jwt_refresh_token");
-
     final res = await http.post(uri, body: {
       'refres_token': token_refresh,
     });
-    
-      if (res.statusCode == 403) {
-        throw Exception("Unauthorized access (403)");
-      }
 
-      if (res.statusCode < 200 || res.statusCode > 400) {
-        throw Exception("Error while patching data");
-      }
-      
-      final body = _instance._decoder.convert(res.body);
+    if (res.statusCode == 403) {
+      throw Exception("Unauthorized access (403)");
+    }
+
+    if (res.statusCode < 200 || res.statusCode > 400) {
+      throw Exception("Error while patching data");
+    }
+
+    final body = _instance._decoder.convert(res.body);
     if (body['success']) {
       final token = body['data']['token'];
       final refreshToken = body['data']['token_refresh'];

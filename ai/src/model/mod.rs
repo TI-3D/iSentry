@@ -56,7 +56,7 @@ pub async fn run(db_pool: mysql::Pool, mut job_rx: Receiver<Job>) {
                 }
                 Err(e) => tracing::error!("Failed to get database connection through pool: {e}"),
             }
-            sleep(Duration::from_secs(120)).await
+            sleep(Duration::from_secs(5)).await
         }
     });
 

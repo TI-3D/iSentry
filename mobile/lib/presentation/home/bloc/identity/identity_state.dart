@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:isentry/data/models/identity_model.dart';
+import 'package:isentry/domain/entities/identity.dart';
 
 abstract class IdentityState extends Equatable {
   @override
@@ -29,3 +30,22 @@ class IdentityFailure extends IdentityState {
 }
 
 class IdentityDeleted extends IdentityState {}
+
+class KeyUpdated extends IdentityState {
+  final String id;
+  final bool key;
+
+  KeyUpdated({required this.id, required this.key});
+
+  @override
+  List<Object?> get props => [id, key];
+}
+
+class IdentityLoaded extends IdentityState {
+  final Identity identities;
+
+  IdentityLoaded(this.identities);
+
+  @override
+  List<Object?> get props => [identities];
+}
