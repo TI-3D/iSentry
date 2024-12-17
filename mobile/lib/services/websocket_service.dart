@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -16,8 +17,10 @@ class WebSocketService {
       _channel?.stream.listen((message) {
         print("Message from server: $message");
 
+        final notif = const JsonDecoder().convert(message);
+
         // Tampilkan notifikasi lokal
-        NotificationService.showNotification("Wajah Terdeteksi", message);
+        NotificationService.showNotification("Wajah Terdeteksi", "${notif["name"]} baru saja terdeteksi");
       }, onError: (error) {
           print("WebSocket error: $error");
         }, onDone: () {
