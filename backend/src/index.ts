@@ -3,6 +3,7 @@ import Routes from "./routes";
 import swagger from "@elysiajs/swagger";
 import { staticPlugin } from "@elysiajs/static";
 import { logger } from "@grotto/logysia";
+import { rateLimit } from "elysia-rate-limit";
 
 const app = new Elysia();
 const homepath =
@@ -23,8 +24,9 @@ app.use(
 app.use(swagger());
 app.get("/", () => "Hello Elysia!");
 app.group("/api", (app) => app.use(Routes));
+app.use(rateLimit({ duration: 1000, max: 3 }));
 app.listen({
-    hostname: "192.168.77.75",
+    hostname: "0.0.0.0",
     port: 3000,
 });
 
