@@ -19,6 +19,15 @@ export const login = async (
             return error(404, { success: false, message: "User not found" });
         }
 
+        // Memverifikasi password
+        const isPasswordValid = await Bun.password.verify(
+            body.password,
+            user.password
+        );
+        if (!isPasswordValid) {
+            return error(404, { success: false, message: "User not found" });
+        }
+
         const token = await jwt.sign({
             id: user.id,
             username: user.username,
@@ -36,15 +45,6 @@ export const login = async (
                 { token: token_refresh, userId: user.id, type: "REFRESH" },
             ],
         });
-
-        // Memverifikasi password
-        const isPasswordValid = await Bun.password.verify(
-            body.password,
-            user.password
-        );
-        if (!isPasswordValid) {
-            return error(404, { success: false, message: "User not found" });
-        }
 
         // Mengirimkan respons sukses dengan data pengguna
         return {
