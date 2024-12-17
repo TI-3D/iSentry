@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isentry/core/configs/ip_address.dart';
 import 'package:isentry/data/models/face_model.dart';
 import 'package:isentry/presentation/home/bloc/faces/face_event.dart';
 import 'package:isentry/presentation/home/bloc/faces/face_state.dart';
-import 'package:http/http.dart' as http;
 import 'package:isentry/services/network_service.dart';
 
 class FaceBloc extends Bloc<FaceEvent, FaceState> {
@@ -35,7 +33,7 @@ class FaceBloc extends Bloc<FaceEvent, FaceState> {
     });
 
     on<LoadUnrecognizedFaces>((event, emit) async {
-      emit(FaceReloading()); 
+      emit(FaceReloading());
       try {
         final url = Uri.http(ipAddress, 'api/faces/unrecognized');
         final data = await NetworkService.get(url.toString());
@@ -45,66 +43,32 @@ class FaceBloc extends Bloc<FaceEvent, FaceState> {
           final List<FaceModel> faces = (data['data'] as List)
               .map((json) => FaceModel.fromJson(json))
               .toList();
-          print('Mapped Faces: $faces'); 
+          print('Mapped Faces: $faces');
           emit(FaceLoaded(faces));
         } else {
           emit(FaceError("Invalid response structure: $data"));
         }
       } catch (e) {
         emit(FaceError("Failed to load unrecognized faces: $e"));
-        print("Error: $e"); 
-      }
-    });
-
-    on<AddFace>((event, emit) async {
-      try {
-        final url = Uri.http(ipAddress, 'api/faces');
-        final response = await http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(event.face.toJson()),
-        );
-
-        if (response.statusCode == 200) {
-          add(LoadFaces());
-        } else {
-          emit(FaceError("Failed to add face: ${response.body}"));
-        }
-      } catch (e) {
-        emit(FaceError("Failed to add face: $e"));
-      }
-    });
-
-    on<UpdateFace>((event, emit) async {
-      try {
-        final url = Uri.http(ipAddress, 'api/faces/${event.face.id}');
-        final response = await http.put(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(event.face.toJson()),
-        );
-
-        if (response.statusCode == 200) {
-          add(LoadFaces());
-        } else {
-          emit(FaceError("Failed to update face: ${response.body}"));
-        }
-      } catch (e) {
-        emit(FaceError("Failed to update face: $e"));
+        print("Error: $e");
       }
     });
 
     on<DeleteFace>((event, emit) async {
       try {
         final url = Uri.http(ipAddress, 'api/faces/${event.id}');
-        final response = await http.delete(url);
+        final response = await NetworkService.delete(url.toString());
 
-        if (response.statusCode == 200) {
-          add(LoadFaces());
+        if (response['success']) {
+          print('Face deleted successfully');
+          emit(FaceDeleted());
+          add(LoadUnrecognizedFaces()); // Memuat ulang data unrecognized
         } else {
-          emit(FaceError("Failed to delete face: ${response.body}"));
+          print('Failed to delete face: ${response['body']}');
+          emit(FaceError("Failed to delete face: ${response['body']}"));
         }
       } catch (e) {
+        print('Exception Caught: $e');
         emit(FaceError("Failed to delete face: $e"));
       }
     });
