@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/core/configs/theme/app_colors.dart';
+import 'package:isentry/presentation/auth/pages/login.dart';
 import 'package:isentry/presentation/home/bloc/detection_log/detection_bloc.dart';
 import 'package:isentry/presentation/home/bloc/detection_log/detection_event.dart';
 import 'package:isentry/presentation/home/bloc/detection_log/detection_state.dart';
@@ -10,8 +11,7 @@ import 'package:isentry/presentation/home/bloc/user/user_bloc.dart';
 import 'package:isentry/presentation/home/bloc/user/user_event.dart';
 import 'package:isentry/presentation/home/bloc/user/user_state.dart';
 import 'package:isentry/presentation/home/pages/profile/account_settings.dart';
-import 'package:isentry/presentation/widgets/components/line_chart.dart';
-import 'package:isentry/presentation/widgets/components/sort.dart';
+import 'package:isentry/presentation/widgets/components/sortGraphResident.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class DashboardResidentPage extends StatefulWidget {
@@ -23,117 +23,104 @@ class DashboardResidentPage extends StatefulWidget {
 }
 
 class _DashboardResidentPageState extends State<DashboardResidentPage> {
-  int filter = 0;
-
-  void _onSortItemSelected(int index) {
-    setState(() {
-      filter = index;
-    });
-  }
-
   @override
   void initState() {
-    context.read<UserBloc>().add(GetUserById(id: widget.userId));
     super.initState();
+    context
+        .read<DetectionBloc>()
+        .add(DetectionByIdentity(id: widget.userId.toString()));
+    context.read<UserBloc>().add(GetUserById(id: widget.userId));
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserBloc, UserState>(
+    return BlocConsumer<UserBloc, UserState>(
+      listener: (context, state) {
+        if (state is AutoLogout) {
+          AppNavigator.push(context, const LoginPage());
+        }
+      },
       builder: (context, state) {
-        if (state is UserLoading) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is UserFailure) {
-          return Center(child: Text('Error: ${state.errorMessage}'));
-        } else if (state is UserLoaded) {
-          return Column(
-            children: [
-              Expanded(
-                flex: 12,
-                child: Dashboard(name: state.user.name),
-              ),
-              Expanded(
-                  flex: 6,
-                  child: Center(
-                    child: MySort(
-                      texts: const ['Week', 'Month', 'Year'],
+        return BlocBuilder<UserBloc, UserState>(
+          builder: (context, state) {
+            if (state is UserLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is UserFailure) {
+              return Center(child: Text('Error: ${state.errorMessage}'));
+            } else if (state is UserLoaded) {
+              return Column(
+                children: [
+                  Expanded(
+                    flex: 12,
+                    child: Container(
+                      color: AppColors.primary,
+                      padding:
+                          const EdgeInsets.only(left: 35, right: 35, top: 40),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Hallo ${state.user.name}",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 1.5,
+                                    color: Color(0xFFc8cad1)),
+                              ),
+                              const Text(
+                                "My Dashboard",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 1.5,
+                                    fontSize: 16),
+                              )
+                            ],
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              AppNavigator.push(
+                                  context,
+                                  AccountSettingsPage(
+                                    userId: widget.userId,
+                                  ));
+                            },
+                            icon: const Icon(
+                              (LucideIcons.userCircle2),
+                              size: 40,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 29,
+                    // child: Text("hallo"),
+                    child: SortgraphResident(
+                      texts: const ['Today', 'Week', 'Month'],
                       leftPadding: 35,
                       rightPadding: 35,
-                      onItemSelected: _onSortItemSelected,
+                      identityId: widget.userId,
                     ),
-                  )),
-              Expanded(
-                  flex: 23,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20, right: 30),
-                    child: AspectRatio(
-                      aspectRatio: 3,
-                      child: LineChartDashboard(filter: filter),
+                  ),
+                  Expanded(
+                    flex: 35,
+                    child: Activity(
+                      name: state.user.name,
+                      identityId: state.user.identityId,
                     ),
-                  )),
-              Expanded(
-                  flex: 35,
-                  child: Activity(
-                    identityId: state.user.identityId,
-                    name: state.user.name,
-                  )),
-            ],
-          );
-        }
-        return const Center(child: Text("No Data Found"));
+                  ),
+                ],
+              );
+            }
+            return const Center(child: Text("No Data Founds"));
+          },
+        );
       },
-    );
-  }
-}
-
-class Dashboard extends StatelessWidget {
-  final String name;
-  const Dashboard({super.key, required this.name});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.primary,
-      padding: const EdgeInsets.only(left: 35, right: 35, top: 40),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Hello! $name",
-                style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1.5,
-                    color: Color(0xFFc8cad1)),
-              ),
-              const Text(
-                "My Dashboard",
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1.5,
-                    fontSize: 16),
-              )
-            ],
-          ),
-          IconButton(
-            onPressed: () {
-              AppNavigator.push(
-                  context,
-                  const AccountSettingsPage(
-                    userId: '1',
-                  ));
-            },
-            icon: const Icon(
-              (LucideIcons.userCircle2),
-              size: 40,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -141,13 +128,10 @@ class Dashboard extends StatelessWidget {
 class Activity extends StatelessWidget {
   final int? identityId;
   final String name;
-  const Activity({super.key, required this.identityId, required this.name});
+  const Activity({super.key, required this.name, this.identityId});
 
   @override
   Widget build(BuildContext context) {
-    context
-        .read<DetectionBloc>()
-        .add(DetectionByIdentity(id: identityId.toString()));
     return BlocBuilder<DetectionBloc, DetectionState>(
       builder: (context, state) {
         if (state is DetectionLoading) {
