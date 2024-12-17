@@ -9,6 +9,19 @@ export async function getDetectionLogs() {
         //get all detection log
         const detectionLogs = await prisma.detection_Log.findMany({
             orderBy: { id: "asc" },
+            select: {
+                id: true,
+                face: true,
+                faceRelation: {
+                    select: {
+                        singlePictures: {
+                            select: {
+                                path: true,
+                            },
+                        },
+                    },
+                },
+            },
         });
 
         //return response json
@@ -31,6 +44,11 @@ export async function getDetailDetectionLogs() {
                 faceRelation: {
                     select: {
                         identity: true,
+                        singlePictures: {
+                            select: {
+                                path: true,
+                            },
+                        },
                         identities: {
                             select: {
                                 name: true,
