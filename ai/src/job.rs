@@ -27,7 +27,7 @@ pub enum JobKind {
 }
 
 pub enum JobResult {
-    AutoLabel(Vec<BoundingBox>, Vec<(u64, String)>),
+    AutoLabel(Vec<BoundingBox>, Vec<(u64, String, bool)>),
     #[allow(clippy::type_complexity)]
     ProcessImage(String, Vec<(String, (i64, i64, u64, u64), Vec<f64>)>),
     RegisterFace(Option<u64>, usize),
