@@ -14,10 +14,9 @@ import 'package:isentry/presentation/home/bloc/faces/face_state.dart';
 import 'package:isentry/presentation/home/bloc/user/user_bloc.dart';
 import 'package:isentry/presentation/home/bloc/user/user_event.dart';
 import 'package:isentry/presentation/home/bloc/user/user_state.dart';
-import 'package:isentry/presentation/widgets/components/line_chart.dart';
-import 'package:isentry/presentation/widgets/components/sort.dart';
 import 'package:isentry/presentation/home/pages/profile/account_settings.dart';
 import 'package:isentry/presentation/home/pages/detection_log.dart';
+import 'package:isentry/presentation/widgets/components/sortGraph.dart';
 import 'package:isentry/services/notification_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -37,12 +36,10 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  int filter = 0;
-
-  void _onSortItemSelected(int index) {
-    setState(() {
-      filter = index;
-    });
+  @override
+  void initState() {
+    super.initState();
+    context.read<DetectionBloc>().add(DetectionDetail());
   }
 
   @override
@@ -115,21 +112,13 @@ class _DashboardPageState extends State<DashboardPage> {
                     toUnrecognized: widget.toUnrecognized,
                   ),
                 ),
-                Expanded(
+                const Expanded(
                   flex: 27,
-                  child: Column(
-                    children: [
-                      MySort(
-                        texts: const ['Today', 'Week', 'Month', 'Year'],
-                        leftPadding: 35,
-                        rightPadding: 35,
-                        onItemSelected: _onSortItemSelected,
-                      ),
-                      Expanded(
-                        child: FilteredLineChart(filter: filter),
-                      )
-                    ],
-                  ),
+                  // child: Text("hallo"),
+                  child: Sortgraph(
+                      texts: ['Today', 'Week', 'Month', 'Year'],
+                      leftPadding: 35,
+                      rightPadding: 35),
                 ),
                 const Expanded(
                   flex: 27,
@@ -325,7 +314,6 @@ class Activity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<DetectionBloc>().add(DetectionDetail());
     return BlocBuilder<DetectionBloc, DetectionState>(
       builder: (context, state) {
         if (state is DetectionLoading) {
@@ -439,24 +427,6 @@ class Activity extends StatelessWidget {
         }
         return const Center(child: Text("No data found"));
       },
-    );
-  }
-}
-
-class FilteredLineChart extends StatelessWidget {
-  final int filter;
-
-  const FilteredLineChart({super.key, required this.filter});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20, right: 30),
-      child: AspectRatio(
-        aspectRatio: 3,
-        child: LineChartDashboard(
-            filter: filter), // Hanya merender ulang LineChartDashboard
-      ),
     );
   }
 }
