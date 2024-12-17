@@ -2600,6 +2600,26 @@ async function main() {
         });
     }
 
+    // Define timestamp
+    const startDates = new Date("2024-12-17T00:00:00Z"); // Start date
+    const endDates = new Date("2024-12-19T23:59:59Z"); // End date
+
+    // Create array dummy data
+    const dummyDatas = Array.from({ length: 40 }).map(() => ({
+        face: faker.number.int({ min: 1, max: 19 }), // Generate random faceId
+        timestamp: faker.date.between({ from: startDates, to: endDates }), // Generate random timestamp
+    }));
+
+    // Detection log
+    for (const data of dummyDatas) {
+        await prisma.detection_Log.create({
+            data: {
+                face: data.face,
+                timestamp: data.timestamp,
+            },
+        });
+    }
+
     console.log("Data seeded successfully!");
 }
 
