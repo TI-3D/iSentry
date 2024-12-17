@@ -46,7 +46,7 @@ class LoginBloc extends Bloc<AuthEvent, LoginState> {
         var response = await NetworkService.post(url.toString());
 
         if (response['success']) {
-          SecureStorageService.deleteAll;
+          SecureStorageService.deleteAll();
           emit(LogoutSuccess());
         } else {
           emit(const LoginFailure('User not found'));
