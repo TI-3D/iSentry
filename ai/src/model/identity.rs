@@ -4,7 +4,6 @@ use std::{
 };
 
 use dlib_face_recognition::FaceEncoding;
-use eyre::eyre;
 use mysql::prelude::Queryable;
 
 pub type Id = u64;
@@ -29,16 +28,19 @@ pub fn update(
     ",
     )? {
         let (face_id, embedding, identity_id, name, key) = row;
-        let embedding: Vec<f64> = bincode::deserialize(&embedding).inspect_err(|_| {
-            tracing::error!("Embedding is not [f64; 128] for face_id: {}", face_id)
-        })?;
+        let Ok(embedding) = bincode::deserialize::<Vec<f64>>(&embedding).inspect_err(|e| {
+            tracing::warn!("Embedding is not [f64; 128] for face_id {face_id} with error: {e}");
+        }) else {
+            continue;
+        };
         if embedding.len() != 128 {
-            return Err(eyre!(
-                "Embedding is not [f64; 128] for face_id: {}",
-                face_id
-            ));
+            tracing::warn!("Embedding is not [f64; 128] for face_id: {face_id}");
+            continue;
         }
-        let embedding = FaceEncoding::from_vec(&embedding).unwrap();
+        let Ok(embedding) = FaceEncoding::from_vec(&embedding) else {
+            tracing::warn!("Can't get FaceEncoding from embeding in database for face_id {face_id}");
+            continue;
+        };
         faces.insert(face_id, identity_id, embedding);
         if let Some(id) = identity_id {
             identities.insert(id, (name.unwrap(), key.unwrap()));
