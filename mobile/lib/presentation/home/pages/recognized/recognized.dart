@@ -72,12 +72,14 @@ class _RecognizedPageState extends State<RecognizedPage> {
       builder: (context, state) {
         return BlocBuilder<IdentityBloc, IdentityState>(
           builder: (context, identityState) {
+            print("Current Identity State: $identityState"); // Log state
             if (identityState is IdentityLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (identityState is IdentityFailure) {
               return Center(
                   child: Text('Error: ${identityState.errorMessage}'));
             } else if (identityState is AllIdentityLoaded) {
+              print("Current Identity State: $identityState");
               return BlocBuilder<UserBloc, UserState>(
                 builder: (context, userState) {
                   if (userState is UserLoading) {
@@ -276,7 +278,19 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                                   name: identities.name,
                                                   id: identities.id,
                                                 ),
-                                              );
+                                              ).then((_) {
+                                                Future.delayed(
+                                                    const Duration(seconds: 1),
+                                                    () {
+                                                  // ignore: use_build_context_synchronously
+                                                  context
+                                                      .read<UserBloc>()
+                                                      .add(GetAllUser());
+                                                  context
+                                                      .read<IdentityBloc>()
+                                                      .add(GetAllIdentity());
+                                                });
+                                              });
                                               break;
                                             case 'delete':
                                               context.read<IdentityBloc>().add(
