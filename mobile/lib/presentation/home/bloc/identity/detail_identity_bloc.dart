@@ -44,5 +44,24 @@ class DetailIdentityBloc
         emit(IdentityFailure("Failed to fetch user: $e"));
       }
     });
+
+    on<UpdateName>((event, emit) async {
+      emit(IdentityLoading());
+
+      try {
+        final url = Uri.http(ipAddress, 'api/identities/${event.id}');
+        final response = await NetworkService.patch(url.toString(), body: {
+          'name': event.name,
+        });
+
+        if (response['success']) {
+          emit(NameUpdated(id: event.id, name: event.name));
+        } else {
+          emit(IdentityFailure(response['message']));
+        }
+      } catch (e) {
+        emit(IdentityFailure("Failed to fetch user: $e"));
+      }
+    });
   }
 }

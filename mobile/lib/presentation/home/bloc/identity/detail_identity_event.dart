@@ -28,6 +28,16 @@ class UpdateKey extends DetailIdentityEvent {
   List<Object?> get props => [id];
 }
 
+class UpdateName extends DetailIdentityEvent {
+  final String id;
+  final String name;
+
+  const UpdateName({required this.id, required this.name});
+
+  @override
+  List<Object?> get props => [id, name];
+}
+
 class GetIdentityById extends DetailIdentityEvent {
   final String id;
 

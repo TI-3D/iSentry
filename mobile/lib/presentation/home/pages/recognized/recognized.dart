@@ -144,16 +144,17 @@ class _RecognizedPageState extends State<RecognizedPage> {
                       ),
                       body: ListView.builder(
                         itemCount: identityState.identities
-                            .where((identity) =>
-                                identity.name
-                                    .toLowerCase()
-                                    .contains(searchQuery) ||
-                                identity.id
-                                    .toString()
-                                    .toLowerCase()
-                                    .contains(searchQuery))
-                            .toList()
-                            .length, // Filtered item count
+                                .where((identity) =>
+                                    identity.name
+                                        .toLowerCase()
+                                        .contains(searchQuery) ||
+                                    identity.id
+                                        .toString()
+                                        .toLowerCase()
+                                        .contains(searchQuery))
+                                .toList()
+                                .length +
+                            1, // Filtered item count
                         itemBuilder: (context, index) {
                           final filteredIdentities = identityState.identities
                               .where((identity) =>
@@ -267,8 +268,21 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                                 context: context,
                                                 isScrollControlled: true,
                                                 builder: (_) => EditData(
-                                                    name: identities.name),
-                                              );
+                                                    name: identities.name,
+                                                    id: identities.id),
+                                              ).then((_) {
+                                                Future.delayed(
+                                                    const Duration(seconds: 1),
+                                                    () {
+                                                  // ignore: use_build_context_synchronously
+                                                  context
+                                                      .read<IdentityBloc>()
+                                                      .add(GetAllIdentity());
+                                                  context
+                                                      .read<UserBloc>()
+                                                      .add(GetAllUser());
+                                                });
+                                              });
                                               break;
                                             case 'detail':
                                               showModalBottomSheet(

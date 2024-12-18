@@ -41,6 +41,16 @@ class KeyUpdated extends DetailIdentityState {
   List<Object?> get props => [id, key];
 }
 
+class NameUpdated extends DetailIdentityState {
+  final String id;
+  final String name;
+
+  NameUpdated({required this.id, required this.name});
+
+  @override
+  List<Object?> get props => [id, name];
+}
+
 class IdentityLoaded extends DetailIdentityState {
   final Identity identities;
 
