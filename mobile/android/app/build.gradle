@@ -1,8 +1,8 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
+    id "org.jetbrains.kotlin.android"
 }
 
 android {
@@ -38,15 +38,16 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.debug
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile(
-                 'proguard-android-optimize.txt'),
-                 'proguard-rules.pro'
+            shrinkResources false  // Nonaktifkan shrinking resources
+            minifyEnabled false    // Nonaktifkan minification (code shrinking)
         }
     }
 }
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.1.0"
 }

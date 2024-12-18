@@ -1,9 +1,21 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.1.0' // Gunakan versi terbaru sesuai project
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0" // Pastikan versi Kotlin sesuai
+    }
+}
+
 allprojects {
     repositories {
         google()
         mavenCentral()
     }
 }
+
 
 rootProject.buildDir = "../build"
 subprojects {
