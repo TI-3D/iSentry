@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:isentry/core/configs/ip_address.dart';
 import 'package:isentry/presentation/home/bloc/detection_log/detection_bloc.dart';
 import 'package:isentry/presentation/home/bloc/detection_log/detection_event.dart';
 import 'package:isentry/presentation/home/bloc/detection_log/detection_state.dart';
-import 'package:isentry/presentation/home/bloc/identity/identity_bloc.dart';
-import 'package:isentry/presentation/home/bloc/identity/identity_event.dart';
-import 'package:isentry/presentation/home/bloc/identity/identity_state.dart';
+import 'package:isentry/presentation/home/bloc/identity/detail_identity_bloc.dart';
+import 'package:isentry/presentation/home/bloc/identity/detail_identity_event.dart';
+import 'package:isentry/presentation/home/bloc/identity/detail_identity_state.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class Details extends StatefulWidget {
@@ -28,15 +29,17 @@ class _DetailsState extends State<Details> {
 
   @override
   void initState() {
-    super.initState(); // Panggil super.initState() hanya sekali
+    super.initState();
     context
         .read<DetectionBloc>()
         .add(DetectionByIdentity(id: widget.id.toString()));
-    context.read<IdentityBloc>().add(GetIdentityById(id: widget.id.toString()));
+    context
+        .read<DetailIdentityBloc>()
+        .add(GetIdentityById(id: widget.id.toString()));
   }
 
   void _toggleSwitch(bool value, BuildContext context) {
-    context.read<IdentityBloc>().add(
+    context.read<DetailIdentityBloc>().add(
           UpdateKey(
             id: widget.id.toString(),
             key: value,
@@ -46,7 +49,7 @@ class _DetailsState extends State<Details> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<IdentityBloc, IdentityState>(
+    return BlocConsumer<DetailIdentityBloc, DetailIdentityState>(
       listener: (context, state) {
         if (state is IdentityFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -57,7 +60,7 @@ class _DetailsState extends State<Details> {
             const SnackBar(content: Text('Identity updated successfully!')),
           );
           context
-              .read<IdentityBloc>()
+              .read<DetailIdentityBloc>()
               .add(GetIdentityById(id: widget.id.toString()));
         }
       },
@@ -112,10 +115,17 @@ class _DetailsState extends State<Details> {
                         children: [
                           Row(
                             children: [
-                              const Icon(
-                                LucideIcons.userCircle2,
-                                color: Colors.black,
-                                size: 40,
+                              ClipOval(
+                                child: Image.network(
+                                  "http://$ipAddress${stateIdentity.identities.pictureSinglePath}",
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(LucideIcons.userCircle2,
+                                        size: 35);
+                                  },
+                                ),
                               ),
                               const SizedBox(width: 10),
                               Column(

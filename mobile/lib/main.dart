@@ -6,9 +6,11 @@ import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
 import 'package:isentry/presentation/home/bloc/detection_log/detection_bloc.dart';
 import 'package:isentry/presentation/home/bloc/faces/face_bloc.dart';
 import 'package:isentry/presentation/home/bloc/faces/face_event.dart';
+import 'package:isentry/presentation/home/bloc/identity/detail_identity_bloc.dart';
 import 'package:isentry/presentation/home/bloc/identity/identity_bloc.dart';
 import 'package:isentry/presentation/home/bloc/medias/media_bloc.dart';
 import 'package:isentry/presentation/home/bloc/user/user_bloc.dart';
+import 'package:isentry/presentation/home/bloc/validate/validate_bloc.dart';
 import 'package:isentry/presentation/splash/bloc/splash_cubit.dart';
 import 'package:isentry/presentation/splash/pages/splash.dart';
 import 'package:isentry/services/notification_service.dart';
@@ -27,8 +29,11 @@ void main() async {
       BlocProvider(create: (context) => UserBloc()),
       BlocProvider(create: (context) => DetectionBloc()),
       BlocProvider(create: (context) => IdentityBloc()),
-      BlocProvider(create: (context) => FaceBloc()..add(LoadUnrecognizedFaces())),
-      BlocProvider(create: (context) => MediaBloc())
+      BlocProvider(
+          create: (context) => FaceBloc()..add(LoadUnrecognizedFaces())),
+      BlocProvider(create: (context) => MediaBloc()),
+      BlocProvider(create: (context) => FaceValidateBloc()),
+      BlocProvider(create: (context) => DetailIdentityBloc()),
     ],
     child: const MyApp(),
   ));

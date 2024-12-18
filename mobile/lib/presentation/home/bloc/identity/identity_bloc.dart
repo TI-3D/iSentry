@@ -13,6 +13,7 @@ class IdentityBloc extends Bloc<IdentityEvent, IdentityState> {
       try {
         final url = Uri.http(ipAddress, 'api/identities');
         final response = await NetworkService.get(url.toString());
+        print("GetAllIdentity response: $response");
 
         if (response['success']) {
           final allIdentities = (response['data'] as List)
@@ -52,6 +53,7 @@ class IdentityBloc extends Bloc<IdentityEvent, IdentityState> {
       try {
         final url = Uri.http(ipAddress, 'api/identities/${event.id}');
         final response = await NetworkService.get(url.toString());
+        print("GetIdentityById response: $response");
 
         if (response['success']) {
           IdentityModel identities = IdentityModel.fromJson(response['data']);
