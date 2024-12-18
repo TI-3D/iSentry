@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:isentry/core/configs/ip_address.dart';
 import 'package:isentry/services/secure_storage_service.dart';
@@ -43,6 +44,68 @@ class NetworkService {
     });
   }
 
+  static Future<dynamic> postMultipart(
+    String url, {
+    Map<String, String>? customHeaders,
+    Map<String, String>? fields,
+    Map<String, File>? files,
+  }) async {
+    if (await isTokenExpired()) {
+      renewToken();
+    }
+
+    final allHeaders = {..._instance.headers, ...?customHeaders};
+
+    try {
+      // Buat multipart request
+      final request = http.MultipartRequest('POST', Uri.parse(url));
+      request.headers.addAll(allHeaders);
+
+      // Tambahkan fields (data lain selain file)
+      if (fields != null) {
+        request.fields.addAll(fields);
+      }
+
+      // Tambahkan file
+      if (files != null) {
+        for (var entry in files.entries) {
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              entry.key, // Nama field sesuai backend
+              entry.value.path,
+            ),
+          );
+        }
+      }
+
+      // Kirim request dan dapatkan respons
+      final streamedResponse =
+          await request.send().timeout(const Duration(seconds: 20));
+      final response = await http.Response.fromStream(streamedResponse);
+
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+      print('Response body: $res');
+
+      _updateCookie(response);
+
+      // Tangani status kode
+      if (statusCode == 403) {
+        SecureStorageService.deleteAll();
+        throw Exception("Unauthorized access (403)");
+      }
+
+      if (statusCode < 200 || statusCode > 400) {
+        throw Exception("Error while fetching data $statusCode");
+      }
+
+      // Decode respons JSON
+      return _instance._decoder.convert(res);
+    } catch (e) {
+      throw Exception("Multipart request failed: $e");
+    }
+  }
+
   static Future<dynamic> post(String url,
       {body, encoding, Map<String, String>? customHeaders}) async {
     if (await isTokenExpired()) {
@@ -59,6 +122,7 @@ class NetworkService {
       final int statusCode = response.statusCode;
 
       _updateCookie(response);
+      print(res);
 
       if (statusCode < 200 || statusCode > 400) {
         throw Exception("Error while fetching data");
