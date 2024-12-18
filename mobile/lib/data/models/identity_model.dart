@@ -7,6 +7,7 @@ class IdentityModel extends Identity {
     required super.createdAt,
     required super.updatedAt,
     required super.key,
+    required super.pictureSinglePath,
   });
 
   factory IdentityModel.fromJson(Map<String, dynamic> json) {
@@ -15,9 +16,17 @@ class IdentityModel extends Identity {
     final createString = json['createdAt'] as String;
     final createDate = DateTime.parse(createString);
 
+    final faces = json['faces'] as List<dynamic>? ?? [];
+    final firstFace = faces.isNotEmpty ? faces.first : null;
+    final pictureSinglePath =
+        firstFace != null && firstFace['singlePictures'] != null
+            ? firstFace['singlePictures']['path'] as String
+            : '';
+
     return IdentityModel(
       id: json['id'] as int,
       name: json['name'] as String,
+      pictureSinglePath: pictureSinglePath,
       updatedAt: DateTime(updateDate.year, updateDate.month, updateDate.day,
           updateDate.hour, updateDate.minute),
       createdAt: DateTime(createDate.year, createDate.month, createDate.day,
