@@ -57,7 +57,7 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
   }
 
   void _onFabPressed() async {
-     final result = await showModalBottomSheet<bool>(
+    final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -131,14 +131,14 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
           print('Face deleted successfully. Reloading unrecognized faces...');
           _loadUnrecognizedFaces();
         } else if (state is FaceError) {
-            Fluttertoast.showToast(
+          Fluttertoast.showToast(
             msg: 'Error: ${state.message}',
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.TOP,
             backgroundColor: Colors.red,
             textColor: Colors.white,
             fontSize: 16.0,
-            );
+          );
         }
       },
       child: Scaffold(
@@ -165,7 +165,6 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
               if (_isSelected.length != state.faces.length) {
                 _isSelected = List.filled(state.faces.length, false);
               }
-
               return GestureDetector(
                 onTap: () {
                   if (_multiSelectMode) {
@@ -260,139 +259,162 @@ class _UnrecognizedPageState extends State<UnrecognizedPage> {
                               ),
                             ),
                           ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Face#${face.id}',
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: SizedBox(
-                                    width: 20,
-                                    child: PopupMenuButton<String>(
-                                      icon: const Icon(
-                                        LucideIcons.moreVertical,
-                                        size: 18,
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          'Face#${face.id}',
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
-                                      color: const Color(0xfff1f4f9),
-                                      onSelected: (value) {
-                                        if (value == 'select') {
-                                          setState(() {
-                                            _multiSelectMode =
-                                                !_multiSelectMode;
-                                            if (!_multiSelectMode) {
-                                              _selectedFaces.clear();
-                                              _isSelected = List.filled(
-                                                  _isSelected.length, false);
-                                            }
-                                          });
-                                        } else if (value == 'delete') {
-                                          // _deleteSelectedFaces();
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return AlertDialog(
-                                                title: const Text('Delete Face'),
-                                                content: const Text(
-                                                    'Are you sure you want to delete this face?'),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: const Text('Cancel'),
-                                                  ),
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      context.read<FaceBloc>().add(
-                                                          DeleteFace(
-                                                              face.id.toString()));
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: const Text(
-                                                      'Delete',
-                                                      style: TextStyle(
-                                                        color: Colors.red,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              );
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: SizedBox(
+                                          width: 20,
+                                          child: PopupMenuButton<String>(
+                                            icon: const Icon(
+                                              LucideIcons.moreVertical,
+                                              size: 18,
+                                            ),
+                                            color: const Color(0xfff1f4f9),
+                                            onSelected: (value) {
+                                              if (value == 'select') {
+                                                setState(() {
+                                                  _multiSelectMode =
+                                                      !_multiSelectMode;
+                                                  if (!_multiSelectMode) {
+                                                    _selectedFaces.clear();
+                                                    _isSelected = List.filled(
+                                                        _isSelected.length,
+                                                        false);
+                                                  }
+                                                });
+                                              } else if (value == 'delete') {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return AlertDialog(
+                                                      title: const Text(
+                                                          'Delete Face'),
+                                                      content: const Text(
+                                                          'Are you sure you want to delete this face?'),
+                                                      actions: [
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child: const Text(
+                                                              'Cancel'),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            context
+                                                                .read<
+                                                                    FaceBloc>()
+                                                                .add(DeleteFace(face
+                                                                    .id
+                                                                    .toString()));
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child: const Text(
+                                                            'Delete',
+                                                            style: TextStyle(
+                                                              color: Colors.red,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              }
                                             },
-                                          );
-                                        }
-                                      },
-                                      itemBuilder: (context) {
-                                        return [
-                                          const PopupMenuItem<String>(
-                                            value: 'select',
-                                            child: Row(
-                                              children: [
-                                                Icon(LucideIcons.checkCircle,
-                                                    size: 18),
-                                                SizedBox(width: 10),
-                                                Text('Select'),
-                                              ],
-                                            ),
-                                          ),
-                                          const PopupMenuDivider(height: 1),
-                                          const PopupMenuItem<String>(
-                                            value: 'delete',
-                                            child: Row(
-                                              children: [
-                                                Icon(LucideIcons.trash2,
-                                                    size: 18,
-                                                    color: Colors.red),
-                                                SizedBox(width: 10),
-                                                Text(
-                                                  'Delete',
-                                                  style: TextStyle(
-                                                      color: Colors.red),
+                                            itemBuilder: (context) {
+                                              return [
+                                                const PopupMenuItem<String>(
+                                                  value: 'select',
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(
+                                                          LucideIcons
+                                                              .checkCircle,
+                                                          size: 18),
+                                                      SizedBox(width: 10),
+                                                      Text('Select'),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ],
-                                            ),
+                                                const PopupMenuDivider(
+                                                    height: 1),
+                                                const PopupMenuItem<String>(
+                                                  value: 'delete',
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(LucideIcons.trash2,
+                                                          size: 18,
+                                                          color: Colors.red),
+                                                      SizedBox(width: 10),
+                                                      Text(
+                                                        'Delete',
+                                                        style: TextStyle(
+                                                            color: Colors.red),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ];
+                                            },
                                           ),
-                                        ];
-                                      },
-                                    ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox.shrink(),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  LucideIcons.calendarDays,
-                                  size: 12,
-                                  color: Colors.grey,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  formattedDate,
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        LucideIcons.calendarDays,
+                                        size: 12,
+                                        color: Colors.grey,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Expanded(
+                                        child: LayoutBuilder(
+                                          builder: (context, constraints) {
+                                            return Text(
+                                              formattedDate,
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.03,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ],
