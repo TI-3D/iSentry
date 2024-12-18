@@ -204,10 +204,16 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                                 children: [
                                                   Text(
                                                     identities.name,
-                                                    style: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.w500),
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontSize:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.04,
+                                                    ),
                                                   ),
                                                   const SizedBox(width: 10),
                                                   if (hasAccount)
@@ -216,15 +222,15 @@ class _RecognizedPageState extends State<RecognizedPage> {
                                                         size: 14),
                                                 ],
                                               ),
-                                              Text(
+                                                Text(
                                                 "Last Modified $formattedDate",
-                                                style: const TextStyle(
-                                                  color: Color(0xffa1a1aa),
+                                                style: TextStyle(
+                                                  color: const Color(0xffa1a1aa),
                                                   letterSpacing: 1.5,
-                                                  fontSize: 12,
+                                                  fontSize: MediaQuery.of(context).size.width * 0.031,
                                                   fontWeight: FontWeight.w500,
                                                 ),
-                                              ),
+                                                ),
                                             ],
                                           ),
                                         ],

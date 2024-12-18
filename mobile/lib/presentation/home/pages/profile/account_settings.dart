@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:isentry/common/helper/navigation/app_navigation.dart';
 import 'package:isentry/presentation/auth/bloc/login_bloc.dart';
 import 'package:isentry/presentation/auth/bloc/login_event.dart';
@@ -32,14 +33,24 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LogoutSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Logout Success'),
-            duration: Duration(seconds: 2),
-          ));
+          Fluttertoast.showToast(
+            msg: "Logout Success",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.TOP,
+            timeInSecForIosWeb: 3,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+          );
           AppNavigator.push(context, const LoginPage());
         } else if (state is LoginFailure) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(state.errorMessage)));
+          Fluttertoast.showToast(
+            msg: state.errorMessage,
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.TOP,
+            timeInSecForIosWeb: 3,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+          );
         }
       },
       child: BlocBuilder<UserBloc, UserState>(
@@ -114,22 +125,23 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                       dense: true,
                       leading: const Icon(LucideIcons.userCircle2),
                       title: const Text(
-                        'Edit Account',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 15,
-                        ),
+                      'Edit Account',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15,
+                      ),
                       ),
                       subtitle: const Text(
-                        'Update your personal information.',
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 1),
+                      'Update your personal information.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1),
                       ),
+                      enabled: false,
                       onTap: () {
-                        // Logic for Edit Account
+                      // Logic for Edit Account
                       },
                     ),
                     const Divider(),
@@ -137,88 +149,70 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                       dense: true,
                       leading: const Icon(LucideIcons.history),
                       title: const Text(
-                        'Log Activity',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 15,
-                        ),
+                      'Log Activity',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15,
+                      ),
                       ),
                       subtitle: const Text(
-                        'View your activity history.',
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 1),
+                      'View your activity history.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1),
                       ),
+                      enabled: false,
                       onTap: () {
-                        // Logic for Log Activity
+                      // Logic for Log Activity
                       },
                     ),
                     const Divider(),
-                    // // ListTile(
-                    // //   leading: const Icon(LucideIcons.settings),
-                    // //   title: const Text('Setting',
-                    // //     style: TextStyle(
-                    // //       fontWeight: FontWeight.w500,
-                    // //       fontSize: 15,
-                    // //     ),
-                    // //   ),
-                    // //   subtitle: const Text('Customize your app experience.',
-                    // //     style: TextStyle(
-                    // //       fontSize: 13,
-                    // //       color: Colors.grey,
-                    // //       fontWeight: FontWeight.w500,
-                    // //       letterSpacing: 1
-                    // //     ),
-                    // //   ),
-                    // //   onTap: () {
-                    // //     // Logic for Settings
-                    // //   },
-                    // // ),
-                    // const Divider(),
                     ListTile(
                       dense: true,
                       leading: const Icon(LucideIcons.settings),
                       title: const Text(
-                        'Setting',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 15,
-                        ),
+                      'Setting',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15,
+                      ),
                       ),
                       subtitle: const Text(
-                        'Customize your app experience.',
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 1),
+                      'Customize your app experience.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1),
                       ),
+                      enabled: false,
                       onTap: () {
-                        // Logic for Settings
+                      // Logic for Settings
                       },
                     ),
                     const Divider(),
                     ListTile(
                       leading: const Icon(LucideIcons.heartHandshake),
                       title: const Text(
-                        'About Us',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 15,
-                        ),
+                      'About Us',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15,
+                      ),
                       ),
                       subtitle: const Text(
-                        'Learn app and development team.',
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 1),
+                      'Learn app and development team.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1),
                       ),
+                      enabled: false,
                       onTap: () {
-                        // Logic for About Us
+                      // Logic for About Us
                       },
                     ),
                     const Divider(),

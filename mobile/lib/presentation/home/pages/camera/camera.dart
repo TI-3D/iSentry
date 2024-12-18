@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:isentry/core/configs/ip_address.dart';
+// import 'package:isentry/core/configs/ip_address.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -35,7 +35,7 @@ class _CameraPageState extends State<CameraPage> {
 
   Future<void> _initVlcPlayer() async {
     _vlcViewController = VlcPlayerController.network(
-      "rtsp://$ipCamera:8554/test",
+      "rtsp://192.168.1.9:8554/label",
       autoPlay: true,
     );
   }

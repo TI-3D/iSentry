@@ -31,3 +31,5 @@ class FaceError extends FaceState {
   @override
   List<Object> get props => [message];
 }
+
+class FaceDeleted extends FaceState {}
